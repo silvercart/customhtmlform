@@ -511,7 +511,7 @@ class CustomHtmlForm extends Form
 
                     if (!$fieldCheckResult['success'])
                     {
-                        $fieldErrorMessages[]   = '<p>'.$fieldCheckResult['errorMessage'].'</p>';
+                        $fieldErrorMessages[]   = $fieldCheckResult['errorMessage'];
                         $fieldError             = true;
                     }
                 }
@@ -814,7 +814,11 @@ class CustomHtmlForm extends Form
         } else {
             $templatePathRel = $defaultTemplatePath;
         }
-        
+
+        // Fehlermeldungen formatieren
+        $nrOfErrorMessages  = count($this->errorMessages);
+        $messageIdx         = 0;
+
         $templatePathAbs    = Director::baseFolder().$templatePathRel;
         $viewableObj        = new ViewableData();
         $output = $viewableObj->customise(
@@ -822,7 +826,7 @@ class CustomHtmlForm extends Form
                 'FormName'      => $this->name,
                 'FieldName'     => $fieldName,
                 'Label'         => $this->formFields[$fieldName]['title'],
-                'errorMessage'  => $this->formFields[$fieldName]['errorMessages'],
+                'errorMessage'  => $this->errorMessages[$fieldName],
                 'FieldTag'      => $this->SSformFields['fields']->fieldByName($fieldName)->Field()
             )
         )->renderWith($templatePathAbs);

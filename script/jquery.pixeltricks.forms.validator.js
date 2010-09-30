@@ -143,7 +143,7 @@ pixeltricks.forms.validator = function()
                                         {
                                             if (!fieldCheckResult.success)
                                             {
-                                                fieldErrorMessages.push('<p>' + fieldCheckResult.errorMessage + '</p>');
+                                                fieldErrorMessages.push(fieldCheckResult.errorMessage);
                                                 fieldErrors = true;
                                             }
                                         }
@@ -198,6 +198,13 @@ pixeltricks.forms.validator = function()
                 var errorFieldID        = that.formName + that.nameSeparator + fieldName + that.nameSeparator + 'Error';
                 var fieldBoxID          = that.formName + that.nameSeparator + fieldName + that.nameSeparator + 'Box';
                 var errorField          = $('#' + errorFieldID);
+                var messageStr          = '';
+
+                for (messageIdx = 0; messageIdx < messages.length; messageIdx++) {
+                    messageStr += '<strong class="message">';
+                    messageStr += messages[messageIdx];
+                    messageStr += '</strong>';
+                }
 
                 if (errorField.length == 0 &&
                     messages != -1)
@@ -205,11 +212,9 @@ pixeltricks.forms.validator = function()
                     // --------------------------------------------------------
                     // Fehlerbox und Meldungstext neu erzeugen
                     // --------------------------------------------------------
-                    fieldErrorMessages  = messages.join("\n");
+                    
+                    messageStr = '<div class="errorList" id="' + errorFieldID + '" style="display: none;">' + messageStr + '</div>';
 
-                    var messageStr      = '<strong class="message" id="' + errorFieldID + '" style="display: none;">' +
-                        fieldErrorMessages +
-                    '</strong>';
                     if ($('#' + fieldBoxID))
                     {
                         $('#' + fieldBoxID).prepend(messageStr);
@@ -225,8 +230,7 @@ pixeltricks.forms.validator = function()
                     // --------------------------------------------------------
                     // Meldungstext in vorhandener Fehlerbox ersetzen
                     // --------------------------------------------------------
-                    fieldErrorMessages          = messages.join("\n");
-                    $('#' + errorFieldID).html(fieldErrorMessages);
+                    $('#' + errorFieldID).html(messageStr);
                 }
 
                 // ------------------------------------------------------------

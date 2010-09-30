@@ -1,8 +1,12 @@
 <div id="{$FormName}_{$FieldName}_Box" class="type-text<% if errorMessage %> error<% end_if %>">
     <% if errorMessage %>
-        <p class="message">
-            $errorMessage
-        </p>
+        <div class="errorList">
+            <% control errorMessage %>
+            <strong class="message">
+                {$message}
+            </strong>
+            <% end_control %>
+        </div>
     <% end_if %>
 
     <p><label for="{$FormName}_{$FieldName}">{$Label}: </label></p>
