@@ -73,8 +73,8 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
      * Liefert den HTML-Quelltext des angeforderten Formulars zurueck.
      *
      * @param string $formIdentifier
-     * @param Object $renderWithObject: Objekt, in dessen Kontext das Formular
-     *               erstellt werden soll.
+     * @param Object $renderWithObject: Array mit Objekten, in deren Kontext das
+     *               Formular erstellt werden soll.
      * @return CustomHtmlForm
      */
     public function InsertCustomHtmlForm($formIdentifier, $renderWithObject = null) {
@@ -88,10 +88,26 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
             );
         }
 
-        if ($renderWithObject) {
-            $customFields = $renderWithObject->getAllFields();
-            unset($customFields['ClassName']);
-            unset($customFields['RecordClassName']);
+        if ($renderWithObject !== null) {
+            if (is_array($renderWithObject)) {
+                foreach ($renderWithObject as $renderWithSingleObject) {
+                    if ($renderWithSingleObject instanceof DataObject) {
+                        if (isset($customFields)) {
+                            $customFields = array_merge($customFields, $renderWithSingleObject->getAllFields());
+                        } else {
+                            $customFields = $renderWithSingleObject->getAllFields();
+                        }
+                        unset($customFields['ClassName']);
+                        unset($customFields['RecordClassName']);
+                    }
+                }
+            } else {
+                if ($renderWithObject instanceof DataObject) {
+                    $customFields = $renderWithObject->getAllFields();
+                    unset($customFields['ClassName']);
+                    unset($customFields['RecordClassName']);
+                }
+            }
         } else {
             $customFields = null;
         }
