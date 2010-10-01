@@ -73,9 +73,11 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
      * Liefert den HTML-Quelltext des angeforderten Formulars zurueck.
      *
      * @param string $formIdentifier
+     * @param Object $renderWithObject: Objekt, in dessen Kontext das Formular
+     *               erstellt werden soll.
      * @return CustomHtmlForm
      */
-    public function InsertCustomHtmlForm($formIdentifier) {
+    public function InsertCustomHtmlForm($formIdentifier, $renderWithObject = null) {
 
         if (!isset($this->registeredCustomHtmlForms[$formIdentifier])) {
             throw new Exception(
@@ -85,11 +87,28 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
                 )
             );
         }
-        $outputForm = $this->registeredCustomHtmlForms[$formIdentifier]->renderWith(
-            array(
-                $this->registeredCustomHtmlForms[$formIdentifier]->class
-            )
-        );
+
+        if ($renderWithObject) {
+            $customFields = $renderWithObject->getAllFields();
+            unset($customFields['ClassName']);
+            unset($customFields['RecordClassName']);
+        } else {
+            $customFields = null;
+        }
+
+        if ($customFields) {
+            $outputForm = $this->registeredCustomHtmlForms[$formIdentifier]->customise($customFields)->renderWith(
+                array(
+                    $this->registeredCustomHtmlForms[$formIdentifier]->class,
+                )
+            );
+        } else {
+            $outputForm = $this->registeredCustomHtmlForms[$formIdentifier]->renderWith(
+                array(
+                    $this->registeredCustomHtmlForms[$formIdentifier]->class,
+                )
+            );
+        }
 
         return $outputForm;
     }
@@ -153,11 +172,7 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
         }
 
         if ($registeredCustomHtmlForm instanceof CustomHtmlForm) {
-            return $this->owner->customise(
-                array(
-                    'message' => $registeredCustomHtmlForm->submit($form, null)
-                )
-            );
+            return $registeredCustomHtmlForm->submit($form, null);
         }
     }
 }

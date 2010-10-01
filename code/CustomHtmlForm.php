@@ -395,14 +395,16 @@ class CustomHtmlForm extends Form
         }
 
         // Dynamisch hinzugefuegte Formularfelder auslesen
-        foreach ($this->customParameters as $customParameterKey => $customParameterValue) {
-            if (isset($request[$customParameterKey]))
-            {
-                $formData[$customParameterKey] = Convert::raw2sql($request[$customParameterKey]);
-            }
-            else
-            {
-                $formData[$customParameterKey] = false;
+        if (isset($this->customParameters)) {
+            foreach ($this->customParameters as $customParameterKey => $customParameterValue) {
+                if (isset($request[$customParameterKey]))
+                {
+                    $formData[$customParameterKey] = Convert::raw2sql($request[$customParameterKey]);
+                }
+                else
+                {
+                    $formData[$customParameterKey] = false;
+                }
             }
         }
 
@@ -560,9 +562,11 @@ class CustomHtmlForm extends Form
         // --------------------------------------------------------------------
         // Metadaten fuer das Formular setzen
         // --------------------------------------------------------------------
-        foreach($this->customParameters as $customParameterKey => $customParameterValue) {
-            $field = new HiddenField($customParameterKey, '', $customParameterValue, null, null);
-            $fields->push($field);
+        if (!empty($this->customParameters)) {
+            foreach($this->customParameters as $customParameterKey => $customParameterValue) {
+                $field = new HiddenField($customParameterKey, '', $customParameterValue, null, null);
+                $fields->push($field);
+            }
         }
 
         $field = new HiddenField('CustomHtmlFormName', '', $this->getCustomHtmlFormName(), null, null);
@@ -770,13 +774,15 @@ class CustomHtmlForm extends Form
 
         // Formularname
         $metadata .= $this->dataFieldByName('CustomHtmlFormName')->Field();
-
+        
         // SecurityID
         $metadata .= $this->dataFieldByName('SecurityID')->Field();
 
         // Eigene Datenfelder
-        foreach ($this->customParameters as $customParameterKey => $customParameterValue) {
-            $metadata .= $this->dataFieldByName($customParameterKey)->Field();
+        if (!empty($this->customParameters)) {
+            foreach ($this->customParameters as $customParameterKey => $customParameterValue) {
+                $metadata .= $this->dataFieldByName($customParameterKey)->Field();
+            }
         }
 
         return $metadata;
@@ -815,9 +821,7 @@ class CustomHtmlForm extends Form
             $templatePathRel = $defaultTemplatePath;
         }
 
-        // Fehlermeldungen formatieren
-        $nrOfErrorMessages  = count($this->errorMessages);
-        $messageIdx         = 0;
+        
 
         $templatePathAbs    = Director::baseFolder().$templatePathRel;
         $viewableObj        = new ViewableData();
@@ -826,11 +830,11 @@ class CustomHtmlForm extends Form
                 'FormName'      => $this->name,
                 'FieldName'     => $fieldName,
                 'Label'         => $this->formFields[$fieldName]['title'],
-                'errorMessage'  => $this->errorMessages[$fieldName],
+                'errorMessage'  => isset($this->errorMessages[$fieldName]) ?  $this->errorMessages[$fieldName] : '',
                 'FieldTag'      => $this->SSformFields['fields']->fieldByName($fieldName)->Field()
             )
         )->renderWith($templatePathAbs);
-        
+
         return $output;
     }
 
