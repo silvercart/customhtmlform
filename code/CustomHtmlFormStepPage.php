@@ -15,20 +15,26 @@ class CustomHtmlFormStepPage extends Page {
      * @var array
      */
     public static $db = array(
-        'basename'      => 'Varchar(255)'
+        'basename'          => 'Varchar(255)',
+        'showCancelLink'    => 'Boolean(1)',
+        'cancelPageID'      => 'Varchar(255)'
     );
     
     /**
-     * Erweitert die Eingabemaske des Admins
+     * Erweitert die Eingabemaske des Admins.
      * 
      * @return FieldSet
      */
     public function  getCMSFields() {
 
-        $basenameField = new TextField('basename', 'Basisname für Formular Objekt- und Templatedateien: ');
+        $basenameField          = new TextField('basename', 'Basisname für Formular Objekt- und Templatedateien: ');
+        $showCancelLinkField    = new CheckboxField('showCancelLink', 'Abbrechen Link anzeigen');
+        $cancelLinkField        = new TreeDropdownField('cancelPageID', 'Auf welche Seite soll der Abbrechen-Link fuehren: ', 'SiteTree');
 
         $fields = parent::getCMSFields();
-        $fields->addFieldToTab('Root.Content.Main', $basenameField);
+        $fields->addFieldToTab('Root.Content.MultistepConfiguration', $basenameField);
+        $fields->addFieldToTab('Root.Content.MultistepConfiguration', $showCancelLinkField);
+        $fields->addFieldToTab('Root.Content.MultistepConfiguration', $cancelLinkField);
 
         return $fields;
     }
@@ -43,6 +49,14 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @var integer
      */
     protected $nrOfSteps = -1;
+
+    /**
+     * Der Schritt, der als erstes angezeigt werden soll, wenn noch kein
+     * Schritt gesetzt worden ist.
+     *
+     * @var integer
+     */
+    protected $defaultStartStep = 1;
     
     /**
      * Enthaelt die Nummer des aktuellen Schritts.
@@ -213,8 +227,25 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     public function CustomHtmlFormStepLinkNext() {
         $link = false;
 
-        if (in_array($this->getNextStep(), $this->getCompletedSteps())) {
+        if ($this->getNextStep() <= $this->getNumberOfSteps() &&
+            in_array($this->getCurrentStep(), $this->getCompletedSteps())) {
+            
             $link = $this->Link('NextStep');
+        }
+
+        return $link;
+    }
+
+    /**
+     * Gibt den Link zurueck, mit dem man Abbrechen kann.
+     *
+     * @return string | boolean false
+     */
+    public function CustomHtmlFormStepLinkCancel() {
+        $link = false;
+
+        if ($this->showCancelLink) {
+            $link = $this->Link('Cancel');
         }
 
         return $link;
@@ -224,7 +255,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * Erhoeht den aktuellen Schritt
      */
     public function NextStep() {
-        if (in_array($this->getNextStep(), $this->getCompletedSteps())) {
+        if ($this->getNextStep() <= $this->getNumberOfSteps()) {
             $this->setCurrentStep($this->getNextStep());
         }
         Director::redirect($this->Link(), 302);
@@ -240,6 +271,23 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
             $this->setCurrentStep($this->getPreviousStep());
         }
         Director::redirect($this->Link(), 302);
+    }
+
+    /**
+     * Bricht das Ausfuellen des Formulars ab und leitet den Nutzer zur
+     * ersten Seite zurueck.
+     */
+    public function Cancel() {
+        $this->setCurrentStep($this->defaultStartStep);
+        $this->deleteSessionData();
+
+        if ($this->cancelPageID) {
+            $link = DataObject::get_by_id('Page', $this->cancelPageID)->Link();
+        } else {
+            $link = $this->Link();
+        }
+
+        Director::redirect($link, 302);
     }
 
     /**
@@ -270,7 +318,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
             $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID] = array();
         }
         if (!isset($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['currentStep'])) {
-            $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['currentStep'] = 1;
+            $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['currentStep'] = $this->defaultStartStep;
         }
         if (!isset($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['completedSteps'])) {
             $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['completedSteps'] = array();
@@ -317,5 +365,16 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         }
 
         return ($stepIdx - 1);
+    }
+
+    /**
+     * Loescht die Daten aller Schritte aus der Session
+     */
+    protected function deleteSessionData() {
+        if (isset($_SESSION['CustomHtmlFormStep']) &&
+            isset($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID])) {
+            
+            unset($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]);
+        }
     }
 }
