@@ -113,8 +113,10 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * Ruft die gleichnamige Methode der Elternseite auf und erstellt den
      * passenden Parameter.
      */
-    public function InsertCustomHtmlForm() {
-        $formIdentifier = $this->basename.$this->getCurrentStep();
+    public function InsertCustomHtmlForm($formIdentifier = null) {
+        if ($formIdentifier === null) {
+            $formIdentifier = $this->basename.$this->getCurrentStep();
+        }
 
         return parent::InsertCustomHtmlForm($formIdentifier);
     }
