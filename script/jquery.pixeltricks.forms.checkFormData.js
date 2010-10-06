@@ -143,6 +143,10 @@ pixeltricks.forms.checkFormData = function()
         {
             isFilledIn = this.fieldValue;
         }
+        else if (this.fieldType == 'OptionSetField')
+        {
+            isFilledIn = this.fieldValue.length > 0 ? true : false;
+        }
         else
         {
             var checkValue = this.getValueWithoutWhitespace(this.fieldValue);

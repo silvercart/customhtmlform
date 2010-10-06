@@ -141,7 +141,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      *
      * @return array | boolean false
      */
-    public function getStepData($stepnr = null) {
+    public function getStepData($stepNr = null) {
 
         if ($stepNr === null) {
             $stepNr = $this->getCurrentStep();
@@ -152,6 +152,25 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Liefert alle in der Session gespeicherten Daten als assoziatives Array
+     * zurueck.
+     *
+     * @return array
+     */
+    public function getCombinedStepData() {
+
+        $combinedData = array();
+
+        for ($idx = $this->defaultStartStep; $idx < $this->getNumberOfSteps(); $idx++) {
+            $stepData = $this->getStepData($idx);
+
+            $combinedData = array_merge($combinedData, $stepData);
+        }
+
+        return $combinedData;
     }
 
     /**
@@ -168,7 +187,14 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         foreach ($fields as $fieldName => $fieldData) {
 
             if (isset($formSessionData[$fieldName])) {
-                $fields[$fieldName]['value'] = $formSessionData[$fieldName];
+                if ($fieldData['type'] == 'OptionSetField' ||
+                    $fieldData['type'] == 'DropdownField') {
+                    $valueParam = 'selectedValue';
+                } else {
+                    $valueParam = 'value';
+                }
+                
+                $fields[$fieldName][$valueParam] = $formSessionData[$fieldName];
             }
         }
     }

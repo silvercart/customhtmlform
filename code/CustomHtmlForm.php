@@ -676,6 +676,16 @@ class CustomHtmlForm extends Form
                 $fieldDefinition['form']
             );
         }
+        else if ($fieldDefinition['type'] == 'OptionSetField')
+        {
+            $field = new $fieldDefinition['type'](
+                $fieldName,
+                $fieldDefinition['title'],
+                $fieldDefinition['value'],
+                $fieldDefinition['selectedValue'],
+                $fieldDefinition['form']
+            );
+        }
         else if ($fieldDefinition['type'] == 'TextField')
         {
             $field = new $fieldDefinition['type'](

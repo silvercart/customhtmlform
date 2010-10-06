@@ -73,10 +73,16 @@ pixeltricks.forms.validator = function()
 
                                 // Fuer Checkboxen uebergeben wir als Feldwert den
                                 // Zustand der Box (checked / unchecked) als Boolean-Wert
-                                if (values == 'CheckboxField')
-                                {
+                                if (values == 'CheckboxField') {
                                     checkFormData.setFieldValue(
                                         $('#' + that.formName + that.nameSeparator + fieldName).attr('checked')
+                                    );
+                                }
+                                // Fuer Radiobuttons wird der Wert des selektierten Buttons
+                                // ausgelesen.
+                                if (values == 'OptionSetField') {
+                                    checkFormData.setFieldValue(
+                                        $('#' + that.formName + that.nameSeparator + fieldName + '  :checked').val()
                                     );
                                 }
                             }
