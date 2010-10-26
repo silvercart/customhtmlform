@@ -19,4 +19,3 @@ $lang['en_US']['Form']['HASNOSPECIALSIGNS']                 = 'This field must c
 $lang['en_US']['Form']['HASSPECIALSIGNS']                   = 'This field must not contain special signs (letters, numbers and the signs "@" and ".").';
 $lang['en_US']['Form']['MUSTNOTBEEMAILADDRESS']             = 'Please don\'t enter an email address.';
 $lang['en_US']['Form']['MUSTBEEMAILADDRESS']                = 'Please enter a valid email address.';
-?>

@@ -19,4 +19,3 @@ $lang['en_CA']['Form']['HASNOSPECIALSIGNS']                 = 'Dieses Feld muss 
 $lang['en_CA']['Form']['HASSPECIALSIGNS']                   = 'Dieses Feld darf nur Buchstaben, Zahlen und die Zeichen "@" und "." enthalten.';
 $lang['en_CA']['Form']['MUSTNOTBEEMAILADDRESS']             = 'Bitte gib hier keine Email Adresse an.';
 $lang['en_CA']['Form']['MUSTBEEMAILADDRESS']                = 'Bitte gib hier eine gültige Email Adresse an.';
-?>

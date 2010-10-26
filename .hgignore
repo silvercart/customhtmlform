@@ -4,3 +4,7 @@
 \.rej$
 \.conflict\~$
 \.DS_Store$
+^config/.*\.conf$
+^log/.*\.log$
+silverstripe-cache/.*
+nbproject/.*

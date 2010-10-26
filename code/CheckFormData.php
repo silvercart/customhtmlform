@@ -2,16 +2,27 @@
 /**
  * Stellt Methoden zur Pruefung von Formularwerten zur Verfuegung.
  *
- * @package fashionbids
- * @author Sascha Koehler
- * @copyright Pixeltricks GmbH
+ * @package pixeltricks_module
+ * @author Sascha Koehler <skoehler@pixeltricks.de>
+ * @copyright 2010 pxieltricks GmbH
+ * @since 25.10.2010
+ * @license none
  */
-class CheckFormData
-{
+class CheckFormData {
+
+    /**
+     * Der Wert des zu pruefenden Ausdrucks.
+     *
+     * @var mixed
+     */
     protected $value;
 
-    public function __construct($value)
-    {
+    /**
+     * Erstellt einen neuen zu pruefenden Ausdruck.
+     *
+     * @param mixed $value Der Wert des zu pruefenden Ausdrucks
+     */
+    public function __construct($value) {
         $this -> value = $value;
     }
 
@@ -19,8 +30,13 @@ class CheckFormData
      * Prueft, ob die Eingabe Sonderzeichen enthaelt und dieses Resultat dem
      * erwarteten Resultat entspricht.
      * 
-     * @param boolean $expectedResults
+     * @param boolean $expectedResult Das erwartete Resultat.
+     *
      * @return array
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
     public function hasSpecialSigns($expectedResult) {
 
@@ -60,8 +76,13 @@ class CheckFormData
      * Prueft, ob die Eingabe formal einer Email Adresse entspricht und
      * dieses Resultat dem erwarteten Resultat entspricht.
      *
-     * @param boolean $expectedResult
+     * @param boolean $expectedResult Das erwartete Resultat.
+     *
      * @return array
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
     public function isEmailAddress($expectedResult) {
 
@@ -100,9 +121,17 @@ class CheckFormData
     /**
      * Prueft, ob die Eingabe in ein Captchafield korrekt war.
      *
-     * @param string $formName
-     * @param string $fieldName
+     * @param array $parameters Name des Formulars und Feldes:
+     *      array(
+     *          'formName'  => string,
+     *          'fieldName' => string
+     *      )
+     *
      * @return array
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
     public function PtCaptchaInput($parameters) {
         $session_key    = $parameters['formName'].'_'.$parameters['fieldName'];
@@ -132,34 +161,32 @@ class CheckFormData
      * Prueft, ob ein Feld leer ist und dieses Resultat dem erwarteten Resultat
      * entspricht.
      *
-     * @param boolean $expectedResult
+     * @param boolean $expectedResult Das erwartete Resultat.
+     *
      * @return array
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
-    public function isFilledIn($expectedResult)
-    {
+    public function isFilledIn($expectedResult) {
         $isFilledIn     = true;
         $success        = false;
         $errorMessage   = '';
         $checkValue     = $this -> getValueWithoutWhitespace($this -> value);
 
-        if (empty($checkValue))
-        {
+        if (empty($checkValue)) {
             $isFilledIn = false;
         }
 
-        if ($isFilledIn === $expectedResult)
-        {
+        if ($isFilledIn === $expectedResult) {
             $success = true;
         }
 
-        if (!$success)
-        {
-            if ($isFilledIn)
-            {
+        if (!$success) {
+            if ($isFilledIn) {
                 $errorMessage = _t('Form.FIELD_MUST_BE_EMPTY', 'Dieses Feld muss leer sein.');
-            }
-            else
-            {
+            } else {
                 $errorMessage = _t('Form.FIELD_MAY_NOT_BE_EMPTY', 'Dieses Feld darf nicht leer sein.');
             }
         }
@@ -175,33 +202,46 @@ class CheckFormData
      * wird, haengt davon ab, ob das als Abhaengigkeit gegebene Feld
      * ausgefuellt ist.
      *
-     * @param array $parameters
+     * @param array $parameters Die zu pruefenden Werte:
+     *      array(
+     *          array(
+     *              'field'     => string,
+     *              'hasValue'  => mixed
+     *          ),
+     *          array(
+     *              'field'     => mixed
+     *          )
+     *      )
+     *
+     * @return array(
+     *      'success'       => bool,
+     *      'errorMessage'  => string
+     * )
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
-    public function isFilledInDependantOn($parameters)
-    {
+    public function isFilledInDependantOn($parameters) {
         $isFilledInCorrectly    = true;
         $checkValue             = $this -> getValueWithoutWhitespace($this -> value);
 
-        if (is_array($parameters))
-        {
+        if (is_array($parameters)) {
+
             if (!isset($parameters[0]['field']) ||
-                !isset($parameters[0]['hasValue']))
-            {
+                !isset($parameters[0]['hasValue'])) {
+
                 throw new Exception(
                     'Feld ist falsch konfiguriert fuer Pruefung "CheckFormData->isFilledInDependantOn".'
                 );
             }
 
-            if ($parameters[1][$parameters[0]['field']] == $parameters[0]['hasValue'])
-            {
-                if (empty($checkValue))
-                {
+            if ($parameters[1][$parameters[0]['field']] == $parameters[0]['hasValue']) {
+                if (empty($checkValue)) {
                     $isFilledInCorrectly = false;
                 }
             }
-        }
-        else
-        {
+        } else {
             throw new Exception(
                 'Feld ist falsch konfiguriert fuer Pruefung "CheckFormData->isFilledInDependantOn".'
             );
@@ -218,17 +258,24 @@ class CheckFormData
      * entspricht. Whitespaces am Anfang und Ende des Wertes werden fuer den
      * Vergleich entfernt.
      *
-     * @param int $minLength
-     * @return array
+     * @param int $minLength Die Mindestlaenge, die der Ausdruck haben muss.
+     *
+     * @return array(
+     *      'success'       => bool,
+     *      'errorMessage'  => string
+     * )
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
-    public function hasMinLength($minLength)
-    {
+    public function hasMinLength($minLength) {
         $hasMinLength   = true;
         $checkValue     = trim($this -> value);
 
         if (strlen($checkValue) > 0 &&
-            strlen($checkValue) < $minLength)
-        {
+            strlen($checkValue) < $minLength) {
+
             $hasMinLength = false;
         }
 
@@ -243,17 +290,24 @@ class CheckFormData
      * entspricht. Whitespaces am Anfang und Ende des Wertes werden fuer den
      * Vergleich entfernt.
      *
-     * @param int $length
-     * @return array
+     * @param int $length Die Laenge, die der Ausdruck exakt haben muss.
+     *
+     * @return array(
+     *      'success'       => bool,
+     *      'errorMessage'  => string
+     * )
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
-    public function hasLength($length)
-    {
+    public function hasLength($length) {
         $hasLength  = true;
         $checkValue = trim($this -> value);
 
         if (strLen($checkValue) > 0 &&
-            strlen($checkValue) !== $length)
-        {
+            strlen($checkValue) !== $length) {
+
             $hasLength = false;
         }
 
@@ -267,18 +321,25 @@ class CheckFormData
      * Prueft ob der Wert eines Feldes dem Wert eines anderen Feldes
      * entspricht.
      *
-     * @param array (
-     *     'value'      => string: Wert den das Feld haben muss
-     *     'fieldName'  => string: Name des anderen Feldes
+     * @param array $parameters Der zu pruefende Feldname und Wert:
+     *      array (
+     *          'value'      => string: Wert den das Feld haben muss
+     *          'fieldName'  => string: Name des anderen Feldes
+     *      )
+     *
+     * @return array(
+     *      'success'       => bool,
+     *      'errorMessage'  => string
      * )
-     * @return array
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
-    public function mustEqual($parameters)
-    {
+    public function mustEqual($parameters) {
         $isEqual = true;
 
-        if ($this -> value !== $parameters['value'])
-        {
+        if ($this -> value !== $parameters['value']) {
             $isEqual = false;
         }
 
@@ -292,18 +353,25 @@ class CheckFormData
      * Prueft ob der Wert eines Feldes dem Wert eines anderen Feldes
      * nicht entspricht.
      *
-     * @param array (
-     *     'value'      => string: Wert den das Feld nicht haben darf
-     *     'fieldName'  => string: Name des anderen Feldes
+     * @param array $parameters Der zu pruefende Feldname und Wert:
+     *      array (
+     *          'value'      => string: Wert den das Feld nicht haben darf
+     *          'fieldName'  => string: Name des anderen Feldes
+     *      )
+     *
+     * @return array(
+     *      'success'       => bool,
+     *      'errorMessage'  => string
      * )
-     * @return array
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
-    public function mustNotEqual($parameters)
-    {
+    public function mustNotEqual($parameters) {
         $isNotEqual = true;
 
-        if ($this -> value == $parameters['value'])
-        {
+        if ($this -> value == $parameters['value']) {
             $isNotEqual = false;
         }
 
@@ -316,11 +384,18 @@ class CheckFormData
     /**
      * Prueft, ob ein Feld ausschliesslich aus Zahlen besteht.
      *
-     * @param boolean $expectedResult
-     * @return array
+     * @param boolean $expectedResult Das erwartete Resultat.
+     *
+     * @return array(
+     *      'success'       => bool,
+     *      'errorMessage'  => string
+     * )
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
-    public function isNumbersOnly($expectedResult)
-    {
+    public function isNumbersOnly($expectedResult) {
         $consistsOfNumbersOnly  = true;
         $success                = false;
 
@@ -330,13 +405,11 @@ class CheckFormData
             $this -> value
         );
 
-        if (strlen($checkValue) > 0)
-        {
+        if (strlen($checkValue) > 0) {
             $consistsOfNumbersOnly = false;
         }
 
-        if ($consistsOfNumbersOnly === $expectedResult)
-        {
+        if ($consistsOfNumbersOnly === $expectedResult) {
             $success = true;
         }
 
@@ -349,19 +422,24 @@ class CheckFormData
     /**
      * Prueft, ob der Wert eines Feldes einer Waehrungsangabe entspricht.
      *
-     * @param mixed $expectedResult
-     * @return array
+     * @param mixed $expectedResult Das erwartete Resultat.
+     *
+     * @return array(
+     *      'success'       => bool,
+     *      'errorMessage'  => string
+     * )
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
-    public function isCurrency($expectedResult)
-    {
+    public function isCurrency($expectedResult) {
         $success = $expectedResult;
 
-        if (!empty($this->value))
-        {
+        if (!empty($this->value)) {
             $nrOfMatches = preg_match('/^[\d]*[,]?[^\D]*$/', $this->value, $matches);
 
-            if ($nrOfMatches === 0)
-            {
+            if ($nrOfMatches === 0) {
                 $success = false;
             }
         }
@@ -375,19 +453,24 @@ class CheckFormData
     /**
      * Prueft, ob der Wert eines Feldes einer Datumsangabe entspricht.
      *
-     * @param mixed $expectedResult
-     * @return array
+     * @param mixed $expectedResult Das erwartete Resultat.
+     *
+     * @return array(
+     *      'success'       => bool,
+     *      'errorMessage'  => string
+     * )
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
-    public function isDate($expectedResult)
-    {
+    public function isDate($expectedResult) {
         $success = $expectedResult;
 
-        if (!empty($this->value))
-        {
+        if (!empty($this->value)) {
             $nrOfMatches = preg_match('/[\d]{2}[\.]{1}[\d]{2}[.]{1}[\d]{4}/', $this->value);
 
-            if ($nrOfMatches === 0)
-            {
+            if ($nrOfMatches === 0) {
                 $success = false;
             }
         }
@@ -402,11 +485,15 @@ class CheckFormData
      * Entfernt alle Whitespaces aus dem uebergebenen Wert und gibt das
      * Ergebnis zurueck.
      *
-     * @param string $value
+     * @param string $value Der zu bearbeitende Wert.
+     *
      * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
-    private function getValueWithoutWhitespace($value)
-    {
+    private function getValueWithoutWhitespace($value) {
         return preg_replace('/[\s]*/', '', $value);
     }
 }

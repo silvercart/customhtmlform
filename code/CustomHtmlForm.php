@@ -3,11 +3,13 @@
  * Stellt Funktionalitaet bereit, die fuer Formulare mit frei anpassbarem
  * HTML-Code nuetzlich ist.
  *
- * TODO: automatische Erstellung des Javascript-Validators muss noch
- *       eingebaut werden.
+ * @package pixeltricks_module
+ * @author Sascha Koehler <skoehler@pixeltricks.de>
+ * @copyright 2010 pxieltricks GmbH
+ * @since 25.10.2010
+ * @license none
  */
-class CustomHtmlForm extends Form
-{
+class CustomHtmlForm extends Form {
     /**
      * Speichert den Controller der aufrufenden Klasse.
      *
@@ -94,11 +96,16 @@ class CustomHtmlForm extends Form
      * Erstellt ein Formularobjekt, dessen Layout frei in einem Template
      * gestaltet werden kann.
      *
-     * @param ContentController $controller
-     * @param string $name
+     * @param ContentController $controller Das aufrufende Controller-Objekt
+     * @param array             $params     Optionale Parameter
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
-    public function __construct($controller, $params = null)
-    {
+    public function __construct($controller, $params = null) {
         self::$instanceNr++;
         
         $this->controller   = $controller;
@@ -157,25 +164,24 @@ class CustomHtmlForm extends Form
      * Erstellt einen String mit Javascript-Code, der die Formularfelder an
      * den Javascript-Validator uebergibt.
      *
-     * @return String
+     * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
-    protected function generateJsValidatorFields()
-    {
+    protected function generateJsValidatorFields() {
         $fieldStr = '';
 
-        foreach ($this->formFields as $fieldName => $fieldProperties)
-        {
+        foreach ($this->formFields as $fieldName => $fieldProperties) {
             $checkRequirementStr = '';
 
-            if (isset($fieldProperties['checkRequirements']))
-            {
-                foreach ($fieldProperties['checkRequirements'] as $requirement => $definition)
-                {
-                    if (is_array($definition))
-                    {
+            if (isset($fieldProperties['checkRequirements'])) {
+                foreach ($fieldProperties['checkRequirements'] as $requirement => $definition) {
+                    if (is_array($definition)) {
+
                         $subCheckRequirementStr = '';
-                        foreach ($definition as $subRequirement => $subDefinition)
-                        {
+                        foreach ($definition as $subRequirement => $subDefinition) {
                             if (is_bool($subDefinition)) {
                                 $subDefinitionStr = $subDefinition ? 'true' : 'false';
                             } else if (is_int($subDefinition)) {
@@ -187,17 +193,14 @@ class CustomHtmlForm extends Form
                             $subCheckRequirementStr .= $subRequirement.": '".$subDefinitionStr."',";
                         }
 
-                        if (!empty($subCheckRequirementStr))
-                        {
+                        if (!empty($subCheckRequirementStr)) {
                             $subCheckRequirementStr = substr($subCheckRequirementStr, 0, strlen($subCheckRequirementStr) - 1);
 
                             $checkRequirementStr .= $requirement.': {';
                             $checkRequirementStr .= $subCheckRequirementStr;
                             $checkRequirementStr .= '},';
                         }
-                    }
-                    else
-                    {
+                    } else {
                         if (is_bool($definition)) {
                             $definitionStr = $definition ? 'true' : 'false';
                         } else if (is_int($definition)) {
@@ -211,8 +214,7 @@ class CustomHtmlForm extends Form
                 }
             }
 
-            if (!empty($checkRequirementStr))
-            {
+            if (!empty($checkRequirementStr)) {
                 $checkRequirementStr = substr($checkRequirementStr, 0, strlen($checkRequirementStr) - 1);
             }
 
@@ -224,27 +226,39 @@ class CustomHtmlForm extends Form
             },';
         }
 
-        if (!empty($fieldStr))
-        {
+        if (!empty($fieldStr)) {
             $fieldStr = substr($fieldStr, 0, strlen($fieldStr) - 1);
         }
         
         return $fieldStr;
     }
 
-    protected function fillInFieldValues()
-    {
-        // Implement in Descendants
+    /**
+     * Diese Methode kann optional in den abgeleiteten Klassen implementiert
+     * werden.
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
+     */
+    protected function fillInFieldValues() {
     }
 
     /**
      * Setzt die URL, auf die nach erfolgreicher Validierung des Formulars
      * umgeleitet werden soll.
      *
-     * @param string $target
+     * @param string $target Ziel, auf das umgeleitet werden soll.
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
-    public function setRedirectTargetAfterSuccessfulSubmit($target)
-    {
+    public function setRedirectTargetAfterSuccessfulSubmit($target) {
         $this->redirectTargetAfterSuccessfulSubmit = $target;
     }
 
@@ -252,16 +266,16 @@ class CustomHtmlForm extends Form
      * Setzt die URL, auf die nach erfolgreicher Validierung des Formulars
      * umgeleitet werden soll.
      *
-     * @param string $target
+     * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
-    public function getRedirectTargetAfterSuccessfulSubmit()
-    {
-        if (empty($this->redirectTargetAfterSuccessfulSubmit))
-        {
+    public function getRedirectTargetAfterSuccessfulSubmit() {
+        if (empty($this->redirectTargetAfterSuccessfulSubmit)) {
             return '/';
-        }
-        else
-        {
+        } else {
             return $this->redirectTargetAfterSuccessfulSubmit;
         }
     }
@@ -271,26 +285,27 @@ class CustomHtmlForm extends Form
      * wird das Formular mit den entsprechenden Hinweisen angezeigt, ansonsten
      * wird der neue User eingeloggt und auf die Accountseite weitergeleitet.
      *
-     * @param SS_HTTPRequest $data
-     * @param Form $form
+     * @param SS_HTTPRequest $data Die gesendeten Rohdaten
+     * @param Form           $form Das Formularobjekt
+     *
      * @return ViewableData
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
-    public function submit($data, $form)
-    {
+    public function submit($data, $form) {
         $formData = $this->getFormData($data);
         $this->checkFormData($formData);
        
-        if (empty($this->errorMessages))
-        {
+        if (empty($this->errorMessages)) {
             // Es sind keine Fehler aufgetreten:
             return $this->submitSuccess(
                 $data,
                 $form,
                 $formData
             );
-        }
-        else
-        {
+        } else {
             // Es sind Fehler aufgetreten:
             return $this->submitFailure(
                 $data,
@@ -303,17 +318,19 @@ class CustomHtmlForm extends Form
      * Die Validierung des Formulars ist fehlgeschlagen, also wird hier das
      * Formular mit den entsprechenden Fehlermeldungen ausgegeben.
      *
-     * @param SS_HTTPRequest $data
-     * @param Form $form
-     * @param array $errorMessages
+     * @param SS_HTTPRequest $data Die gesendeten Rohdaten
+     * @param Form           $form Das Formularobjekt
+     *
      * @return ViewableData
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
-    public function submitFailure($data, $form)
-    {
+    public function submitFailure($data, $form) {
         $this->SSformFields = $this->getForm();
 
-        if (empty($form))
-        {
+        if (empty($form)) {
             $form = $this->class;
         }
         
@@ -351,12 +368,17 @@ class CustomHtmlForm extends Form
      * Wird ausgefuehrt, wenn nach dem Senden des Formulars keine Validierungs-
      * fehler aufgetreten sind.
      *
-     * @param SS_HTTPRequest $data
-     * @param Form $form
-     * @param array $formData
+     * @param SS_HTTPRequest $data     Die gesendeten Rohdaten
+     * @param Form           $form     Das Formularobjekt
+     * @param array          $formData Die abgesicherten Formulardaten
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
-    protected function submitSuccess($data, $form, $formData)
-    {
+    protected function submitSuccess($data, $form, $formData) {
         // In Instanz implementieren
     }
 
@@ -367,28 +389,27 @@ class CustomHtmlForm extends Form
      * Bei der Uebertragung werden die gesendeten Werte datenbanksicher
      * gemacht.
      *
-     * @param SS_HTTPRequest $request
+     * @param SS_HTTPRequest $request Die gesendeten Rohdaten.
+     *
      * @return array
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
-    protected function getFormData($request)
-    {
+    protected function getFormData($request) {
         $formData = array();
 
-        if($this->securityTokenEnabled()) {
+        if ($this->securityTokenEnabled()) {
             $formData['SecurityID'] = Convert::raw2sql($request['SecurityID']);
         }
 
         // Definierte Formularfelder auslesen
-        if (isset($this->formFields))
-        {
-            foreach ($this->formFields as $fieldName => $fieldDefinition)
-            {
-                if (isset($request[$fieldName]))
-                {
+        if (isset($this->formFields)) {
+            foreach ($this->formFields as $fieldName => $fieldDefinition) {
+                if (isset($request[$fieldName])) {
                     $formData[$fieldName] = Convert::raw2sql($request[$fieldName]);
-                }
-                else
-                {
+                } else {
                     $formData[$fieldName] = false;
                 }
             }
@@ -397,37 +418,13 @@ class CustomHtmlForm extends Form
         // Dynamisch hinzugefuegte Formularfelder auslesen
         if (isset($this->customParameters)) {
             foreach ($this->customParameters as $customParameterKey => $customParameterValue) {
-                if (isset($request[$customParameterKey]))
-                {
+                if (isset($request[$customParameterKey])) {
                     $formData[$customParameterKey] = Convert::raw2sql($request[$customParameterKey]);
-                }
-                else
-                {
+                } else {
                     $formData[$customParameterKey] = false;
                 }
             }
         }
-
-        /*
-        if (!isset($_SESSION[$this->controller->ClassName]))
-        {
-            $_SESSION[$this->controller->ClassName] = array();
-        }
-
-        if (isset($_SESSION[$this->controller->ClassName]['formFields']))
-        {
-            $sessionFormFields = $_SESSION[$this->controller->ClassName]['formFields'];
-        }
-        else
-        {
-            $sessionFormFields = array();
-        }
-
-        $_SESSION[$this->controller->ClassName]['formFields'] = array_merge(
-            $sessionFormFields,
-            $formData
-        );
-        */
         
         return $formData;
     }
@@ -435,15 +432,19 @@ class CustomHtmlForm extends Form
     /**
      * Prueft alle Formularfelder und gibt das Ergebnis als Array zurueck.
      *
-     * @param SS_HTTPRequest $data
-     * @return array
+     * @param SS_HTTPRequest $data Die zu pruefenden Formulardaten.
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
-    protected function checkFormData($data)
-    {
+    protected function checkFormData($data) {
         $errorMessages  = array();
         $error          = false;
 
-        if($this->securityTokenEnabled()) {
+        if ($this->securityTokenEnabled()) {
             $securityID = Session::get('SecurityID');
             
             if (empty($securityID) ||
@@ -461,30 +462,26 @@ class CustomHtmlForm extends Form
             }
         }
 
-        if (!$error && isset($this->formFields))
-        {
-            foreach ($this->formFields as $fieldName => $fieldDefinition)
-            {
+        if (!$error && isset($this->formFields)) {
+            foreach ($this->formFields as $fieldName => $fieldDefinition) {
                 $fieldErrorMessages = array();
                 $fieldError         = false;
                 $checkFormData      = new CheckFormData($data[$fieldName]);
 
                 // Formale Erfordernisse pruefen, die dieses Feld erfuellen muss.
-                if (!isset($fieldDefinition['checkRequirements']))
-                {
+                if (!isset($fieldDefinition['checkRequirements'])) {
                     continue;
                 }
                 
-                foreach($fieldDefinition['checkRequirements'] as $requirement => $requiredValue)
-                {
+                foreach ($fieldDefinition['checkRequirements'] as $requirement => $requiredValue) {
                     // --------------------------------------------------------
                     // Sonderfaelle:
                     // --------------------------------------------------------
 
                     // Kriterium bezieht sich auf ein anderes Feld
                     if ($requirement == 'mustEqual' ||
-                        $requirement == 'mustNotEqual')
-                    {
+                        $requirement == 'mustNotEqual') {
+
                         $requiredValue = array(
                             'fieldName' => $this->formFields[$requiredValue]['title'] ? $this->formFields[$requiredValue]['title'] : $requiredValue,
                             'value'     => $data[$requiredValue]
@@ -493,8 +490,7 @@ class CustomHtmlForm extends Form
 
                     // Feld muss ausgefuellt sein, wenn anderes Feld
                     // ausgefuellt ist
-                    if ($requirement == 'isFilledInDependantOn')
-                    {
+                    if ($requirement == 'isFilledInDependantOn') {
                         $requiredValue = array(
                             $requiredValue,
                             $data
@@ -502,17 +498,13 @@ class CustomHtmlForm extends Form
                     }
 
                     // Callbackfunktion verwenden
-                    if ($requirement == 'callBack')
-                    {
+                    if ($requirement == 'callBack') {
                         $fieldCheckResult = $this->$requiredValue($data[$fieldName]);
-                    }
-                    else
-                    {
+                    } else {
                         $fieldCheckResult = $checkFormData->$requirement($requiredValue);
                     }
 
-                    if (!$fieldCheckResult['success'])
-                    {
+                    if (!$fieldCheckResult['success']) {
                         $fieldErrorMessages[]   = $fieldCheckResult['errorMessage'];
                         $fieldError             = true;
                     }
@@ -520,13 +512,10 @@ class CustomHtmlForm extends Form
 
                 // Bei diesem Feld sind ein oder mehrere Fehler aufgetreten, also
                 // diese zuordnen und speichern.
-                if ($fieldError)
-                {
+                if ($fieldError) {
                     // Fehler an das Formularfeld anhaengen
-                    foreach ($this->SSformFields['fields'] as $field)
-                    {
-                        if ($field->name == $fieldName)
-                        {
+                    foreach ($this->SSformFields['fields'] as $field) {
+                        if ($field->name == $fieldName) {
                             $field->errorMessage = new ArrayData(array(
                                 'message' => implode("\n", $fieldErrorMessages)
                             ));
@@ -553,17 +542,24 @@ class CustomHtmlForm extends Form
      * Erstellt die Eingabe- und Aktionsfelder fuer das Formular und befuellt
      * fehlende Angaben in der Felddefinition mit Standardwerten.
      *
-     * @return array
+     * @return array Liefert die Fields und Actions des Formulars:
+     *      array(
+     *          'fields'    => FieldSet,
+     *          'actions'   => FieldSet
+     *      )
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
-    protected function getForm()
-    {
+    protected function getForm() {
         $fields = new FieldSet();
 
         // --------------------------------------------------------------------
         // Metadaten fuer das Formular setzen
         // --------------------------------------------------------------------
         if (!empty($this->customParameters)) {
-            foreach($this->customParameters as $customParameterKey => $customParameterValue) {
+            foreach ($this->customParameters as $customParameterKey => $customParameterValue) {
                 $field = new HiddenField($customParameterKey, '', $customParameterValue, null, null);
                 $fields->push($field);
             }
@@ -575,10 +571,8 @@ class CustomHtmlForm extends Form
         // --------------------------------------------------------------------
         // Fieldset aus den Definitionen in $this->formFields erstellen
         // --------------------------------------------------------------------
-        if (isset($this->formFields))
-        {
-            foreach ($this->formFields as $fieldName => $fieldDefinition)
-            {
+        if (isset($this->formFields)) {
+            foreach ($this->formFields as $fieldName => $fieldDefinition) {
                 $field = $this->getFormField(
                     $fieldName,
                     $fieldDefinition
@@ -606,14 +600,17 @@ class CustomHtmlForm extends Form
      * Erstellt ein Formularfeld anhand der uebergebenen Definition. Setzt die
      * Felddefinitionen auf Standardwerte, wenn nicht definiert.
      *
-     * @param string $fieldName
-     * @param array $fieldDefinition
+     * @param string $fieldName       Der Name des Feldes
+     * @param array  $fieldDefinition Die Definition des Feldes
+     *
      * @return Field
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
-    protected function getFormField($fieldName, $fieldDefinition)
-    {
-        if (!isset($fieldDefinition['type']))
-        {
+    protected function getFormField($fieldName, $fieldDefinition) {
+        if (!isset($fieldDefinition['type'])) {
             throw new Exception(
                 'CustomHtmlForm: Feldtyp muss angegeben werden.'
             );
@@ -623,51 +620,43 @@ class CustomHtmlForm extends Form
 
         // Erforderliche Felder mit Standardwerten befuellen, wenn sie
         // nicht angegeben sind.
-        if (!isset($fieldDefinition['isRequired']))
-        {
+        if (!isset($fieldDefinition['isRequired'])) {
             $fieldDefinition['isRequired'] = false;
             $fieldReference['isRequired'] = $fieldDefinition['isRequired'];
         }
 
-        if (!isset($fieldDefinition['checkRequirements']))
-        {
+        if (!isset($fieldDefinition['checkRequirements'])) {
             $fieldDefinition['checkRequirements'] = array();
             $fieldReference['checkRequirements'] = $fieldDefinition['checkRequirements'];
         }
 
-        if (!isset($fieldDefinition['title']))
-        {
+        if (!isset($fieldDefinition['title'])) {
             $fieldDefinition['title'] = '';
             $fieldReference['title'] = $fieldDefinition['title'];
         }
 
-        if (!isset($fieldDefinition['value']))
-        {
+        if (!isset($fieldDefinition['value'])) {
             $fieldDefinition['value'] = '';
             $fieldReference['value'] = $fieldDefinition['value'];
         }
 
-        if (!isset($fieldDefinition['selectedValue']))
-        {
+        if (!isset($fieldDefinition['selectedValue'])) {
             $fieldDefinition['selectedValue'] = '';
             $fieldReference['selectedValue'] = $fieldDefinition['selectedValue'];
         }
 
-        if (!isset($fieldDefinition['maxLength']))
-        {
+        if (!isset($fieldDefinition['maxLength'])) {
             $fieldDefinition['maxLength'] = null;
             $fieldReference['maxLength'] = $fieldDefinition['maxLength'];
         }
 
-        if (!isset($fieldDefinition['form']))
-        {
+        if (!isset($fieldDefinition['form'])) {
             $fieldDefinition['form'] = $this;
             $fieldReference['form'] = $fieldDefinition['form'];
         }
 
         // Feld erstellen
-        if ($fieldDefinition['type'] == 'DropdownField')
-        {
+        if ($fieldDefinition['type'] == 'DropdownField') {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
@@ -675,9 +664,7 @@ class CustomHtmlForm extends Form
                 $fieldDefinition['selectedValue'],
                 $fieldDefinition['form']
             );
-        }
-        else if ($fieldDefinition['type'] == 'OptionSetField')
-        {
+        } else if ($fieldDefinition['type'] == 'OptionSetField') {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
@@ -685,9 +672,7 @@ class CustomHtmlForm extends Form
                 $fieldDefinition['selectedValue'],
                 $fieldDefinition['form']
             );
-        }
-        else if ($fieldDefinition['type'] == 'TextField')
-        {
+        } else if ($fieldDefinition['type'] == 'TextField') {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
@@ -695,9 +680,7 @@ class CustomHtmlForm extends Form
                 $fieldDefinition['maxLength'],
                 $fieldDefinition['form']
             );
-        }
-        else if ($fieldDefinition['type'] == 'TextareaField')
-        {
+        } else if ($fieldDefinition['type'] == 'TextareaField') {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
@@ -706,13 +689,10 @@ class CustomHtmlForm extends Form
                 $fieldDefinition['value'],
                 $fieldDefinition['form']
             );
-        }
-        else if ($fieldDefinition['type'] == 'RecaptchaField') {
+        } else if ($fieldDefinition['type'] == 'RecaptchaField') {
             $field = new RecaptchaField('Recaptcha');
             $recaptchaField->jsOptions = array('theme' => 'clean');
-        }
-        else
-        {
+        } else {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
@@ -721,17 +701,8 @@ class CustomHtmlForm extends Form
             );
         }
 
-        // Wert setzen, wenn in Session gespeichert
-        /*
-        if (isset($_SESSION[$this->controller->ClassName]['formFields'][$fieldName]))
-        {
-            $field->setValue($_SESSION[$this->controller->ClassName]['formFields'][$fieldName]);
-        }
-        */
-
         // Wenn eine Fehlermeldung fuer dieses Feld existiert, dann einbauen
-        if (isset($this->errorMessages[$fieldName]))
-        {
+        if (isset($this->errorMessages[$fieldName])) {
             $field->errorMessage = new ArrayData(array(
                 'message' => $this->errorMessages[$fieldName]['message']
             ));
@@ -744,6 +715,10 @@ class CustomHtmlForm extends Form
      * Liefert den Namen des Formularobjekts zurueck.
      *
      * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
     public function getCustomHtmlFormName() {
         return $this->name;
@@ -753,9 +728,12 @@ class CustomHtmlForm extends Form
      * Liefert die Attribute fuer den HTML-Formtag.
      *
      * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
-    public function FormAttributes()
-    {
+    public function FormAttributes() {
         $attributes  = parent::FormAttributes();
         $attributes .= ' onsubmit="return '.$this->jsName.'.checkForm();"';
 
@@ -765,10 +743,15 @@ class CustomHtmlForm extends Form
     /**
      * Setzt eine neue Nachricht fuer das Formular.
      *
-     * @param string
+     * @param string $message Der Nachrichtentext
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
-    public function addMessage($message)
-    {
+    public function addMessage($message) {
         $this->messages[] = array('message' => $message);
     }
 
@@ -778,6 +761,10 @@ class CustomHtmlForm extends Form
      * Wird vom Template aus aufgerufen.
      *
      * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
     public function CustomHtmlFormMetadata() {
         $metadata = '';
@@ -802,10 +789,14 @@ class CustomHtmlForm extends Form
      * Liefert den HTML-Code fuer das angegebene Feld zurueck. Dieser wird
      * mit dem Standardtemplate fuer Felder erzeugt.
      *
-     * @param string $fieldName
-     * @param string $template: optional. Pfad zum Template-Snippet, ausgehend
-     *                          relativ vom Siteroot
+     * @param string $fieldName Der Feldname
+     * @param string $template  optional. Pfad zum Template-Snippet, ausgehend relativ vom Siteroot
+     * 
      * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
     public function CustomHtmlFormFieldByName($fieldName, $template = null) {
 
@@ -831,8 +822,6 @@ class CustomHtmlForm extends Form
             $templatePathRel = $defaultTemplatePath;
         }
 
-        
-
         $templatePathAbs    = Director::baseFolder().$templatePathRel;
         $viewableObj        = new ViewableData();
         $output = $viewableObj->customise(
@@ -849,9 +838,15 @@ class CustomHtmlForm extends Form
     }
 
     /**
-     * 
+     * Liefert die Fehlermeldungen als HTML-Text zurueck.
+     *
+     * @param string $template optional. Name des Templates, das zum Rendern der Meldungen benutzt werden soll.
      *
      * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
     public function CustomHtmlFormErrorMessages($template = null) {
         
@@ -887,14 +882,19 @@ class CustomHtmlForm extends Form
     }
 
     /**
-	 * Returns the name of the form
+	 * Liefert den Name des Formulars.
+     *
+     * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
 	 */
-	public function FormName() {
-		if($this->htmlID) {
+    public function FormName() {
+        if ($this->htmlID) {
             return $this->htmlID;
-        }
-		else {
+        } else {
             return $this->name;
         }
-	}
+    }
 }

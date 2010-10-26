@@ -2,6 +2,12 @@
 /**
  * Stellt zusaetzliche Methoden und Mechanismen fuer die Page.php bereit, die von Pixeltricks-
  * modulen verwendet werden.
+ *
+ * @package pixeltricks_module
+ * @author Sascha Koehler <skoehler@pixeltricks.de>
+ * @copyright 2010 pxieltricks GmbH
+ * @since 25.10.2010
+ * @license none
  */
 class PixeltricksPage_Controller extends DataObjectDecorator {
 
@@ -38,14 +44,19 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
      * @var array
      */
     protected $registeredCustomHtmlForms = array();
-    
+
     /**
      * Fuegt ein Snippet in die Liste der Javascript Onload-Events ein.
      *
-     * @param string $snippet
+     * @param string $snippet Textblock mit Javascript-Anweisungen
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
-    public function addJavascriptOnloadSnippet($snippet)
-    {
+    public function addJavascriptOnloadSnippet($snippet) {
         $this->JavascriptOnloadSnippets[] = $snippet;
     }
 
@@ -53,17 +64,29 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
      * Fuegt ein Snippet in die Liste der Javascripte ein, die im Headbereich
      * eingefuegt werden sollen.
      *
-     * @param string $snippet
+     * @param string $snippet Textblock mit Javascript-Anweisungen
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
-    public function addJavascriptSnippet($snippet)
-    {
+    public function addJavascriptSnippet($snippet) {
         $this->JavascriptSnippets[] = $snippet;
     }
 
     /**
      * Registriert ein Formularobjekt.
      *
-     * @param CustomHtmlForm $formObj
+     * @param string         $formIdentifier Eindeutiger Name des Formulars, mit dem es in Templates aufgerufen werden kann.
+     * @param CustomHtmlForm $formObj        Das Formularobjekt mit Felddefinitionen und Verarbeitungsmethoden.
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
     public function registerCustomHtmlForm($formIdentifier, CustomHtmlForm $formObj) {
         $this->registeredCustomHtmlForms[$formIdentifier] = $formObj;
@@ -72,10 +95,14 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
     /**
      * Liefert den HTML-Quelltext des angeforderten Formulars zurueck.
      *
-     * @param string $formIdentifier
-     * @param Object $renderWithObject: Array mit Objekten, in deren Kontext das
-     *               Formular erstellt werden soll.
+     * @param string $formIdentifier   Eindeutiger Name des Formulars, mit dem es in Templates aufgerufen werden kann.
+     * @param Object $renderWithObject Array mit Objekten, in deren Kontext das Formular erstellt werden soll.
+     *
      * @return CustomHtmlForm
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
     public function InsertCustomHtmlForm($formIdentifier, $renderWithObject = null) {
 
@@ -129,41 +156,18 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
         return $outputForm;
     }
 
-    public function ptInit() {
-    
-        $currentTheme = SSViewer::current_theme();
+    /**
+     * Eigene Requirements als erste laden.
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
+     */
+    public function onBeforeInit() {
         Validator::set_javascript_validation_handler('none');
-        
-        // -------------------------------------------------------------------
-        // Javascript Onload Snippets einfuegen
-        // -------------------------------------------------------------------
-        $onLoadSnippetStr   = '';
-        $snippetStr         = '';
-        
-        foreach ($this->JavascriptOnloadSnippets as $snippet)
-        {
-            $onLoadSnippetStr .= $snippet;
-        }
 
-        foreach ($this->JavascriptSnippets as $snippet)
-        {
-            $snippetStr .= $snippet;
-        }
-
-        if (!empty($snippetStr) ||
-            !empty($onLoadSnippetStr))
-        {
-            Requirements::customScript('
-
-                '.$snippetStr.'
-
-                window.onload = function()
-                {
-                    '.$onLoadSnippetStr.'
-                };
-            ');
-        }
-        
         // -------------------------------------------------------------------
         // Scripte laden
         // -------------------------------------------------------------------
@@ -174,11 +178,56 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
     }
 
     /**
+     * Erweitert die init-Methode des erweiterten Controllers.
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
+     */
+    public function init() {
+        // -------------------------------------------------------------------
+        // Javascript Onload Snippets einfuegen
+        // -------------------------------------------------------------------
+        $onLoadSnippetStr   = '';
+        $snippetStr         = '';
+
+        foreach ($this->JavascriptOnloadSnippets as $snippet) {
+            $onLoadSnippetStr .= $snippet;
+        }
+
+        foreach ($this->JavascriptSnippets as $snippet) {
+            $snippetStr .= $snippet;
+        }
+
+        if (!empty($snippetStr) ||
+            !empty($onLoadSnippetStr)) {
+
+            Requirements::customScript('
+
+                '.$snippetStr.'
+
+                window.onload = function()
+                {
+                    '.$onLoadSnippetStr.'
+                };
+            ');
+        }
+    }
+
+    /**
      * Verarbeitungsmethode fuer alle CustomHtmlFormObjekte.
+     *
+     * @param Form $form Das sendende Formularobjekt
+     *
+     * @return mixed (abhaengig von der verarbeitenden Formularmethode)
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
      */
     public function customHtmlFormSubmit($form) {
-        // TODO: Herausfinden, welches Formular gesendet wurde und dessen
-        // Submit-Methode aufrufen.
         $formName = $this->owner->request->postVar('CustomHtmlFormName');
 
         foreach ($this->registeredCustomHtmlForms as $registeredCustomHtmlForm) {
