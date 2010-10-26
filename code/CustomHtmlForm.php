@@ -60,14 +60,6 @@ class CustomHtmlForm extends Form {
     protected $messages;
 
     /**
-     * Enthaelt spezielle Javascriptanweisungen; wird momentan nur von der
-     * CustomHtmlFormStep-Klasse benutzt.
-     *
-     * @var string
-     */
-    protected $specialRequirements;
-
-    /**
      * Enthaelt ein assoziatives Array mit Werten, die fuer die Instanz des
      * Formulars als Hiddenfields eingefuegt werden. Diese Felder werden
      * keiner Validierung unterzogen und dienen nur der Weitergabe von
@@ -76,6 +68,19 @@ class CustomHtmlForm extends Form {
      * @var array
      */
     protected $customParameters;
+
+    /**
+     * Enthaelt die Voreinstellungen fuer das Formular.
+     * 
+     * Diese Einstellungen koennen ueberschrieben werden, indem in der
+     * Formularinstanz ein Array "preferences" angelegt wird, in dem die
+     * hier definierten Werte ueberschrieben werden.
+     *
+     * @var array
+     */
+    protected $basePreferences  = array(
+        'submitButtonTitle'     => 'Abschicken'
+    );
 
     /**
      * Enthaelt die Nummer der aktuellen Instanziierung.
@@ -147,8 +152,6 @@ class CustomHtmlForm extends Form {
                 }
             );
             '.$this->jsName.'.setFormName(\''.$this->jsName.'\');
-
-            '.$this->specialRequirements.'
         ');
     }
 
@@ -543,7 +546,7 @@ class CustomHtmlForm extends Form {
         $actions = new FieldSet(
             new FormAction(
                 'customHtmlFormSubmit',
-                'Abschicken',
+                $this->getSubmitButtonTitle(),
                 $this
             )
         );
@@ -854,5 +857,26 @@ class CustomHtmlForm extends Form {
         } else {
             return $this->name;
         }
+    }
+
+    /**
+     * Liefert die Beschriftung fuer den Submitbutton des Formulars.
+     *
+     * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 26.10.2010
+     */
+    protected function getSubmitButtontitle() {
+        $title = '';
+
+        if (isset($this->preferences['submitButtonTitle'])) {
+            $title = $this->preferences['submitButtonTitle'];
+        } else {
+            $title = $this->basePreferences['submitButtonTitle'];
+        }
+
+        return $title;
     }
 }
