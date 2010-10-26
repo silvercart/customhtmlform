@@ -16,14 +16,6 @@ class CustomHtmlForm extends Form {
      * @var Controller
      */
     protected $controller;
-    
-    /**
-     * Gibt an, wohin die Umleitung nach erfolgreicher Validierung des
-     * Formulars erfolgen soll.
-     * 
-     * @var string
-     */
-    protected $redirectTargetAfterSuccessfulSubmit;
 
     /**
      * Enthaelt die Formularfelder.
@@ -244,40 +236,6 @@ class CustomHtmlForm extends Form {
      * @since 25.10.2010
      */
     protected function fillInFieldValues() {
-    }
-
-    /**
-     * Setzt die URL, auf die nach erfolgreicher Validierung des Formulars
-     * umgeleitet werden soll.
-     *
-     * @param string $target Ziel, auf das umgeleitet werden soll.
-     *
-     * @return void
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
-     * @since 25.10.2010
-     */
-    public function setRedirectTargetAfterSuccessfulSubmit($target) {
-        $this->redirectTargetAfterSuccessfulSubmit = $target;
-    }
-
-    /**
-     * Setzt die URL, auf die nach erfolgreicher Validierung des Formulars
-     * umgeleitet werden soll.
-     *
-     * @return string
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
-     * @since 25.10.2010
-     */
-    public function getRedirectTargetAfterSuccessfulSubmit() {
-        if (empty($this->redirectTargetAfterSuccessfulSubmit)) {
-            return '/';
-        } else {
-            return $this->redirectTargetAfterSuccessfulSubmit;
-        }
     }
 
     /**
