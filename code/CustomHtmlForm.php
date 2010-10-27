@@ -93,7 +93,8 @@ class CustomHtmlForm extends Form {
      * @var array
      */
     protected $basePreferences  = array(
-        'submitButtonTitle'     => 'Abschicken'
+        'submitButtonTitle'     => 'Abschicken',
+        'submitAction'          => 'customHtmlFormSubmit'
     );
 
     /**
@@ -120,7 +121,7 @@ class CustomHtmlForm extends Form {
         self::$instanceNr++;
         
         $this->controller   = $controller;
-        $name               = 'customHtmlFormSubmit';
+        $name               = $this->getSubmitAction();
 
         if (is_array($params)) {
             $this->customParameters = $params;
@@ -569,7 +570,7 @@ class CustomHtmlForm extends Form {
 
         $actions = new FieldSet(
             new FormAction(
-                'customHtmlFormSubmit',
+                $this->getSubmitAction(),
                 $this->getSubmitButtonTitle(),
                 $this
             )
@@ -789,7 +790,7 @@ class CustomHtmlForm extends Form {
      */
     public function CustomHtmlFormFieldsByGroup($groupName, $template = null) {
 
-        $fieldGroup = array();
+        $fieldGroup = new DataObjectSet();
 
         if (!isset($this->fieldGroups[$groupName])) {
             throw new Exception(
@@ -802,14 +803,16 @@ class CustomHtmlForm extends Form {
 
         foreach ($this->fieldGroups[$groupName] as $fieldName => $fieldDefinitions) {
 
-            $fieldGroup[$fieldName] = array(
-                'CustomHtmlFormField' => $this->CustomHtmlFormFieldByName($fieldName, $template)
+            $fieldGroup->push(
+                new ArrayData(
+                    array(
+                        'CustomHtmlFormField'   => $this->CustomHtmlFormFieldByName($fieldName, $template)
+                    )
+                )
             );
         }
 
-        $fieldGroupSet = new DataObjectSet($fieldGroup);
-        
-        return $fieldGroupSet;
+        return $fieldGroup;
     }
 
     /**
@@ -952,6 +955,27 @@ class CustomHtmlForm extends Form {
         }
 
         return $title;
+    }
+
+    /**
+     * Liefert die Beschriftung fuer den Submitbutton des Formulars.
+     *
+     * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 27.10.2010
+     */
+    protected function getSubmitAction() {
+        $action = '';
+
+        if (isset($this->preferences['submitAction'])) {
+            $action = $this->preferences['submitAction'];
+        } else {
+            $action = $this->basePreferences['submitAction'];
+        }
+
+        return $action;
     }
 
     /**
