@@ -85,7 +85,7 @@ class CustomHtmlForm extends Form {
 
     /**
      * Enthaelt die Voreinstellungen fuer das Formular.
-     * 
+     *
      * Diese Einstellungen koennen ueberschrieben werden, indem in der
      * Formularinstanz ein Array "preferences" angelegt wird, in dem die
      * hier definierten Werte ueberschrieben werden.
@@ -93,7 +93,8 @@ class CustomHtmlForm extends Form {
      * @var array
      */
     protected $basePreferences  = array(
-        'submitButtonTitle'     => 'Abschicken'
+        'submitButtonTitle'     => 'Abschicken',
+        'submitAction'          => 'customHtmlFormSubmit'
     );
 
     /**
@@ -118,16 +119,16 @@ class CustomHtmlForm extends Form {
      */
     public function __construct($controller, $params = null) {
         self::$instanceNr++;
-        
+
         $this->controller   = $controller;
-        $name               = 'customHtmlFormSubmit';
+        $name               = $this->getSubmitAction();
 
         if (is_array($params)) {
             $this->customParameters = $params;
         }
 
         $this->fillInFieldValues();
-        
+
         parent::__construct(
             $this->controller,
             $name,
@@ -246,7 +247,7 @@ class CustomHtmlForm extends Form {
         if (!empty($fieldStr)) {
             $fieldStr = substr($fieldStr, 0, strlen($fieldStr) - 1);
         }
-        
+
         return $fieldStr;
     }
 
@@ -280,7 +281,7 @@ class CustomHtmlForm extends Form {
     public function submit($data, $form) {
         $formData = $this->getFormData($data);
         $this->checkFormData($formData);
-       
+
         if (empty($this->errorMessages)) {
             // Es sind keine Fehler aufgetreten:
             return $this->submitSuccess(
@@ -316,7 +317,7 @@ class CustomHtmlForm extends Form {
         if (empty($form)) {
             $form = $this->class;
         }
-        
+
         // aufgetretene Validierungsfehler in Template auswertbar machen
         $data = array(
             'errorMessages' => new DataObjectSet($this->errorMessages),
@@ -408,7 +409,7 @@ class CustomHtmlForm extends Form {
                 }
             }
         }
-        
+
         return $formData;
     }
 
@@ -429,11 +430,11 @@ class CustomHtmlForm extends Form {
 
         if ($this->securityTokenEnabled()) {
             $securityID = Session::get('SecurityID');
-            
+
             if (empty($securityID) ||
                 empty($data['SecurityID']) ||
                 $data['SecurityID'] != $securityID) {
-                
+
                 $error                      = true;
                 $errorMessages['CSRF'] = array(
                     'message'   => 'CSRF Attacke!',
@@ -569,12 +570,12 @@ class CustomHtmlForm extends Form {
 
         $actions = new FieldSet(
             new FormAction(
-                'customHtmlFormSubmit',
+                $this->getSubmitAction(),
                 $this->getSubmitButtonTitle(),
                 $this
             )
         );
-        
+
         return array(
             'fields'    => $fields,
             'actions'   => $actions
@@ -761,7 +762,7 @@ class CustomHtmlForm extends Form {
 
         // Formularname
         $metadata .= $this->dataFieldByName('CustomHtmlFormName')->Field();
-        
+
         // SecurityID
         $metadata .= $this->dataFieldByName('SecurityID')->Field();
 
@@ -789,7 +790,7 @@ class CustomHtmlForm extends Form {
      */
     public function CustomHtmlFormFieldsByGroup($groupName, $template = null) {
 
-        $fieldGroup = array();
+        $fieldGroup = new DataObjectSet();
 
         if (!isset($this->fieldGroups[$groupName])) {
             throw new Exception(
@@ -802,14 +803,16 @@ class CustomHtmlForm extends Form {
 
         foreach ($this->fieldGroups[$groupName] as $fieldName => $fieldDefinitions) {
 
-            $fieldGroup[$fieldName] = array(
-                'CustomHtmlFormField' => $this->CustomHtmlFormFieldByName($fieldName, $template)
+            $fieldGroup->push(
+                new ArrayData(
+                    array(
+                        'CustomHtmlFormField'   => $this->CustomHtmlFormFieldByName($fieldName, $template)
+                    )
+                )
             );
         }
 
-        $fieldGroupSet = new DataObjectSet($fieldGroup);
-        
-        return $fieldGroupSet;
+        return $fieldGroup;
     }
 
     /**
@@ -818,7 +821,7 @@ class CustomHtmlForm extends Form {
      *
      * @param string $fieldName Der Feldname
      * @param string $template  optional. Pfad zum Template-Snippet, ausgehend relativ vom Siteroot
-     * 
+     *
      * @return string
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
@@ -884,7 +887,7 @@ class CustomHtmlForm extends Form {
      * @since 25.10.2010
      */
     public function CustomHtmlFormErrorMessages($template = null) {
-        
+
         // aufgetretene Validierungsfehler in Template auswertbar machen
         $data = array(
             'errorMessages' => new DataObjectSet($this->errorMessages),
@@ -952,6 +955,27 @@ class CustomHtmlForm extends Form {
         }
 
         return $title;
+    }
+
+    /**
+     * Liefert die Beschriftung fuer den Submitbutton des Formulars.
+     *
+     * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 27.10.2010
+     */
+    protected function getSubmitAction() {
+        $action = '';
+
+        if (isset($this->preferences['submitAction'])) {
+            $action = $this->preferences['submitAction'];
+        } else {
+            $action = $this->basePreferences['submitAction'];
+        }
+
+        return $action;
     }
 
     /**
