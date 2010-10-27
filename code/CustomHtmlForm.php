@@ -18,7 +18,21 @@ class CustomHtmlForm extends Form {
     protected $controller;
 
     /**
-     * Enthaelt die Formularfelder.
+     * Enthaelt die CustomHtmlForm-Definitionen der Formularfelder.
+     *
+     * @var array
+     */
+    protected $formFields;
+
+    /**
+     * Enthaelt beliebige Gruppen, in denen Felder gesammelt werden koennen.
+     *
+     * @var array
+     */
+    protected $fieldGroups;
+
+    /**
+     * Enthaelt die fuer Silverstripe aufbereiteten Formularfelder.
      *
      * Aufbau:
      * $SSformFields = array(
@@ -26,7 +40,7 @@ class CustomHtmlForm extends Form {
      *     'actions' => array(FieldSet)
      * );
      *
-     * @var FieldSet
+     * @var array
      */
     protected $SSformFields;
 
@@ -121,6 +135,11 @@ class CustomHtmlForm extends Form {
             new FieldSet()
         );
 
+        // Gruppenstruktur erzeugen
+        if (isset($this->formFields)) {
+            $this->fieldGroups['formFields'] = $this->formFields;
+        }
+
         $this->name               = $this->class.'_'.$name.'_'.self::$instanceNr;
         $this->jsName             = str_replace('/', '', $this->name);
         $this->SSformFields       = $this->getForm();
@@ -169,57 +188,59 @@ class CustomHtmlForm extends Form {
     protected function generateJsValidatorFields() {
         $fieldStr = '';
 
-        foreach ($this->formFields as $fieldName => $fieldProperties) {
-            $checkRequirementStr = '';
+        foreach ($this->fieldGroups as $groupName => $groupFields) {
+            foreach ($groupFields as $fieldName => $fieldProperties) {
+                $checkRequirementStr = '';
 
-            if (isset($fieldProperties['checkRequirements'])) {
-                foreach ($fieldProperties['checkRequirements'] as $requirement => $definition) {
-                    if (is_array($definition)) {
+                if (isset($fieldProperties['checkRequirements'])) {
+                    foreach ($fieldProperties['checkRequirements'] as $requirement => $definition) {
+                        if (is_array($definition)) {
 
-                        $subCheckRequirementStr = '';
-                        foreach ($definition as $subRequirement => $subDefinition) {
-                            if (is_bool($subDefinition)) {
-                                $subDefinitionStr = $subDefinition ? 'true' : 'false';
-                            } else if (is_int($subDefinition)) {
-                                $subDefinitionStr = $subDefinition;
-                            } else {
-                                $subDefinitionStr = "'".$subDefinition."'";
+                            $subCheckRequirementStr = '';
+                            foreach ($definition as $subRequirement => $subDefinition) {
+                                if (is_bool($subDefinition)) {
+                                    $subDefinitionStr = $subDefinition ? 'true' : 'false';
+                                } else if (is_int($subDefinition)) {
+                                    $subDefinitionStr = $subDefinition;
+                                } else {
+                                    $subDefinitionStr = "'".$subDefinition."'";
+                                }
+
+                                $subCheckRequirementStr .= $subRequirement.": '".$subDefinitionStr."',";
                             }
 
-                            $subCheckRequirementStr .= $subRequirement.": '".$subDefinitionStr."',";
-                        }
+                            if (!empty($subCheckRequirementStr)) {
+                                $subCheckRequirementStr = substr($subCheckRequirementStr, 0, strlen($subCheckRequirementStr) - 1);
 
-                        if (!empty($subCheckRequirementStr)) {
-                            $subCheckRequirementStr = substr($subCheckRequirementStr, 0, strlen($subCheckRequirementStr) - 1);
-
-                            $checkRequirementStr .= $requirement.': {';
-                            $checkRequirementStr .= $subCheckRequirementStr;
-                            $checkRequirementStr .= '},';
-                        }
-                    } else {
-                        if (is_bool($definition)) {
-                            $definitionStr = $definition ? 'true' : 'false';
-                        } else if (is_int($definition)) {
-                            $definitionStr = $definition;
+                                $checkRequirementStr .= $requirement.': {';
+                                $checkRequirementStr .= $subCheckRequirementStr;
+                                $checkRequirementStr .= '},';
+                            }
                         } else {
-                            $definitionStr = "'".$definition."'";
+                            if (is_bool($definition)) {
+                                $definitionStr = $definition ? 'true' : 'false';
+                            } else if (is_int($definition)) {
+                                $definitionStr = $definition;
+                            } else {
+                                $definitionStr = "'".$definition."'";
+                            }
+
+                            $checkRequirementStr .= $requirement.": ".$definitionStr.",\n";
                         }
-                        
-                        $checkRequirementStr .= $requirement.": ".$definitionStr.",\n";
                     }
                 }
-            }
 
-            if (!empty($checkRequirementStr)) {
-                $checkRequirementStr = substr($checkRequirementStr, 0, strlen($checkRequirementStr) - 1);
-            }
-
-            $fieldStr .= $fieldName.': {
-                type: \''.$fieldProperties['type'].'\',
-                checkRequirements: {
-                    '.$checkRequirementStr.'
+                if (!empty($checkRequirementStr)) {
+                    $checkRequirementStr = substr($checkRequirementStr, 0, strlen($checkRequirementStr) - 1);
                 }
-            },';
+
+                $fieldStr .= $fieldName.': {
+                    type: \''.$fieldProperties['type'].'\',
+                    checkRequirements: {
+                        '.$checkRequirementStr.'
+                    }
+                },';
+            }
         }
 
         if (!empty($fieldStr)) {
@@ -367,8 +388,8 @@ class CustomHtmlForm extends Form {
         }
 
         // Definierte Formularfelder auslesen
-        if (isset($this->formFields)) {
-            foreach ($this->formFields as $fieldName => $fieldDefinition) {
+        foreach ($this->fieldGroups as $groupName => $groupFields) {
+            foreach ($groupFields as $fieldName => $fieldDefinition) {
                 if (isset($request[$fieldName])) {
                     $formData[$fieldName] = Convert::raw2sql($request[$fieldName]);
                 } else {
@@ -424,75 +445,77 @@ class CustomHtmlForm extends Form {
             }
         }
 
-        if (!$error && isset($this->formFields)) {
-            foreach ($this->formFields as $fieldName => $fieldDefinition) {
-                $fieldErrorMessages = array();
-                $fieldError         = false;
-                $checkFormData      = new CheckFormData($data[$fieldName]);
+        if (!$error) {
+            foreach ($this->fieldGroups as $groupName => $groupFields) {
+                foreach ($groupFields as $fieldName => $fieldDefinition) {
+                    $fieldErrorMessages = array();
+                    $fieldError         = false;
+                    $checkFormData      = new CheckFormData($data[$fieldName]);
 
-                // Formale Erfordernisse pruefen, die dieses Feld erfuellen muss.
-                if (!isset($fieldDefinition['checkRequirements'])) {
-                    continue;
-                }
-                
-                foreach ($fieldDefinition['checkRequirements'] as $requirement => $requiredValue) {
-                    // --------------------------------------------------------
-                    // Sonderfaelle:
-                    // --------------------------------------------------------
-
-                    // Kriterium bezieht sich auf ein anderes Feld
-                    if ($requirement == 'mustEqual' ||
-                        $requirement == 'mustNotEqual') {
-
-                        $requiredValue = array(
-                            'fieldName' => $this->formFields[$requiredValue]['title'] ? $this->formFields[$requiredValue]['title'] : $requiredValue,
-                            'value'     => $data[$requiredValue]
-                        );
+                    // Formale Erfordernisse pruefen, die dieses Feld erfuellen muss.
+                    if (!isset($fieldDefinition['checkRequirements'])) {
+                        continue;
                     }
 
-                    // Feld muss ausgefuellt sein, wenn anderes Feld
-                    // ausgefuellt ist
-                    if ($requirement == 'isFilledInDependantOn') {
-                        $requiredValue = array(
-                            $requiredValue,
-                            $data
-                        );
-                    }
+                    foreach ($fieldDefinition['checkRequirements'] as $requirement => $requiredValue) {
+                        // --------------------------------------------------------
+                        // Sonderfaelle:
+                        // --------------------------------------------------------
 
-                    // Callbackfunktion verwenden
-                    if ($requirement == 'callBack') {
-                        $fieldCheckResult = $this->$requiredValue($data[$fieldName]);
-                    } else {
-                        $fieldCheckResult = $checkFormData->$requirement($requiredValue);
-                    }
+                        // Kriterium bezieht sich auf ein anderes Feld
+                        if ($requirement == 'mustEqual' ||
+                            $requirement == 'mustNotEqual') {
 
-                    if (!$fieldCheckResult['success']) {
-                        $fieldErrorMessages[]   = $fieldCheckResult['errorMessage'];
-                        $fieldError             = true;
-                    }
-                }
+                            $requiredValue = array(
+                                'fieldName' => $groupFields[$requiredValue]['title'] ? $groupFields[$requiredValue]['title'] : $requiredValue,
+                                'value'     => $data[$requiredValue]
+                            );
+                        }
 
-                // Bei diesem Feld sind ein oder mehrere Fehler aufgetreten, also
-                // diese zuordnen und speichern.
-                if ($fieldError) {
-                    // Fehler an das Formularfeld anhaengen
-                    foreach ($this->SSformFields['fields'] as $field) {
-                        if ($field->name == $fieldName) {
-                            $field->errorMessage = new ArrayData(array(
-                                'message' => implode("\n", $fieldErrorMessages)
-                            ));
+                        // Feld muss ausgefuellt sein, wenn anderes Feld
+                        // ausgefuellt ist
+                        if ($requirement == 'isFilledInDependantOn') {
+                            $requiredValue = array(
+                                $requiredValue,
+                                $data
+                            );
+                        }
+
+                        // Callbackfunktion verwenden
+                        if ($requirement == 'callBack') {
+                            $fieldCheckResult = $this->$requiredValue($data[$fieldName]);
+                        } else {
+                            $fieldCheckResult = $checkFormData->$requirement($requiredValue);
+                        }
+
+                        if (!$fieldCheckResult['success']) {
+                            $fieldErrorMessages[]   = $fieldCheckResult['errorMessage'];
+                            $fieldError             = true;
                         }
                     }
 
-                    // Fehler in eigenem Feld speichern
-                    $errorMessages[$fieldName] = array(
-                        'message'   => implode("\n", $fieldErrorMessages),
-                        'fieldname' => $fieldDefinition['title'] ? $fieldDefinition['title'] : $fieldName,
-                        $fieldName => array(
-                            'message' => implode("\n", $fieldErrorMessages)
-                        )
-                    );
-                    $error = true;
+                    // Bei diesem Feld sind ein oder mehrere Fehler aufgetreten, also
+                    // diese zuordnen und speichern.
+                    if ($fieldError) {
+                        // Fehler an das Formularfeld anhaengen
+                        foreach ($this->SSformFields['fields'] as $field) {
+                            if ($field->name == $fieldName) {
+                                $field->errorMessage = new ArrayData(array(
+                                    'message' => implode("\n", $fieldErrorMessages)
+                                ));
+                            }
+                        }
+
+                        // Fehler in eigenem Feld speichern
+                        $errorMessages[$fieldName] = array(
+                            'message'   => implode("\n", $fieldErrorMessages),
+                            'fieldname' => $fieldDefinition['title'] ? $fieldDefinition['title'] : $fieldName,
+                            $fieldName => array(
+                                'message' => implode("\n", $fieldErrorMessages)
+                            )
+                        );
+                        $error = true;
+                    }
                 }
             }
         }
@@ -531,10 +554,10 @@ class CustomHtmlForm extends Form {
         $fields->push($field);
 
         // --------------------------------------------------------------------
-        // Fieldset aus den Definitionen in $this->formFields erstellen
+        // Fieldset aus den Definitionen erstellen
         // --------------------------------------------------------------------
-        if (isset($this->formFields)) {
-            foreach ($this->formFields as $fieldName => $fieldDefinition) {
+        foreach ($this->fieldGroups as $groupName => $groupFields) {
+            foreach ($groupFields as $fieldName => $fieldDefinition) {
                 $field = $this->getFormField(
                     $fieldName,
                     $fieldDefinition
@@ -578,7 +601,12 @@ class CustomHtmlForm extends Form {
             );
         }
 
-        $fieldReference = &$this->formFields[$fieldName];
+        foreach ($this->fieldGroups as $groupName => $groupFields) {
+            if (isset($groupFields[$fieldName])) {
+                $fieldReference = &$groupFields[$fieldName];
+                break;
+            }
+        }
 
         // Erforderliche Felder mit Standardwerten befuellen, wenn sie
         // nicht angegeben sind.
@@ -748,6 +776,43 @@ class CustomHtmlForm extends Form {
     }
 
     /**
+     * Liefert den HTML-Code fuer eine Gruppe von Feldern zurueck.
+     *
+     * @param string $groupName Name der Gruppe
+     * @param string $template  Name des Templates, das fuer alle Felder der Gruppe verwendet werden soll
+     *
+     * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 27.10.2010
+     */
+    public function CustomHtmlFormFieldsByGroup($groupName, $template = null) {
+
+        $fieldGroup = array();
+
+        if (!isset($this->fieldGroups[$groupName])) {
+            throw new Exception(
+                sprintf(
+                    'Die CustomHtmlForm Feldgruppe "%s" wird aufgerufen, aber ist nicht definiert.',
+                    $groupName
+                )
+            );
+        }
+
+        foreach ($this->fieldGroups[$groupName] as $fieldName => $fieldDefinitions) {
+
+            $fieldGroup[$fieldName] = array(
+                'CustomHtmlFormField' => $this->CustomHtmlFormFieldByName($fieldName, $template)
+            );
+        }
+
+        $fieldGroupSet = new DataObjectSet($fieldGroup);
+        
+        return $fieldGroupSet;
+    }
+
+    /**
      * Liefert den HTML-Code fuer das angegebene Feld zurueck. Dieser wird
      * mit dem Standardtemplate fuer Felder erzeugt.
      *
@@ -762,7 +827,15 @@ class CustomHtmlForm extends Form {
      */
     public function CustomHtmlFormFieldByName($fieldName, $template = null) {
 
-        if (!isset($this->formFields[$fieldName])) {
+        $fieldReference = '';
+
+        foreach ($this->fieldGroups as $groupName => $groupFields) {
+            if (isset($groupFields[$fieldName])) {
+                $fieldReference = $groupFields[$fieldName];
+                break;
+            }
+        }
+        if ($fieldReference === '') {
             throw new Exception(
                 printf('Das Feld "%s" wird im Template aufgerufen, ist aber nicht im Formularobjekt definiert.', $fieldName)
             );
@@ -790,7 +863,7 @@ class CustomHtmlForm extends Form {
             array(
                 'FormName'      => $this->name,
                 'FieldName'     => $fieldName,
-                'Label'         => $this->formFields[$fieldName]['title'],
+                'Label'         => $fieldReference['title'],
                 'errorMessage'  => isset($this->errorMessages[$fieldName]) ?  $this->errorMessages[$fieldName] : '',
                 'FieldTag'      => $this->SSformFields['fields']->fieldByName($fieldName)->Field()
             )
@@ -879,5 +952,38 @@ class CustomHtmlForm extends Form {
         }
 
         return $title;
+    }
+
+    /**
+     * Fuegt ein Feld zu einer Gruppe hinzu.
+     *
+     * @param string $groupName        Name der Gruppe, zu der das Feld hinzugefuegt werden soll
+     * @param string $fieldName        Name des Feldes
+     * @param array  $fieldDefinitions Die Definition des Feldes
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 27.10.2010
+     */
+    protected function addFieldToGroup($groupName, $fieldName, $fieldDefinitions) {
+        // Gruppe erstellen, wenn sie noch nicht existiert
+        if (!isset($this->fieldGroups[$groupName])) {
+            $this->fieldGroups[$groupName] = array();
+        }
+
+        // Pruefen, ob schon ein Feld mit dem gleichen Namen in dieser Gruppe existiert.
+        if (isset($this->fieldGroups[$groupName][$fieldName])) {
+            throw new Exception(
+                sprintf(
+                    'In der CustomHtmlForm Feldgruppe "%s" ist das Feld "%s" schon definiert.',
+                    $groupName,
+                    $fieldName
+                )
+            );
+        }
+
+        $this->fieldGroups[$groupName][$fieldName] = $fieldDefinitions;
     }
 }
