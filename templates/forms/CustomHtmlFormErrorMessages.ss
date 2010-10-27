@@ -1,5 +1,5 @@
 <% if errorMessages %>
-    <div class="errorSummary">
+    <div class="error">
         <p>
             <strong>Bitte pr&uuml;fen Sie Ihre Eingaben in folgenden Feldern:</strong>
         </p>
@@ -12,7 +12,7 @@
 <% end_if %>
 
 <% if messages %>
-    <div class="errorSummary">
+    <div class="note">
         <ul>
             <% control messages %>
                 <li>$message</li>

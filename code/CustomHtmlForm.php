@@ -107,6 +107,11 @@ class CustomHtmlForm extends Form {
         
         $this->controller   = $controller;
         $name               = 'customHtmlFormSubmit';
+
+        if (is_array($params)) {
+            $this->customParameters = $params;
+        }
+
         $this->fillInFieldValues();
         
         parent::__construct(
@@ -115,10 +120,6 @@ class CustomHtmlForm extends Form {
             new FieldSet(),
             new FieldSet()
         );
-
-        if (is_array($params)) {
-            $this->customParameters = $params;
-        }
 
         $this->name               = $this->class.'_'.$name.'_'.self::$instanceNr;
         $this->jsName             = str_replace('/', '', $this->name);
