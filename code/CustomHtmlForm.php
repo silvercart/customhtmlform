@@ -108,8 +108,9 @@ class CustomHtmlForm extends Form {
      * Erstellt ein Formularobjekt, dessen Layout frei in einem Template
      * gestaltet werden kann.
      *
-     * @param ContentController $controller Das aufrufende Controller-Objekt
-     * @param array             $params     Optionale Parameter
+     * @param ContentController $controller  Das aufrufende Controller-Objekt
+     * @param array             $params      Optionale Parameter
+     * @param array             $preferences Optionale Voreinstellungen
      *
      * @return void
      *
@@ -117,7 +118,7 @@ class CustomHtmlForm extends Form {
      * @copyright 2010 pxieltricks GmbH
      * @since 25.10.2010
      */
-    public function __construct($controller, $params = null) {
+    public function __construct($controller, $params = null, $preferences = null) {
         self::$instanceNr++;
 
         $this->controller   = $controller;
@@ -126,15 +127,25 @@ class CustomHtmlForm extends Form {
         if (is_array($params)) {
             $this->customParameters = $params;
         }
+        if (is_array($preferences)) {
+            foreach ($preferences as $title => $setting) {
+                if (!empty($title)) {
+                    $this->basePreferences[$title] = $setting;
+                }
+            }
+        }
 
         $this->fillInFieldValues();
 
         parent::__construct(
-            $this->controller,
+            $this->getFormController($controller, $preferences),
             $name,
             new FieldSet(),
             new FieldSet()
         );
+
+        // Nochmaliges Setzen erforderlich, da der Controller in der Form-Klasse ueberschrieben wird.
+        $this->controller   = $controller;
 
         // Gruppenstruktur erzeugen
         if (isset($this->formFields)) {
@@ -150,7 +161,7 @@ class CustomHtmlForm extends Form {
         parent::setActions($this->SSformFields['actions']);
 
         // Action fuer das Formular setzen
-        $this->setFormAction(Controller::join_links($this->controller->Link(), $name));
+        $this->setFormAction(Controller::join_links($this->getFormController($controller, $preferences)->Link(), $name));
 
         // -------------------------------------------------------------------
         // Javascript-Validator laden und initialisieren.
@@ -972,6 +983,9 @@ class CustomHtmlForm extends Form {
         if (isset($this->preferences['submitAction'])) {
             $action = $this->preferences['submitAction'];
         } else {
+            /**
+             *  
+             */
             $action = $this->basePreferences['submitAction'];
         }
 
@@ -1009,5 +1023,25 @@ class CustomHtmlForm extends Form {
         }
 
         $this->fieldGroups[$groupName][$fieldName] = $fieldDefinitions;
+    }
+
+    /**
+     * Liefert das Controller-Objekt zurueck, das verwendet werden soll.
+     *
+     * @param ContentController $controller  Das aufrufende Controller-Objekt
+     * @param array             $preferences Die optionalen Voreinstellungen
+     *
+     * @return ContentController
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 28.10.2010
+     */
+    protected function getFormController($controller, $preferences) {
+        if (isset($preferences['controller'])) {
+            return $preferences['controller'];
+        } else {
+            return $controller;
+        }
     }
 }
