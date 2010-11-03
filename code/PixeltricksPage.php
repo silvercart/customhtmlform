@@ -20,7 +20,10 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
      * @var array
      */
     public static $allowed_actions = array(
-        'customHtmlFormSubmit'
+        'customHtmlFormSubmit',
+        'uploadifyUpload',
+        'uploadifyRefresh',
+        'uploadifyRemoveFile'
     );
 
     /**
@@ -239,5 +242,97 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
         if ($registeredCustomHtmlForm instanceof CustomHtmlForm) {
             return $registeredCustomHtmlForm->submit($form, null);
         }
+    }
+
+    /**
+     * Wrapper fuer Action auf Uploadify-Feld.
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 03.11.2010
+     */
+    public function uploadifyUpload() {
+
+        $fieldReference = $this->getFieldObject();
+
+        if ($fieldReference != '') {
+            return $fieldReference->upload();
+        } else {
+            return -1;
+        }
+    }
+
+    /**
+     * Wrapper fuer Action auf Uploadify-Feld.
+     *
+	 * @param SS_HTTPRequest $request Die Anfrageparameter
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 03.11.2010
+     */
+    public function uploadifyRefresh(SS_HTTPRequest $request) {
+        $fieldReference = $this->getFieldObject();
+
+        if ($fieldReference != '') {
+            return $fieldReference->refresh($request);
+        } else {
+            return -1;
+        }
+    }
+
+    /**
+     * Wrapper fuer Action auf Uploadify-Feld.
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 03.11.2010
+     */
+    public function uploadifyRemoveFile() {
+        $fieldReference = $this->getFieldObject();
+
+        if ($fieldReference != '') {
+            return $fieldReference->removefile();
+        } else {
+            return -1;
+        }
+    }
+
+    /**
+     * Method Description
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 03.11.2010
+     */
+    protected function getFieldObject() {
+        $formName       = 'CreateAuctionFormStep5_customHtmlFormSubmit_1';
+        $fieldName      = 'UploadImages';
+        $fieldReference = '';
+
+        foreach ($this->registeredCustomHtmlForms as $registeredCustomHtmlForm) {
+            if ($formName === $registeredCustomHtmlForm->name) {
+                break;
+            }
+        }
+
+        if ($registeredCustomHtmlForm instanceof CustomHtmlForm) {
+
+            foreach ($registeredCustomHtmlForm->SSformFields['fields'] as $field) {
+                if ($field instanceof MultipleImageUploadField) {
+                    $fieldReference = $field;
+                }
+            }
+        }
+
+        return $fieldReference;
     }
 }

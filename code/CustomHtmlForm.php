@@ -694,6 +694,39 @@ class CustomHtmlForm extends Form {
         } else if ($fieldDefinition['type'] == 'RecaptchaField') {
             $field = new RecaptchaField('Recaptcha');
             $recaptchaField->jsOptions = array('theme' => 'clean');
+        } else if ($fieldDefinition['type'] == 'MultipleImageUploadField' ||
+                   $fieldDefinition['type'] == 'MultipleFileUploadField') {
+
+            if (isset($fieldDefinition['configuration']) &&
+                is_array($fieldDefinition['configuration'])) {
+
+                $configuration = $fieldDefinition['configuration'];
+            } else {
+                $configuration = array();
+            }
+
+            $field = new $fieldDefinition['type'](
+                $fieldName,
+                $fieldDefinition['title'],
+                $configuration,
+                $fieldDefinition['form']
+            );
+            if (isset($fieldDefinition['filetypes']) &&
+                is_array($fieldDefinition['filetypes'])) {
+                $field->setFileTypes($fieldDefinition['filetypes']);
+            }
+            $field->setVar('script', urlencode($this->controller->Link().'uploadifyUpload'));
+            $field->setVar('refreshlink', ($this->controller->Link().'uploadifyRefresh'));
+            $field->setVar('refreshlink', ($this->controller->Link().'uploadifyRefresh'));
+
+            if (isset($fieldDefinition['configuration']) &&
+                is_array($fieldDefinition['configuration']) &&
+                isset($fieldDefinition['configuration']['uploadFolder'])) {
+
+                $field->setUploadFolder($fieldDefinition['configuration']['uploadFolder']);
+            } else {
+                $field->setUploadFolder('Uploads');
+            }
         } else {
             $field = new $fieldDefinition['type'](
                 $fieldName,
@@ -879,7 +912,8 @@ class CustomHtmlForm extends Form {
                 'FieldName'     => $fieldName,
                 'Label'         => $fieldReference['title'],
                 'errorMessage'  => isset($this->errorMessages[$fieldName]) ?  $this->errorMessages[$fieldName] : '',
-                'FieldTag'      => $this->SSformFields['fields']->fieldByName($fieldName)->Field()
+                'FieldTag'      => $this->SSformFields['fields']->fieldByName($fieldName)->Field(),
+                'FieldHolder'   => $this->SSformFields['fields']->fieldByName($fieldName)->FieldHolder()
             )
         )->renderWith($templatePathAbs);
 
