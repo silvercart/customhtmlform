@@ -864,7 +864,11 @@ class CustomHtmlForm extends Form {
      * mit dem Standardtemplate fuer Felder erzeugt.
      *
      * @param string $fieldName Der Feldname
-     * @param string $template  optional. Pfad zum Template-Snippet, ausgehend relativ vom Siteroot
+     * @param string $template  optional. Pfad zum Template-Snippet, ausgehend
+     *      relativ vom Siteroot. Durch Setzen eines Punkts kann die Suche in
+     *      einem Modulverzeichnis veranlasst werden:
+     *          "modul.meinTemplate" sucht in Modulverzeichnis "modul" im
+     *          Ordner "templates" nach dem Template "meinTemplate.ss"
      *
      * @return string
      *
@@ -872,7 +876,7 @@ class CustomHtmlForm extends Form {
      * @copyright 2010 pxieltricks GmbH
      * @since 25.10.2010
      */
-    public function CustomHtmlFormFieldByName($fieldName, $template = null, $module = null) {
+    public function CustomHtmlFormFieldByName($fieldName, $template = null) {
 
         $fieldReference = '';
 
@@ -893,10 +897,11 @@ class CustomHtmlForm extends Form {
         if (!empty($template)) {
 
             // Template aus dem Modul oder Standardverzeicnis holen
-            if (!empty($module)) {
-                $template = $module.'/'.'/templates/'.$template.'.ss';
-            } else {
+            if (strpos($template, '.') === false) {
                 $template = THEMES_DIR.'/'.SSViewer::current_theme().'/templates/Layout/'.$template.'.ss';
+            } else {
+                list($module, $template) = explode('.', $template);
+                $template = $module.'/'.'/templates/'.$template.'.ss';
             }
 
             if (Director::fileExists($template)) {
