@@ -872,7 +872,7 @@ class CustomHtmlForm extends Form {
      * @copyright 2010 pxieltricks GmbH
      * @since 25.10.2010
      */
-    public function CustomHtmlFormFieldByName($fieldName, $template = null) {
+    public function CustomHtmlFormFieldByName($fieldName, $template = null, $module = null) {
 
         $fieldReference = '';
 
@@ -892,14 +892,26 @@ class CustomHtmlForm extends Form {
 
         if (!empty($template)) {
 
-            $template = THEMES_DIR.'/'.SSViewer::current_theme().'/templates/Layout/'.$template.'.ss';
-
-            if (Director::fileExists($template)) {
-                $templatePathRel = '/'.$template;
+            // Template aus dem Modul oder Standardverzeicnis holen
+            if (!empty($module)) {
+                $template = $module.'/'.'/templates/'.$template.'.ss';
             } else {
-                $templatePathRel = $defaultTemplatePath;
+                $template = THEMES_DIR.'/'.SSViewer::current_theme().'/templates/Layout/'.$template.'.ss';
             }
 
+            if (Director::fileExists($template)) {
+                // Template wurde im Theme- oder Modulverzeichnis gefunden
+                $templatePathRel = '/'.$template;
+            } else {
+                // Wenn Template nicht gefunden wurde, dann im eigenen Modulverzeichnis suchen
+                $template = 'pixeltricks_module/templates/forms/'.$template.'.ss';
+
+                if (Director::fileExists($template)) {
+                    $templatePathRel = '/'.$template;
+                } else {
+                    $templatePathRel = $defaultTemplatePath;
+                }
+            }
         } else {
             $templatePathRel = $defaultTemplatePath;
         }
