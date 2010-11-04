@@ -901,7 +901,7 @@ class CustomHtmlForm extends Form {
                 $template = THEMES_DIR.'/'.SSViewer::current_theme().'/templates/Layout/'.$template.'.ss';
             } else {
                 list($module, $template) = explode('.', $template);
-                $template = $module.'/'.'/templates/'.$template.'.ss';
+                $template = $module.'/templates/forms/'.$template.'.ss';
             }
 
             if (Director::fileExists($template)) {
