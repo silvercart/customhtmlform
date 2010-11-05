@@ -899,7 +899,11 @@ class CustomHtmlForm extends Form {
      * mit dem Standardtemplate fuer Felder erzeugt.
      *
      * @param string $fieldName Der Feldname
-     * @param string $template  optional. Pfad zum Template-Snippet, ausgehend relativ vom Siteroot
+     * @param string $template  optional. Pfad zum Template-Snippet, ausgehend
+     *      relativ vom Siteroot. Durch Setzen eines Punkts kann die Suche in
+     *      einem Modulverzeichnis veranlasst werden:
+     *          "modul.meinTemplate" sucht in Modulverzeichnis "modul" im
+     *          Ordner "templates" nach dem Template "meinTemplate.ss"
      *
      * @return string
      *
@@ -927,14 +931,27 @@ class CustomHtmlForm extends Form {
 
         if (!empty($template)) {
 
-            $template = THEMES_DIR.'/'.SSViewer::current_theme().'/templates/Layout/'.$template.'.ss';
-
-            if (Director::fileExists($template)) {
-                $templatePathRel = '/'.$template;
+            // Template aus dem Modul oder Standardverzeicnis holen
+            if (strpos($template, '.') === false) {
+                $template = THEMES_DIR.'/'.SSViewer::current_theme().'/templates/Layout/'.$template.'.ss';
             } else {
-                $templatePathRel = $defaultTemplatePath;
+                list($module, $template) = explode('.', $template);
+                $template = $module.'/templates/forms/'.$template.'.ss';
             }
 
+            if (Director::fileExists($template)) {
+                // Template wurde im Theme- oder Modulverzeichnis gefunden
+                $templatePathRel = '/'.$template;
+            } else {
+                // Wenn Template nicht gefunden wurde, dann im eigenen Modulverzeichnis suchen
+                $template = 'pixeltricks_module/templates/forms/'.$template.'.ss';
+
+                if (Director::fileExists($template)) {
+                    $templatePathRel = '/'.$template;
+                } else {
+                    $templatePathRel = $defaultTemplatePath;
+                }
+            }
         } else {
             $templatePathRel = $defaultTemplatePath;
         }
