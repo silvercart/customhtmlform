@@ -403,10 +403,24 @@ pixeltricks.forms.checkFormData = function()
     this.isCurrency = function(expectedResult)
     {
         var errorMessage    = '';
-        var success         = true;
+        var success         = expectedResult;
+
+        if (that.fieldValue.length > 0)
+        {
+            var nrOfMatches = that.fieldValue.search(
+                /^[\d]{1,}[,]?[\d]{0,2}$/
+            );
+
+            if (nrOfMatches === -1)
+            {
+                success = false;
+            }
+        }
 
         if(typeof(ss) == 'undefined' || typeof(ss.i18n) == 'undefined') {
+            errorMessage = 'In dieses Feld muss eine Währungsangabe (z.B. "1499,95") eingetragen werden.';
         } else {
+            errorMessage = ss.i18n._t('Form.CURRENCY_ONLY', 'In dieses Feld muss eine Währungsangabe (z.B. "1499,95") eingetragen werden.');
         }
 
         return {
@@ -426,10 +440,10 @@ pixeltricks.forms.checkFormData = function()
         var errorMessage    = '';
         var success         = expectedResult;
 
-        if (this.fieldValue.length > 0)
+        if (that.fieldValue.length > 0)
         {
-            var nrOfMatches = this.fieldValue.search(
-                /^[\d]*[,]?[^\D]*$/
+            var nrOfMatches = that.fieldValue.search(
+                /^[\d]{2}[\.]{1}[\d]{2}[\.]{1}[\d]{4}$/
             );
 
             if (nrOfMatches === -1)
@@ -439,9 +453,9 @@ pixeltricks.forms.checkFormData = function()
         }
 
         if(typeof(ss) == 'undefined' || typeof(ss.i18n) == 'undefined') {
-            errorMessage = 'In dieses Feld muss eine Währungsangabe (z.B. "1499,95") eingetragen werden.';
+            errorMessage = 'In dieses Feld muss ein Datum (z.B. "31.01.2010") eingetragen werden.';
         } else {
-            errorMessage = ss.i18n._t('Form.CURRENCY_ONLY', 'In dieses Feld muss eine Währungsangabe (z.B. "1499,95") eingetragen werden.');
+            errorMessage = ss.i18n._t('Form.DATE_ONLY', 'In dieses Feld muss ein Datum (z.B. "31.01.2010") eingetragen werden.');
         }
 
         return {

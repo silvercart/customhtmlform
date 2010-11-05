@@ -218,7 +218,7 @@ class CustomHtmlForm extends Form {
                                     $subDefinitionStr = "'".$subDefinition."'";
                                 }
 
-                                $subCheckRequirementStr .= $subRequirement.": '".$subDefinitionStr."',";
+                                $subCheckRequirementStr .= $subRequirement.": ".$subDefinitionStr.",";
                             }
 
                             if (!empty($subCheckRequirementStr)) {
@@ -652,13 +652,33 @@ class CustomHtmlForm extends Form {
             $fieldReference['maxLength'] = $fieldDefinition['maxLength'];
         }
 
+        if (!isset($fieldDefinition['size'])) {
+            $fieldDefinition['size'] = null;
+            $fieldReference['size'] = $fieldDefinition['size'];
+        }
+
+        if (!isset($fieldDefinition['multiple'])) {
+            $fieldDefinition['multiple'] = null;
+            $fieldReference['multiple'] = $fieldDefinition['multiple'];
+        }
+
         if (!isset($fieldDefinition['form'])) {
             $fieldDefinition['form'] = $this;
             $fieldReference['form'] = $fieldDefinition['form'];
         }
 
         // Feld erstellen
-        if ($fieldDefinition['type'] == 'DropdownField') {
+        if ($fieldDefinition['type'] == 'ListboxField') {
+            $field = new $fieldDefinition['type'](
+                $fieldName,
+                $fieldDefinition['title'],
+                $fieldDefinition['value'],
+                $fieldDefinition['selectedValue'],
+                $fieldDefinition['size'],
+                $fieldDefinition['multiple'],
+                $fieldDefinition['form']
+            );
+        } else if ($fieldDefinition['type'] == 'DropdownField') {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
@@ -682,6 +702,21 @@ class CustomHtmlForm extends Form {
                 $fieldDefinition['maxLength'],
                 $fieldDefinition['form']
             );
+        } else if ($fieldDefinition['type'] == 'DateField') {
+            $field = new $fieldDefinition['type'](
+                $fieldName,
+                $fieldDefinition['title'],
+                $fieldDefinition['value'],
+                $fieldDefinition['form']
+            );
+
+            if (isset($fieldDefinition['configuration']) &&
+                is_array($fieldDefinition['configuration'])) {
+
+                foreach ($fieldDefinition['configuration'] as $key => $value) {
+                    $field->setConfig($key, $value);
+                }
+            }
         } else if ($fieldDefinition['type'] == 'TextareaField') {
             $field = new $fieldDefinition['type'](
                 $fieldName,
