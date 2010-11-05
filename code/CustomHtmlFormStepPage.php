@@ -440,6 +440,23 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
+     * Loescht die Daten aller Schritte aus der Session
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
+     */
+    public function deleteSessionData() {
+        if (isset($_SESSION['CustomHtmlFormStep']) &&
+            isset($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID])) {
+
+            unset($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]);
+        }
+    }
+
+    /**
      * Registriert das Formular fuer den aktuellen Schritt.
      *
      * @return void
@@ -530,22 +547,5 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         }
 
         return ($stepIdx - 1);
-    }
-
-    /**
-     * Loescht die Daten aller Schritte aus der Session
-     *
-     * @return void
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
-     * @since 25.10.2010
-     */
-    protected function deleteSessionData() {
-        if (isset($_SESSION['CustomHtmlFormStep']) &&
-            isset($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID])) {
-            
-            unset($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]);
-        }
     }
 }
