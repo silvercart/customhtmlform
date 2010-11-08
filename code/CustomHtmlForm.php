@@ -933,21 +933,20 @@ class CustomHtmlForm extends Form {
 
             // Template aus dem Modul oder Standardverzeicnis holen
             if (strpos($template, '.') === false) {
-                $template = THEMES_DIR.'/'.SSViewer::current_theme().'/templates/Layout/'.$template.'.ss';
+                $workingTemplate = THEMES_DIR.'/'.SSViewer::current_theme().'/templates/Layout/'.$template.'.ss';
             } else {
-                list($module, $template) = explode('.', $template);
-                $template = $module.'/templates/forms/'.$template.'.ss';
+                list($module, $workingTemplate) = explode('.', $template);
+                $workingTemplate = $module.'/templates/forms/'.$workingTemplate.'.ss';
             }
 
-            if (Director::fileExists($template)) {
+            if (Director::fileExists($workingTemplate)) {
                 // Template wurde im Theme- oder Modulverzeichnis gefunden
-                $templatePathRel = '/'.$template;
+                $templatePathRel = '/'.$workingTemplate;
             } else {
                 // Wenn Template nicht gefunden wurde, dann im eigenen Modulverzeichnis suchen
-                $template = 'pixeltricks_module/templates/forms/'.$template.'.ss';
-
-                if (Director::fileExists($template)) {
-                    $templatePathRel = '/'.$template;
+                $workingTemplate = 'pixeltricks_module/templates/forms/'.$template.'.ss';
+                if (Director::fileExists($workingTemplate)) {
+                    $templatePathRel = '/'.$workingTemplate;
                 } else {
                     $templatePathRel = $defaultTemplatePath;
                 }
@@ -965,7 +964,8 @@ class CustomHtmlForm extends Form {
                 'Label'         => $fieldReference['title'],
                 'errorMessage'  => isset($this->errorMessages[$fieldName]) ?  $this->errorMessages[$fieldName] : '',
                 'FieldTag'      => $this->SSformFields['fields']->fieldByName($fieldName)->Field(),
-                'FieldHolder'   => $this->SSformFields['fields']->fieldByName($fieldName)->FieldHolder()
+                'FieldHolder'   => $this->SSformFields['fields']->fieldByName($fieldName)->FieldHolder(),
+                'Parent'        => $this,
             )
         )->renderWith($templatePathAbs);
 
