@@ -28,6 +28,19 @@ pixeltricks.forms.validator = function()
      */
     this.doValidation   = true;
     /**
+     * Gibt an, ob das Formular validiert wurde.
+     */
+    this.isValidated    = false;
+    /**
+     * Enthaelt das Resultat der Validierung.
+     *
+     * Kann folgende Werte enthalten:
+     *   PENDING -> es wurde noch nicht validiert
+     *   SUCCESS -> Validierung war erfolgreich
+     *   FAILURE -> Validierung ist fehlgeschlagen
+     */
+    this.validationResult = 'PENDING';
+    /**
      * Workaround fuer Selbstreferenzierung in Closures.
      */
     var that            = this;
@@ -175,15 +188,19 @@ pixeltricks.forms.validator = function()
                 );
             }
         );
+        
+        this.isValidated = true;
 
         if (errors)
         {
+            this.validationResult = 'FAILURE';
             this.toggleErrorFields(errorMessages);
 
             return false;
         }
         else
         {
+            this.validationResult = 'SUCCESS';
             this.toggleErrorFields(errorMessages);
 
             return true;
