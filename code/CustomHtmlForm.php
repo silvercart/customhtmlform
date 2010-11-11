@@ -169,8 +169,6 @@ class CustomHtmlForm extends Form {
         // -------------------------------------------------------------------
         $validatorFields    = $this->generateJsValidatorFields();
         $currentTheme       = SSViewer::current_theme();
-        Requirements::javascript('themes/'.$currentTheme.'/script/jquery.pixeltricks.forms.checkFormData.js');
-        Requirements::javascript('themes/'.$currentTheme.'/script/jquery.pixeltricks.forms.validator.js');
 
         $this->controller->addJavascriptSnippet('
             var '.$this->jsName.';
@@ -184,6 +182,7 @@ class CustomHtmlForm extends Form {
                 }
             );
             '.$this->jsName.'.setFormName(\''.$this->jsName.'\');
+            '.$this->jsName.'.bindEvents();
         ');
     }
 
@@ -202,54 +201,40 @@ class CustomHtmlForm extends Form {
 
         foreach ($this->fieldGroups as $groupName => $groupFields) {
             foreach ($groupFields as $fieldName => $fieldProperties) {
-                $checkRequirementStr = '';
+                $checkRequirementStr    = '';
+                $eventStr               = '';
 
+                // ------------------------------------------------------------
+                // Javascript Requirements erzeugen
+                // ------------------------------------------------------------
                 if (isset($fieldProperties['checkRequirements'])) {
                     foreach ($fieldProperties['checkRequirements'] as $requirement => $definition) {
-                        if (is_array($definition)) {
-
-                            $subCheckRequirementStr = '';
-                            foreach ($definition as $subRequirement => $subDefinition) {
-                                if (is_bool($subDefinition)) {
-                                    $subDefinitionStr = $subDefinition ? 'true' : 'false';
-                                } else if (is_int($subDefinition)) {
-                                    $subDefinitionStr = $subDefinition;
-                                } else {
-                                    $subDefinitionStr = "'".$subDefinition."'";
-                                }
-
-                                $subCheckRequirementStr .= $subRequirement.": ".$subDefinitionStr.",";
-                            }
-
-                            if (!empty($subCheckRequirementStr)) {
-                                $subCheckRequirementStr = substr($subCheckRequirementStr, 0, strlen($subCheckRequirementStr) - 1);
-
-                                $checkRequirementStr .= $requirement.': {';
-                                $checkRequirementStr .= $subCheckRequirementStr;
-                                $checkRequirementStr .= '},';
-                            }
-                        } else {
-                            if (is_bool($definition)) {
-                                $definitionStr = $definition ? 'true' : 'false';
-                            } else if (is_int($definition)) {
-                                $definitionStr = $definition;
-                            } else {
-                                $definitionStr = "'".$definition."'";
-                            }
-
-                            $checkRequirementStr .= $requirement.": ".$definitionStr.",\n";
-                        }
+                        $checkRequirementStr .= $this->generateJsValidatorRequirementString($requirement, $definition);
                     }
                 }
-
                 if (!empty($checkRequirementStr)) {
                     $checkRequirementStr = substr($checkRequirementStr, 0, strlen($checkRequirementStr) - 1);
+                }
+
+                // ------------------------------------------------------------
+                // Javascript Events erzeugen
+                // ------------------------------------------------------------
+                if (isset($fieldProperties['jsEvents'])) {
+                    foreach ($fieldProperties['jsEvents'] as $event => $definition) {
+                        $eventStr .= $this->generateJsValidatorEventString($event, $definition);
+                    }
+                }
+                if (!empty($eventStr)) {
+                    $eventStr = substr($eventStr, 0, strlen($eventStr) - 1);
                 }
 
                 $fieldStr .= $fieldName.': {
                     type: \''.$fieldProperties['type'].'\',
                     checkRequirements: {
                         '.$checkRequirementStr.'
+                    },
+                    events: {
+                        '.$eventStr.'
                     }
                 },';
             }
@@ -260,6 +245,163 @@ class CustomHtmlForm extends Form {
         }
 
         return $fieldStr;
+    }
+
+    /**
+     * Liefert einen String mit Javascript-Code, der sich aus den uebergebenen
+     * Parametern ergibt.
+     *
+     * @param string $requirement Der Name des Requirements
+     * @param mixed  $definition  Die Definition
+     * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 10.11.2010
+     *
+     */
+    protected function generateJsValidatorRequirementString($requirement, $definition) {
+
+        $checkRequirementStr = '';
+
+        if (is_array($definition)) {
+            $subCheckRequirementStr = '';
+            foreach ($definition as $subRequirement => $subDefinition) {
+                if (is_bool($subDefinition)) {
+                    $subDefinitionStr = $subDefinition ? 'true' : 'false';
+                } else if (is_int($subDefinition)) {
+                    $subDefinitionStr = $subDefinition;
+                } else {
+                    $subDefinitionStr = "'".$subDefinition."'";
+                }
+
+                $subCheckRequirementStr .= $subRequirement.": ".$subDefinitionStr.",";
+            }
+
+            if (!empty($subCheckRequirementStr)) {
+                $subCheckRequirementStr = substr($subCheckRequirementStr, 0, strlen($subCheckRequirementStr) - 1);
+
+                $checkRequirementStr .= $requirement.': {';
+                $checkRequirementStr .= $subCheckRequirementStr;
+                $checkRequirementStr .= '},';
+            }
+        } else {
+            if (is_bool($definition)) {
+                $definitionStr = $definition ? 'true' : 'false';
+            } else if (is_int($definition)) {
+                $definitionStr = $definition;
+            } else {
+                $definitionStr = "'".$definition."'";
+            }
+
+            $checkRequirementStr .= $requirement.": ".$definitionStr.",\n";
+        }
+
+        return $checkRequirementStr;
+    }
+
+    /**
+     * Liefert einen String mit Javascript-Code, der sich aus den uebergebenen
+     * Parametern ergibt.
+     *
+     * @param string $event      Der Name des Events
+     * @param mixed  $definition Die Definition
+     *
+     * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 10.11.2010
+     */
+    protected function generateJsValidatorEventString($event, $definition) {
+        $eventStr               = '';
+        $subEventStr            = '';
+        $eventFieldMappingsStr  = '';
+
+        if ($event == 'setValueDependantOn') {
+
+            $eventReferenceField = $definition[0];
+
+            foreach ($definition[1] as $referenceFieldValue => $mapping) {
+                
+                $mappingStr = '';
+
+                foreach ($mapping as $key => $value) {
+                    if (is_bool($value)) {
+                        $value = $value ? 'true' : 'false';
+                    } else if (is_int($value)) {
+                        $value = $value;
+                    } else {
+                        $value = "'".$value."'";
+                    }
+                    if (!empty($key)) {
+                        $mappingStr .= $key.': '.$value.',';
+                    } else {
+                        $mappingStr .= 'CustomHtmlFormEmptyValue: '.$value.',';
+                    }
+                }
+                if (!empty($mappingStr)) {
+                    $mappingStr = substr($mappingStr, 0, -1);
+                }
+
+                $eventFieldMappingsStr .= $referenceFieldValue.': {';
+                $eventFieldMappingsStr .= $mappingStr;
+                $eventFieldMappingsStr .= '},';
+            }
+            if (!empty($eventFieldMappingsStr)) {
+                $eventFieldMappingsStr = substr($eventFieldMappingsStr, 0, -1);
+            }
+
+            $eventStr .= $event.': {';
+            $eventStr .= $eventReferenceField.': {';
+            $eventStr .= $eventFieldMappingsStr;
+            $eventStr .= '}';
+            $eventStr .= '},';
+        } else {
+            $eventStr .= $event.': ';
+            $eventStr .= $this->createJsonFromStructure($definition);
+            $eventStr .= ',';
+            /*
+            $options = '';
+
+            if (!is_array($definition)) {
+                $definition = array($definition);
+            }
+
+            $optionIdx = 0;
+            foreach ($definition as $optionKey => $optionValue) {
+
+                if (!empty($optionKey)) {
+                    $options .= $optionKey.': ';
+                }
+                if (is_bool($optionValue)) {
+                    $optionValue = $optionValue ? 'true' : 'false';
+                } else if (is_int($optionValue)) {
+                    $optionValue = $optionValue;
+                } else {
+                    $optionValue = "'".$optionValue."'";
+                }
+                $options .= $optionValue.',';
+                $optionIdx++;
+            }
+
+            if (!empty($options)) {
+                $options = substr($options, 0, -1);
+            }
+            
+            if (count($definition) > 1) {
+                $eventStr .= $event.': {';
+                $eventStr .= $options;
+                $eventStr .= '},';
+            } else {
+                $eventStr .= $event.': ';
+                $eventStr .= $options;
+                $eventStr .= ',';
+            }
+            */
+        }
+        
+        return $eventStr;
     }
 
     /**
@@ -1129,5 +1271,89 @@ class CustomHtmlForm extends Form {
         } else {
             return $controller;
         }
+    }
+
+    /**
+     * Nimmt eine Array-Struktur entgegen und liefert einen String im
+     * Json-Format zurueck.
+     *
+     * @param array $structure Ein beliebig strukturiertes Array.
+     *
+     * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 11.11.2010
+     */
+    protected function createJsonFromStructure($structure) {
+        $jsonStr = '';
+
+        if (is_array($structure)) {
+            $jsonStr = $this->traverseArray($structure);
+
+            if (!empty($jsonStr)) {
+                $jsonStr = substr($jsonStr, 0, -1);
+                $jsonStr = '{'.$jsonStr.'}';
+            }
+        } else {
+            $jsonStr = $structure;
+        }
+
+        return $jsonStr;
+    }
+
+    /**
+     * Erzeugt rekursiv einen Json-String aus einem Array.
+     *
+     * @return string
+     *
+     * @param array $structure
+     * @param string $output
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 11.11.2010
+     */
+    private function traverseArray($structure) {
+
+        $output = '';
+
+        if (is_array($structure)) {
+            foreach ($structure as $structureKey => $structureValue) {
+                if ($structureKey !== '') {
+                    $output .= $structureKey.': ';
+                }
+
+                if (is_array($structureValue)) {
+
+                    $section = $this->traverseArray($structureValue, $output);
+
+                    if (!empty($section)) {
+                        $section = substr($section, 0, -1);
+                    }
+
+                    $output .= "{";
+                    $output .= $section;
+                    $output .= "},";
+                } else {
+
+                    if (is_bool($structureValue)) {
+                        $structureValue = $structureValue ? 'true' : 'false';
+                    } else if (is_int($structureValue)) {
+                    } else {
+                        if (strpos($structureValue, '"') === false &&
+                            strpos($structureValue, "'") === false) {
+                            $structureValue = "'".$structureValue."'";
+                        }
+                    }
+
+                    $output .= $structureValue.",";
+                }
+            }
+        } else {
+            $output = $structure;
+        }
+
+        return $output;
     }
 }

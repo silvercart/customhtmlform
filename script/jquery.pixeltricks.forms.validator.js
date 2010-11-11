@@ -102,6 +102,9 @@ pixeltricks.forms.validator = function()
                         }
                         else if (definition == 'checkRequirements')
                         {
+                            // ------------------------------------------------
+                            // Eingaben validieren
+                            // ------------------------------------------------
                             var fieldErrorMessages  = [];
                             var fieldErrors         = false;
 
@@ -205,6 +208,61 @@ pixeltricks.forms.validator = function()
 
             return true;
         }
+    }
+
+    /**
+     * Bindet Eventhandler in das Formular ein.
+     */
+    this.bindEvents = function() {
+
+        var errorMessages   = {};
+        var events          = new pixeltricks.forms.events();
+
+        events.setFormName(that.formName);
+        events.setNameSeparator(that.nameSeparator);
+
+        $.each(
+            this.formFields,
+            function(fieldName, definitions)
+            {
+                events.setFieldName(fieldName);
+
+                $.each(
+                    definitions,
+                    function(definition, values)
+                    {
+                        if (definition == 'events')
+                        {
+                            // ------------------------------------------------
+                            // Events einbauen
+                            // ------------------------------------------------
+                            var fieldErrorMessages  = [];
+                            var fieldErrors         = false;
+
+                            $.each(
+                                values,
+                                function(event, eventDefinition)
+                                {
+                                    events[event](eventDefinition);
+                                }
+                            );
+
+                            // Bei diesem Feld sind ein oder mehrere Fehler aufgetreten,
+                            // die hier zusammengefasst und ausgeben werdeb.
+                            if (fieldErrors)
+                            {
+                                errorMessages[fieldName] = fieldErrorMessages;
+                                errors                   = true;
+                            }
+                            else
+                            {
+                                errorMessages[fieldName] = -1;
+                            }
+                        }
+                    }
+                );
+            }
+        );
     }
 
     /**

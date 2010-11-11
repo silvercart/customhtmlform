@@ -177,6 +177,7 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
         Requirements::javascript('pixeltricks_module/script/jquery.js');
         Requirements::javascript('pixeltricks_module/script/jquery.scrollTo.min.js');
         Requirements::javascript('pixeltricks_module/script/jquery.pixeltricks.forms.checkFormData.js');
+        Requirements::javascript('pixeltricks_module/script/jquery.pixeltricks.forms.events.js');
         Requirements::javascript('pixeltricks_module/script/jquery.pixeltricks.forms.validator.js');
     }
 
