@@ -330,7 +330,7 @@ class CustomHtmlForm extends Form {
             $eventReferenceField = $definition[0];
 
             foreach ($definition[1] as $referenceFieldValue => $mapping) {
-                
+
                 $mappingStr = '';
 
                 foreach ($mapping as $key => $value) {
@@ -339,19 +339,19 @@ class CustomHtmlForm extends Form {
                     } else if (is_int($value)) {
                         $value = $value;
                     } else {
-                        $value = "'".$value."'";
+                        $value = '"'.$value.'"';
                     }
                     if (!empty($key)) {
-                        $mappingStr .= $key.': '.$value.',';
+                        $mappingStr .= '"'.$key.'": '.$value.',';
                     } else {
-                        $mappingStr .= 'CustomHtmlFormEmptyValue: '.$value.',';
+                        $mappingStr .= '"CustomHtmlFormEmptyValue": '.$value.',';
                     }
                 }
                 if (!empty($mappingStr)) {
                     $mappingStr = substr($mappingStr, 0, -1);
                 }
 
-                $eventFieldMappingsStr .= $referenceFieldValue.': {';
+                $eventFieldMappingsStr .= '"'.$referenceFieldValue.'": {';
                 $eventFieldMappingsStr .= $mappingStr;
                 $eventFieldMappingsStr .= '},';
             }
@@ -359,8 +359,8 @@ class CustomHtmlForm extends Form {
                 $eventFieldMappingsStr = substr($eventFieldMappingsStr, 0, -1);
             }
 
-            $eventStr .= $event.': {';
-            $eventStr .= $eventReferenceField.': {';
+            $eventStr .= '"'.$event.'": {';
+            $eventStr .= '"'.$eventReferenceField.'": {';
             $eventStr .= $eventFieldMappingsStr;
             $eventStr .= '}';
             $eventStr .= '},';
@@ -368,46 +368,8 @@ class CustomHtmlForm extends Form {
             $eventStr .= $event.': ';
             $eventStr .= $this->createJsonFromStructure($definition);
             $eventStr .= ',';
-            /*
-            $options = '';
-
-            if (!is_array($definition)) {
-                $definition = array($definition);
-            }
-
-            $optionIdx = 0;
-            foreach ($definition as $optionKey => $optionValue) {
-
-                if (!empty($optionKey)) {
-                    $options .= $optionKey.': ';
-                }
-                if (is_bool($optionValue)) {
-                    $optionValue = $optionValue ? 'true' : 'false';
-                } else if (is_int($optionValue)) {
-                    $optionValue = $optionValue;
-                } else {
-                    $optionValue = "'".$optionValue."'";
-                }
-                $options .= $optionValue.',';
-                $optionIdx++;
-            }
-
-            if (!empty($options)) {
-                $options = substr($options, 0, -1);
-            }
-            
-            if (count($definition) > 1) {
-                $eventStr .= $event.': {';
-                $eventStr .= $options;
-                $eventStr .= '},';
-            } else {
-                $eventStr .= $event.': ';
-                $eventStr .= $options;
-                $eventStr .= ',';
-            }
-            */
         }
-        
+
         return $eventStr;
     }
 
@@ -1263,7 +1225,7 @@ class CustomHtmlForm extends Form {
             $action = $this->preferences['submitAction'];
         } else {
             /**
-             *  
+             *
              */
             $action = $this->basePreferences['submitAction'];
         }
@@ -1372,7 +1334,7 @@ class CustomHtmlForm extends Form {
         if (is_array($structure)) {
             foreach ($structure as $structureKey => $structureValue) {
                 if ($structureKey !== '') {
-                    $output .= $structureKey.': ';
+                    $output .= '"'.$structureKey.'": ';
                 }
 
                 if (is_array($structureValue)) {
@@ -1381,11 +1343,13 @@ class CustomHtmlForm extends Form {
 
                     if (!empty($section)) {
                         $section = substr($section, 0, -1);
-                    }
 
-                    $output .= "{";
-                    $output .= $section;
-                    $output .= "},";
+                        $output .= "{";
+                        $output .= $section;
+                        $output .= "},";
+                    } else {
+                        $output .= '"",';
+                    }
                 } else {
 
                     if (is_bool($structureValue)) {
@@ -1394,7 +1358,7 @@ class CustomHtmlForm extends Form {
                     } else {
                         if (strpos($structureValue, '"') === false &&
                             strpos($structureValue, "'") === false) {
-                            $structureValue = "'".$structureValue."'";
+                            $structureValue = '"'.$structureValue.'"';
                         }
                     }
 
