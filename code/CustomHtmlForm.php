@@ -93,8 +93,10 @@ class CustomHtmlForm extends Form {
      * @var array
      */
     protected $basePreferences  = array(
-        'submitButtonTitle'     => 'Abschicken',
-        'submitAction'          => 'customHtmlFormSubmit'
+        'submitButtonTitle'         => 'Abschicken',
+        'submitAction'              => 'customHtmlFormSubmit',
+        'doJsValidation'            => true,
+        'doJsValidationScrolling'   => true
     );
 
     /**
@@ -150,6 +152,8 @@ class CustomHtmlForm extends Form {
         // Gruppenstruktur erzeugen
         if (isset($this->formFields)) {
             $this->fieldGroups['formFields'] = $this->formFields;
+        } else {
+            $this->fieldGroups['formFields'] = array();
         }
 
         $this->name               = $this->class.'_'.$name.'_'.self::$instanceNr;
@@ -167,23 +171,26 @@ class CustomHtmlForm extends Form {
         // Javascript-Validator laden und initialisieren.
         // Einbindung ins Formular erfolgt in Methode "FormAttributes()".
         // -------------------------------------------------------------------
-        $validatorFields    = $this->generateJsValidatorFields();
-        $currentTheme       = SSViewer::current_theme();
-
-        $this->controller->addJavascriptSnippet('
-            var '.$this->jsName.';
-        ');
-
-        $this->controller->addJavascriptOnloadSnippet('
-            '.$this->jsName.' = new pixeltricks.forms.validator();
-            '.$this->jsName.'.setFormFields(
-                {
-                    '.$validatorFields.'
-                }
-            );
-            '.$this->jsName.'.setFormName(\''.$this->jsName.'\');
-            '.$this->jsName.'.bindEvents();
-        ');
+        if ($this->getDoJsValidation()) {
+            $validatorFields    = $this->generateJsValidatorFields();
+            $currentTheme       = SSViewer::current_theme();
+        
+            $this->controller->addJavascriptSnippet('
+                var '.$this->jsName.';
+            ');
+    
+            $this->controller->addJavascriptOnloadSnippet('
+                '.$this->jsName.' = new pixeltricks.forms.validator();
+                '.$this->jsName.'.setFormFields(
+                    {
+                        '.$validatorFields.'
+                    }
+                );
+                '.$this->jsName.'.setFormName(\''.$this->jsName.'\');
+                '.$this->jsName.'.setPreference(\'doJsValidationScrolling\', '.($this->getDoJsValidationScrolling() ? 'true' : 'false').');
+                '.$this->jsName.'.bindEvents();
+            ');
+        }
     }
 
     /**
@@ -1194,6 +1201,50 @@ class CustomHtmlForm extends Form {
         }
 
         return $title;
+    }
+    
+    /**
+     * Gibt zurueck, ob die Javascript-Validierung des Formulars gewuenscht
+     * ist.
+     *
+     * @return bool
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 18.11.2010
+     */
+    protected function getDoJsValidation() {
+        $doJsValidation = true;
+
+        if (isset($this->preferences['doJsValidation'])) {
+            $doJsValidation = $this->preferences['doJsValidation'];
+        } else {
+            $doJsValidation = $this->basePreferences['doJsValidation'];
+        }
+
+        return $doJsValidation;
+    }
+    
+    /**
+     * Gibt zurueck, ob die Javascript-Validierung zum ersten Fehler im
+     * Formular scrollen soll.
+     *
+     * @return bool
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 18.11.2010
+     */
+    protected function getDoJsValidationScrolling() {
+        $doJsValidationScrolling = true;
+
+        if (isset($this->preferences['doJsValidationScrolling'])) {
+            $doJsValidationScrolling = $this->preferences['doJsValidationScrolling'];
+        } else {
+            $doJsValidationScrolling = $this->basePreferences['doJsValidationScrolling'];
+        }
+
+        return $doJsValidationScrolling;
     }
 
     /**

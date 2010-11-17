@@ -40,10 +40,20 @@ pixeltricks.forms.validator = function()
      *   FAILURE -> Validierung ist fehlgeschlagen
      */
     this.validationResult = 'PENDING';
+    
+    /**
+     * Enthaelt die Voreinstellungen.
+     *
+     * @var array
+     */
+    this.preferences = {
+        doJsValidationScrolling: true
+    };
+    
     /**
      * Workaround fuer Selbstreferenzierung in Closures.
      */
-    var that            = this;
+    var that = this;
 
     /**
      * Einstiegsfunktion: prueft alle angegebenen Felder und liefert eine
@@ -353,7 +363,10 @@ pixeltricks.forms.validator = function()
                 }
             }
         );
-        $.scrollTo($('#' + that.formName), 400);
+        
+        if (that.preferences.doJsValidationScrolling) {
+            $.scrollTo($('#' + that.formName), 400);
+        }
     }
 
     /**
@@ -443,5 +456,21 @@ pixeltricks.forms.validator = function()
     this.enableValidation = function()
     {
         this.doValidation = true;
+    }
+    
+    /**
+     * Setzt den Wert fuer eine Voreinstellung.
+     *
+     * @param preference Name der Voreinstellung
+     * @param value      Wert der Voreinstellung
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 17.11.2010
+     */
+    this.setPreference = function(preference, value) {
+        that.preferences[preference] = value;
     }
 }

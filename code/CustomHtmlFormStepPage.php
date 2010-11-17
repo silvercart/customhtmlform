@@ -99,7 +99,9 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     public function init() {
         $this->initialiseSessionData();
         $this->nrOfSteps = $this->getNumberOfSteps();
-        $this->registerCurrentFormStep();
+
+        $formInstance = $this->registerCurrentFormStep();
+        $this->processCurrentFormStep($formInstance);
 
         parent::init();
     }
@@ -238,7 +240,9 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         for ($idx = $this->defaultStartStep; $idx < $this->getNumberOfSteps(); $idx++) {
             $stepData = $this->getStepData($idx);
 
-            $combinedData = array_merge($combinedData, $stepData);
+            if (is_array($stepData)) {
+                $combinedData = array_merge($combinedData, $stepData);
+            }
         }
 
         return $combinedData;
@@ -459,16 +463,40 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     /**
      * Registriert das Formular fuer den aktuellen Schritt.
      *
-     * @return void
+     * @return Object
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
      * @copyright 2010 pxieltricks GmbH
      * @since 25.10.2010
      */
     protected function registerCurrentFormStep() {
-        $formClassName = $this->basename.$this->getCurrentStep();
+        $formClassName  = $this->basename.$this->getCurrentStep();
+        $formInstance   = new $formClassName($this);
 
-        $this->registerCustomHtmlForm($formClassName, new $formClassName($this));
+        $this->registerCustomHtmlForm($formClassName, $formInstance);
+        
+        return $formInstance;
+    }
+
+    /**
+     * Fuehrt eine Prozessormethode auf dem aktuellen Formularobjekt aus,
+     * wenn diese vorhanden ist.
+     *
+     * @param Object $formInstance Die Instanz des aktuellen Formularobjekts.
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 16.11.2010
+     */
+    protected function processCurrentFormStep($formInstance) {
+        $formClassName  = $this->basename.$this->getCurrentStep();
+        $checkClass     = new ReflectionClass($formClassName);
+        
+        if ($checkClass->hasMethod('process')) {
+            $formInstance->process();
+        }
     }
 
     /**
@@ -528,9 +556,12 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
             return $this->nrOfSteps;
         }
 
-        $themePath      = THEMES_DIR.'/'.SSViewer::current_theme().'/templates/Layout/';
+        $themePath      = array(
+            THEMES_DIR.'/'.SSViewer::current_theme().'/templates/Layout/'
+        );
         $increaseStep   = true;
         $stepIdx        = 1;
+        $pathIdx        = 0;
 
          while ($increaseStep) {
             
