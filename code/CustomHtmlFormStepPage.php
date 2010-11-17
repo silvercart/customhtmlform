@@ -86,6 +86,20 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @var integer
      */
     protected $currentStep;
+    
+    /**
+     * Voreinstellungen fuer die Formularreihe.
+     *
+     * @return array
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 17.11.2010
+     */
+    protected $basePreferences = array(
+        'templateDir' => '' // Das Verzeichnis, in dem die Templates fuer die
+                            // Formularreihe gesucht werden sollen
+    );
 
     /**
      * Initialisiert die Formularreihe.
@@ -555,10 +569,8 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         if ($this->nrOfSteps > -1) {
             return $this->nrOfSteps;
         }
-
-        $themePath      = array(
-            THEMES_DIR.'/'.SSViewer::current_theme().'/templates/Layout/'
-        );
+        
+        $themePath      = $this->getTemplateDir();
         $increaseStep   = true;
         $stepIdx        = 1;
         $pathIdx        = 0;
@@ -578,5 +590,28 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         }
 
         return ($stepIdx - 1);
+    }
+    
+    /**
+     * Wenn das Templateverzeichnis in den Preferences definiert ist, wird es
+     * zurueckgeliefert.
+     *
+     * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 17.11.2010
+     */
+    protected function getTemplateDir() {
+        $templateDir = '';
+        
+        if (isset($this->preferences['templateDir']) &&
+            !empty($this->preferences['templateDir'])) {
+            $templateDir = $this->preferences['templateDir'];
+        } else {
+            $templateDir = THEMES_DIR.'/'.SSViewer::current_theme().'/templates/Layout/';
+        }
+        
+        return $templateDir;
     }
 }
