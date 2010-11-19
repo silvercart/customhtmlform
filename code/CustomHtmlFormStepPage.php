@@ -36,7 +36,7 @@ class CustomHtmlFormStepPage extends Page {
      * @since 19.11.2010
      */
     public $allowedOutsideReferers = array(
-
+		'/de/cgi-bin/webscr'
     );
     
     /**
@@ -662,17 +662,18 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
             $callFromOutside = false;
         }
 
-        print_r($refererUri);
-        exit();
-
         // Pruefen, ob der Aufruf durch ein Whitelist-Mitglied durchgefuehrt
         // wurde.
         if ($callFromOutside) {
             foreach ($this->allowedOutsideReferers as $allowedOutsideReferer) {
-                $parsedRefererUrl = parse_url($allowedOutsideReferer);
-                $refererUri       = $parsedRefererUrl['path'];
+                $allowedRefererUrl = parse_url($allowedOutsideReferer);
+                $allowedRefererUri = $allowedRefererUrl['path'];
 
-                if ($refererUri === substr($requestUri, 0, strlen($refererUri))) {
+				if (substr($allowedRefererUri, -1) != '/') {
+					$allowedRefererUri .= '/';
+				}
+
+                if ($refererUri === substr($allowedRefererUri, 0, strlen($refererUri))) {
                     $callFromOutside = false;
                     break;
                 }
