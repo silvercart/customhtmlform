@@ -233,15 +233,32 @@ class CustomHtmlForm extends Form {
                     $eventStr = substr($eventStr, 0, strlen($eventStr) - 1);
                 }
 
-                $fieldStr .= $fieldName.': {
-                    type: \''.$fieldProperties['type'].'\',
-                    checkRequirements: {
-                        '.$checkRequirementStr.'
-                    },
-                    events: {
-                        '.$eventStr.'
-                    }
-                },';
+                // ------------------------------------------------------------
+                // Zusaetzliche Attribute einfuegen
+                // ------------------------------------------------------------
+                if (isset($fieldProperties['title'])) {
+                    $titleField = 'title: "'.$fieldProperties['title'].'",';
+                } else {
+                    $titleField = '';
+                }
+
+                $fieldStr .= sprintf(
+                    "%s: {
+                        type: \"%s\",
+                        %s
+                        checkRequirements: {
+                            %s
+                        },
+                        events: {
+                            %s
+                        }
+                    },",
+                    $fieldName,
+                    $fieldProperties['type'],
+                    $titleField,
+                    $checkRequirementStr,
+                    $eventStr
+                );
             }
         }
 
@@ -366,44 +383,6 @@ class CustomHtmlForm extends Form {
             $eventStr .= $event.': ';
             $eventStr .= $this->createJsonFromStructure($definition);
             $eventStr .= ',';
-            /*
-            $options = '';
-
-            if (!is_array($definition)) {
-                $definition = array($definition);
-            }
-
-            $optionIdx = 0;
-            foreach ($definition as $optionKey => $optionValue) {
-
-                if (!empty($optionKey)) {
-                    $options .= $optionKey.': ';
-                }
-                if (is_bool($optionValue)) {
-                    $optionValue = $optionValue ? 'true' : 'false';
-                } else if (is_int($optionValue)) {
-                    $optionValue = $optionValue;
-                } else {
-                    $optionValue = "'".$optionValue."'";
-                }
-                $options .= $optionValue.',';
-                $optionIdx++;
-            }
-
-            if (!empty($options)) {
-                $options = substr($options, 0, -1);
-            }
-            
-            if (count($definition) > 1) {
-                $eventStr .= $event.': {';
-                $eventStr .= $options;
-                $eventStr .= '},';
-            } else {
-                $eventStr .= $event.': ';
-                $eventStr .= $options;
-                $eventStr .= ',';
-            }
-            */
         }
         
         return $eventStr;
@@ -841,13 +820,21 @@ class CustomHtmlForm extends Form {
                 $fieldDefinition['selectedValue'],
                 $fieldDefinition['form']
             );
-        } else if ($fieldDefinition['type'] == 'TextField') {
+        } else if ($fieldDefinition['type'] == 'TextField' ||
+                   $fieldDefinition['type'] == 'EmailField') {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
                 $fieldDefinition['value'],
                 $fieldDefinition['maxLength'],
                 $fieldDefinition['form']
+            );
+        } else if ($fieldDefinition['type'] == 'PasswordField') {
+            $field = new $fieldDefinition['type'](
+                $fieldName,
+                $fieldDefinition['title'],
+                $fieldDefinition['value'],
+                $fieldDefinition['maxLength']
             );
         } else if ($fieldDefinition['type'] == 'DateField') {
             $field = new $fieldDefinition['type'](
@@ -1111,7 +1098,7 @@ class CustomHtmlForm extends Form {
             array(
                 'FormName'      => $this->name,
                 'FieldName'     => $fieldName,
-                'Label'         => $fieldReference['title'],
+                'Label'         => isset($fieldReference['title']) ? $fieldReference['title'] : '',
                 'errorMessage'  => isset($this->errorMessages[$fieldName]) ?  $this->errorMessages[$fieldName] : '',
                 'FieldTag'      => $this->SSformFields['fields']->fieldByName($fieldName)->Field(),
                 'FieldHolder'   => $this->SSformFields['fields']->fieldByName($fieldName)->FieldHolder(),

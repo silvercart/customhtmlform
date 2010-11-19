@@ -343,9 +343,15 @@ class CheckFormData {
             $isEqual = false;
         }
 
+        if (isset($parameters['fieldTitle'])) {
+            $refererField = $parameters['fieldTitle'];
+        } else {
+            $refererField = $parameters['fieldName'];
+        }
+
         return array(
             'success'       => $isEqual,
-            'errorMessage'  => sprintf(_t('Form.REQUIRES_SAME_VALUE_AS_IN_FIELD', 'Bitte geben Sie den gleichen Wert ein wie im Feld "%s".'), $parameters['fieldName'])
+            'errorMessage'  => sprintf(_t('Form.REQUIRES_SAME_VALUE_AS_IN_FIELD', 'Bitte geben Sie den gleichen Wert ein wie im Feld "%s".'), $refererField)
         );
     }
 
@@ -375,9 +381,15 @@ class CheckFormData {
             $isNotEqual = false;
         }
 
+        if (isset($parameters['fieldTitle'])) {
+            $refererField = $parameters['fieldTitle'];
+        } else {
+            $refererField = $parameters['fieldName'];
+        }
+
         return array(
             'success'       => $isNotEqual,
-            'errorMessage'  => sprintf(_t('Form.REQUIRES_OTHER_VALUE_AS_IN_FIELD', 'Dieses Feld darf nicht den gleichen Wert wie das Feld "%s" haben.'), $parameters['fieldName'])
+            'errorMessage'  => sprintf(_t('Form.REQUIRES_OTHER_VALUE_AS_IN_FIELD', 'Dieses Feld darf nicht den gleichen Wert wie das Feld "%s" haben.'), $refererField)
         );
     }
 

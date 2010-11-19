@@ -24,6 +24,20 @@ class CustomHtmlFormStepPage extends Page {
         'showCancelLink'    => 'Boolean(1)',
         'cancelPageID'      => 'Varchar(255)'
     );
+
+    /**
+     * Liste von URLs, die die Stepreihe aufrufen duerfen, ohne dass diese
+     * sich zuruecksetzt.
+     *
+     * @var array
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 19.11.2010
+     */
+    public $allowedOutsideReferers = array(
+
+    );
     
     /**
      * Erweitert die Eingabemaske des Admins.
@@ -36,9 +50,9 @@ class CustomHtmlFormStepPage extends Page {
      */
     public function getCMSFields() {
 
-        $basenameField          = new TextField('basename', 'Basisname für Formular Objekt- und Templatedateien: ');
-        $showCancelLinkField    = new CheckboxField('showCancelLink', 'Abbrechen Link anzeigen');
-        $cancelLinkField        = new TreeDropdownField('cancelPageID', 'Auf welche Seite soll der Abbrechen-Link fuehren: ', 'SiteTree');
+        $basenameField       = new TextField('basename', 'Basisname für Formular Objekt- und Templatedateien: ');
+        $showCancelLinkField = new CheckboxField('showCancelLink', 'Abbrechen Link anzeigen');
+        $cancelLinkField     = new TreeDropdownField('cancelPageID', 'Auf welche Seite soll der Abbrechen-Link fuehren: ', 'SiteTree');
 
         $fields = parent::getCMSFields();
         $fields->addFieldToTab('Root.Content.MultistepConfiguration', $basenameField);
@@ -111,6 +125,11 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @since 25.10.2010
      */
     public function init() {
+
+        if ($this->isStepPageCalledFromOutside()) {
+            $this->deleteSessionData();
+        }
+
         $this->initialiseSessionData();
         $this->nrOfSteps = $this->getNumberOfSteps();
 
@@ -613,5 +632,53 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         }
         
         return $templateDir;
+    }
+
+    /**
+     * Gibt an, ob die Step-Seite sich selbst aufgerufen hat, oder ob der
+     * Aufruf von einer anderen Seite aus erfolgte.
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 19.11.2010
+     */
+    protected function isStepPageCalledFromOutside() {
+        $callFromOutside = true;
+
+        $parsedRefererUrl = parse_url($_SERVER['HTTP_REFERER']);
+        $refererUri       = $parsedRefererUrl['path'];
+        $requestUri       = $_SERVER['REQUEST_URI'];
+
+        if (substr($refererUri, -1) != '/') {
+            $refererUri .= '/';
+        }
+        if (substr($requestUri, -1) != '/') {
+            $requestUri .= '/';
+        }
+
+        if ($refererUri === substr($requestUri, 0, strlen($refererUri))) {
+            $callFromOutside = false;
+        }
+
+        print_r($refererUri);
+        exit();
+
+        // Pruefen, ob der Aufruf durch ein Whitelist-Mitglied durchgefuehrt
+        // wurde.
+        if ($callFromOutside) {
+            foreach ($this->allowedOutsideReferers as $allowedOutsideReferer) {
+                $parsedRefererUrl = parse_url($allowedOutsideReferer);
+                $refererUri       = $parsedRefererUrl['path'];
+
+                if ($refererUri === substr($requestUri, 0, strlen($refererUri))) {
+                    $callFromOutside = false;
+                    break;
+                }
+            }
+        }
+
+        return $callFromOutside;
     }
 }
