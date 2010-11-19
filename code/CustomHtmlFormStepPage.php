@@ -34,7 +34,7 @@ class CustomHtmlFormStepPage extends Page {
      * @copyright 2010 pxieltricks GmbH
      * @since 25.10.2010
      */
-    public function  getCMSFields() {
+    public function getCMSFields() {
 
         $basenameField          = new TextField('basename', 'Basisname für Formular Objekt- und Templatedateien: ');
         $showCancelLinkField    = new CheckboxField('showCancelLink', 'Abbrechen Link anzeigen');
