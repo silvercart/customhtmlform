@@ -605,8 +605,9 @@ class CustomHtmlForm extends Form {
                             $requirement == 'mustNotEqual') {
 
                             $requiredValue = array(
-                                'fieldName' => $groupFields[$requiredValue]['title'] ? $groupFields[$requiredValue]['title'] : $requiredValue,
-                                'value'     => $data[$requiredValue]
+                                'fieldName'  => $requiredValue,
+                                'fieldTitle' => $groupFields[$requiredValue]['title'] ? $groupFields[$requiredValue]['title'] : $requiredValue,
+                                'value'      => $data[$requiredValue]
                             );
                         }
 
