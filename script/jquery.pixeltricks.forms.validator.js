@@ -47,7 +47,8 @@ pixeltricks.forms.validator = function()
      * @var array
      */
     this.preferences = {
-        doJsValidationScrolling: true
+        doJsValidationScrolling: true,
+        showJsValidationErrorMessages: true
     };
     
     /**
@@ -348,18 +349,22 @@ pixeltricks.forms.validator = function()
                         messages != -1)
                 {
                     // Box ist unsichtbar, aber Fehler vorhanden
-                    $('#' + errorFieldID).fadeIn(300, function() {});
-                    $('#' + fieldBoxID).addClass('error');
+                    if (that.preferences.showJsValidationErrorMessages) {
+                        $('#' + errorFieldID).fadeIn(300, function() {});
+                        $('#' + fieldBoxID).addClass('error');
+                    }
                 }
                 else if ( ($('#' + errorFieldID).css('display') == 'block' ||
                            $('#' + errorFieldID).css('display') == 'inline') &&
                          messages != -1)
                 {
                     // Box ist sichtbar, und es gibt noch Fehler
-                    $('#' + errorFieldID).fadeTo(
-                        200,
-                        1
-                    );
+                    if (that.preferences.showJsValidationErrorMessages) {
+                        $('#' + errorFieldID).fadeTo(
+                            200,
+                            1
+                        );
+                    }
                 }
             }
         );
@@ -378,8 +383,10 @@ pixeltricks.forms.validator = function()
             this.formFields,
             function(fieldName, definitions)
             {
-                var fieldID = that.formName + that.nameSeparator + fieldName + that.nameSeparator + 'Error';
+                var fieldID    = that.formName + that.nameSeparator + fieldName + that.nameSeparator + 'Error';
+                var fieldBoxID = that.formName + that.nameSeparator + fieldName + that.nameSeparator + 'Box';
                 $('#' + fieldID).remove();
+                $('#' + fieldBoxID).removeClass('error');
             }
         );
     }

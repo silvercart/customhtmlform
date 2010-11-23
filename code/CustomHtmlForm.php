@@ -93,10 +93,11 @@ class CustomHtmlForm extends Form {
      * @var array
      */
     protected $basePreferences  = array(
-        'submitButtonTitle'         => 'Abschicken',
-        'submitAction'              => 'customHtmlFormSubmit',
-        'doJsValidation'            => true,
-        'doJsValidationScrolling'   => true
+        'submitButtonTitle'             => 'Abschicken',
+        'submitAction'                  => 'customHtmlFormSubmit',
+        'doJsValidation'                => true,
+        'doJsValidationScrolling'       => true,
+        'showJsValidationErrorMessages' => true
     );
 
     /**
@@ -187,6 +188,7 @@ class CustomHtmlForm extends Form {
             );
             '.$this->jsName.'.setFormName(\''.$this->jsName.'\');
             '.$this->jsName.'.setPreference(\'doJsValidationScrolling\', '.($this->getDoJsValidationScrolling() ? 'true' : 'false').');
+            '.$this->jsName.'.setPreference(\'showJsValidationErrorMessages\', '.($this->getShowJsValidationErrorMessages() ? 'true' : 'false').');
             '.$this->jsName.'.bindEvents();
         ');
     }
@@ -1234,6 +1236,28 @@ class CustomHtmlForm extends Form {
         }
 
         return $doJsValidationScrolling;
+    }
+
+    /**
+     * Gibt zurueck, ob die Javascript-Fehlermeldungen eingeblendet werden
+     * sollen.
+     *
+     * @return bool
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 23.11.2010
+     */
+    protected function getShowJsValidationErrorMessages() {
+        $showMessages = true;
+
+        if (isset($this->preferences['showJsValidationErrorMessages'])) {
+            $showMessages = $this->preferences['showJsValidationErrorMessages'];
+        } else {
+            $showMessages = $this->basePreferences['showJsValidationErrorMessages'];
+        }
+
+        return $showMessages;
     }
 
     /**
