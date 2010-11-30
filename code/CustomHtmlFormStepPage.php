@@ -36,7 +36,7 @@ class CustomHtmlFormStepPage extends Page {
      * @since 19.11.2010
      */
     public $allowedOutsideReferers = array(
-		'/de/cgi-bin/webscr'
+        '/de/cgi-bin/webscr'
     );
     
     /**
@@ -114,6 +114,28 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         'templateDir' => '' // Das Verzeichnis, in dem die Templates fuer die
                             // Formularreihe gesucht werden sollen
     );
+
+    /**
+     * Enthaelt die Namen der Schritte.
+     *
+     * @var array
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 29.11.2010
+     */
+    protected $stepNames = array();
+
+    /**
+     * Speichert fuer jeden Schritt, ob er sichtbar ist oder nicht.
+     *
+     * @var array
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 29.11.2010
+     */
+    protected $stepVisibility = array();
 
     /**
      * Initialisiert die Formularreihe.
@@ -494,6 +516,66 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
+     * Gibt den Titel des angegegeben Schrittes zurueck.
+     *
+     * @param int $stepNr Der Index des Schrittes, dessen Name geliefert werden
+     *                    soll.
+     *
+     * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 29.11.2010
+     */
+    public function getStepName($stepNr) {
+        $stepName = '';
+
+        if (isset($this->stepNames[$stepNr])) {
+            $stepName = $this->stepNames[$stepNr];
+        }
+
+        return $stepName;
+    }
+
+    /**
+     * Liefert alle Schritte als DataObjectSet zurueck.
+     *
+     * @return DataObjectSet
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 29.11.2010
+     */
+    public function getStepList() {
+        $stepList       = array();
+        $completedSteps = $this->getCompletedSteps();
+
+        for ($stepIdx = 1; $stepIdx <= $this->getNumberOfSteps(); $stepIdx++) {
+
+            if (in_array($stepIdx, $completedSteps)) {
+                $completed = true;
+            } else {
+                $completed = false;
+            }
+
+            if ($stepIdx == $this->getCurrentStep()) {
+                $isCurrentStep = true;
+            } else {
+                $isCurrentStep = false;
+            }
+
+            $stepList['step'.$stepIdx] = array(
+                'title'           => $this->stepNames[$stepIdx],
+                'stepIsVisible'   => $this->stepVisibility[$stepIdx],
+                'stepIsCompleted' => $completed,
+                'isCurrentStep'   => $isCurrentStep
+            );
+        }
+
+        return new DataObjectSet($stepList);
+    }
+
+    /**
      * Registriert das Formular fuer den aktuellen Schritt.
      *
      * @return Object
@@ -595,12 +677,17 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         $pathIdx        = 0;
 
          while ($increaseStep) {
+            $stepClassName = $this->basename.$stepIdx;
             
             if (!Director::fileExists($themePath.$this->basename.$stepIdx.'.ss')) {
                 $increaseStep = false;
             }
-            if (!class_exists($this->basename.$stepIdx)) {
+            if (!class_exists($stepClassName)) {
                 $increaseStep = false;
+            } else {
+                $stepClass                      = new $stepClassName($this, null, null, true);
+                $this->stepNames[$stepIdx]      = $stepClass->getStepTitle();
+                $this->stepVisibility[$stepIdx] = $stepClass->getStepIsVisible();
             }
 
             if ($increaseStep) {
@@ -608,7 +695,9 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
             }
         }
 
-        return ($stepIdx - 1);
+        $this->nrOfSteps = $stepIdx - 1;
+
+        return $this->nrOfSteps;
     }
     
     /**
@@ -647,35 +736,37 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     protected function isStepPageCalledFromOutside() {
         $callFromOutside = true;
 
-        $parsedRefererUrl = parse_url($_SERVER['HTTP_REFERER']);
-        $refererUri       = $parsedRefererUrl['path'];
-        $requestUri       = $_SERVER['REQUEST_URI'];
+        if (isset($_SERVER['HTTP_REFERER'])) {
+            $parsedRefererUrl = parse_url($_SERVER['HTTP_REFERER']);
+            $refererUri       = $parsedRefererUrl['path'];
+            $requestUri       = $_SERVER['REQUEST_URI'];
 
-        if (substr($refererUri, -1) != '/') {
-            $refererUri .= '/';
-        }
-        if (substr($requestUri, -1) != '/') {
-            $requestUri .= '/';
-        }
+            if (substr($refererUri, -1) != '/') {
+                $refererUri .= '/';
+            }
+            if (substr($requestUri, -1) != '/') {
+                $requestUri .= '/';
+            }
 
-        if ($refererUri === substr($requestUri, 0, strlen($refererUri))) {
-            $callFromOutside = false;
-        }
+            if ($refererUri === substr($requestUri, 0, strlen($refererUri))) {
+                $callFromOutside = false;
+            }
 
-        // Pruefen, ob der Aufruf durch ein Whitelist-Mitglied durchgefuehrt
-        // wurde.
-        if ($callFromOutside) {
-            foreach ($this->allowedOutsideReferers as $allowedOutsideReferer) {
-                $allowedRefererUrl = parse_url($allowedOutsideReferer);
-                $allowedRefererUri = $allowedRefererUrl['path'];
+            // Pruefen, ob der Aufruf durch ein Whitelist-Mitglied durchgefuehrt
+            // wurde.
+            if ($callFromOutside) {
+                foreach ($this->allowedOutsideReferers as $allowedOutsideReferer) {
+                    $allowedRefererUrl = parse_url($allowedOutsideReferer);
+                    $allowedRefererUri = $allowedRefererUrl['path'];
 
-				if (substr($allowedRefererUri, -1) != '/') {
-					$allowedRefererUri .= '/';
-				}
+                    if (substr($allowedRefererUri, -1) != '/') {
+                        $allowedRefererUri .= '/';
+                    }
 
-                if ($refererUri === substr($allowedRefererUri, 0, strlen($refererUri))) {
-                    $callFromOutside = false;
-                    break;
+                    if ($refererUri === substr($allowedRefererUri, 0, strlen($refererUri))) {
+                        $callFromOutside = false;
+                        break;
+                    }
                 }
             }
         }

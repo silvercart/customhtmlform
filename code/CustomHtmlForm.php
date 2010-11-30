@@ -97,7 +97,9 @@ class CustomHtmlForm extends Form {
         'submitAction'                  => 'customHtmlFormSubmit',
         'doJsValidation'                => true,
         'doJsValidationScrolling'       => true,
-        'showJsValidationErrorMessages' => true
+        'showJsValidationErrorMessages' => true,
+        'stepTitle'                     => '',
+        'stepIsVisible'                 => true
     );
 
     /**
@@ -114,6 +116,7 @@ class CustomHtmlForm extends Form {
      * @param ContentController $controller  Das aufrufende Controller-Objekt
      * @param array             $params      Optionale Parameter
      * @param array             $preferences Optionale Voreinstellungen
+     * @param bool              $barebone    Gibt an, ob das Formular nur instanziiert werden soll, oder ob es tatsaechlich benutzt wird.
      *
      * @return void
      *
@@ -121,7 +124,7 @@ class CustomHtmlForm extends Form {
      * @copyright 2010 pxieltricks GmbH
      * @since 25.10.2010
      */
-    public function __construct($controller, $params = null, $preferences = null) {
+    public function __construct($controller, $params = null, $preferences = null, $barebone = false) {
         self::$instanceNr++;
 
         $this->controller   = $controller;
@@ -138,7 +141,9 @@ class CustomHtmlForm extends Form {
             }
         }
 
-        $this->fillInFieldValues();
+        if (!$barebone) {
+            $this->fillInFieldValues();
+        }
 
         parent::__construct(
             $this->getFormController($controller, $preferences),
@@ -172,25 +177,27 @@ class CustomHtmlForm extends Form {
         // Javascript-Validator laden und initialisieren.
         // Einbindung ins Formular erfolgt in Methode "FormAttributes()".
         // -------------------------------------------------------------------
-        $validatorFields    = $this->generateJsValidatorFields();
-        $currentTheme       = SSViewer::current_theme();
-    
-        $this->controller->addJavascriptSnippet('
-            var '.$this->jsName.';
-        ');
+        if (!$barebone) {
+            $validatorFields    = $this->generateJsValidatorFields();
+            $currentTheme       = SSViewer::current_theme();
+        
+            $this->controller->addJavascriptSnippet('
+                var '.$this->jsName.';
+            ');
 
-        $this->controller->addJavascriptOnloadSnippet('
-            '.$this->jsName.' = new pixeltricks.forms.validator();
-            '.$this->jsName.'.setFormFields(
-                {
-                    '.$validatorFields.'
-                }
-            );
-            '.$this->jsName.'.setFormName(\''.$this->jsName.'\');
-            '.$this->jsName.'.setPreference(\'doJsValidationScrolling\', '.($this->getDoJsValidationScrolling() ? 'true' : 'false').');
-            '.$this->jsName.'.setPreference(\'showJsValidationErrorMessages\', '.($this->getShowJsValidationErrorMessages() ? 'true' : 'false').');
-            '.$this->jsName.'.bindEvents();
-        ');
+            $this->controller->addJavascriptOnloadSnippet('
+                '.$this->jsName.' = new pixeltricks.forms.validator();
+                '.$this->jsName.'.setFormFields(
+                    {
+                        '.$validatorFields.'
+                    }
+                );
+                '.$this->jsName.'.setFormName(\''.$this->jsName.'\');
+                '.$this->jsName.'.setPreference(\'doJsValidationScrolling\', '.($this->getDoJsValidationScrolling() ? 'true' : 'false').');
+                '.$this->jsName.'.setPreference(\'showJsValidationErrorMessages\', '.($this->getShowJsValidationErrorMessages() ? 'true' : 'false').');
+                '.$this->jsName.'.bindEvents();
+            ');
+        }
     }
 
     /**
@@ -1157,20 +1164,62 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-	 * Liefert den Name des Formulars.
+     * Liefert den Name des Formulars.
      *
      * @return string
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
      * @copyright 2010 pxieltricks GmbH
      * @since 25.10.2010
-	 */
+     */
     public function FormName() {
         if ($this->htmlID) {
             return $this->htmlID;
         } else {
             return $this->name;
         }
+    }
+    
+    /**
+     * Gibt den Titel des Formulars zurueck.
+     *
+     * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 29.11.2010
+     */
+    public function getStepTitle() {
+        $title = '';
+
+        if (isset($this->preferences['stepTitle'])) {
+            $title = $this->preferences['stepTitle'];
+        } else {
+            $title = $this->basePreferences['stepTitle'];
+        }
+
+        return $title;
+    }
+
+    /**
+     * Gibt zurueck, ob das Formular sichtbar ist.
+     *
+     * @return boolean
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 29.11.2010
+     */
+    public function getStepIsVisible() {
+        $isVisible = '';
+
+        if (isset($this->preferences['stepIsVisible'])) {
+            $isVisible = $this->preferences['stepIsVisible'];
+        } else {
+            $isVisible = $this->basePreferences['stepIsVisible'];
+        }
+
+        return $isVisible;
     }
 
     /**
@@ -1193,7 +1242,7 @@ class CustomHtmlForm extends Form {
 
         return $title;
     }
-    
+
     /**
      * Gibt zurueck, ob die Javascript-Validierung des Formulars gewuenscht
      * ist.
