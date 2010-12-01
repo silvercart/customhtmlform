@@ -36,7 +36,8 @@ class CustomHtmlFormStepPage extends Page {
      * @since 19.11.2010
      */
     public $allowedOutsideReferers = array(
-        '/de/cgi-bin/webscr'
+        '/de/cgi-bin/webscr',
+        '/checkout/customHtmlFormSubmit'
     );
     
     /**
