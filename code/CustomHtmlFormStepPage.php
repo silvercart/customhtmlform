@@ -223,11 +223,20 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @since 25.10.2010
      */
     public function InsertCustomHtmlForm($formIdentifier = null) {
+        global $project;
+
         if ($formIdentifier === null) {
             $formIdentifier = $this->basename.$this->getCurrentStep();
         }
 
-        return parent::InsertCustomHtmlForm($formIdentifier);
+        $projectPrefix          = ucfirst($project);
+        $extendedFormIdentifier = $projectPrefix.$formIdentifier;
+
+        if (class_exists($extendedFormIdentifier)) {
+            return parent::InsertCustomHtmlForm($extendedFormIdentifier);
+        } else {
+            return parent::InsertCustomHtmlForm($formIdentifier);
+        }
     }
 
     /**
@@ -585,10 +594,19 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @since 25.10.2010
      */
     protected function registerCurrentFormStep() {
-        $formClassName  = $this->basename.$this->getCurrentStep();
-        $formInstance   = new $formClassName($this);
+        global $project;
 
-        $this->registerCustomHtmlForm($formClassName, $formInstance);
+        $projectPrefix         = ucfirst($project);
+        $formClassName         = $this->basename.$this->getCurrentStep();
+        $extendedFormClassName = $projectPrefix.$formClassName;
+
+        if (class_exists($extendedFormClassName)) {
+            $formInstance  = new $extendedFormClassName($this);
+            $this->registerCustomHtmlForm($extendedFormClassName, $formInstance);
+        } else {
+            $formInstance  = new $formClassName($this);
+            $this->registerCustomHtmlForm($formClassName, $formInstance);
+        }
         
         return $formInstance;
     }
@@ -606,8 +624,17 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @since 16.11.2010
      */
     protected function processCurrentFormStep($formInstance) {
-        $formClassName  = $this->basename.$this->getCurrentStep();
-        $checkClass     = new ReflectionClass($formClassName);
+        global $project;
+
+        $projectPrefix         = ucfirst($project);
+        $formClassName         = $this->basename.$this->getCurrentStep();
+        $extendedFormClassName = $projectPrefix.$formClassName;
+
+        if (class_exists($extendedFormClassName)) {
+            $checkClass = new ReflectionClass($extendedFormClassName);
+        } else {
+            $checkClass = new ReflectionClass($formClassName);
+        }
         
         if ($checkClass->hasMethod('process')) {
             $formInstance->process();
@@ -666,6 +693,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @since 25.10.2010
      */
     protected function getNumberOfSteps() {
+        global $project;
 
         if ($this->nrOfSteps > -1) {
             return $this->nrOfSteps;
@@ -675,17 +703,25 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         $increaseStep   = true;
         $stepIdx        = 1;
         $pathIdx        = 0;
+        $projectPrefix  = ucfirst($project);
 
          while ($increaseStep) {
-            $stepClassName = $this->basename.$stepIdx;
+            $stepClassName         = $this->basename.$stepIdx;
+            $extendedStepClassName = $projectPrefix.$this->basename.$stepIdx;
             
-            if (!Director::fileExists($themePath.$this->basename.$stepIdx.'.ss')) {
+            if (!Director::fileExists($themePath.$extendedStepClassName.'.ss') &&
+                !Director::fileExists($themePath.$stepClassName.'.ss')) {
                 $increaseStep = false;
             }
-            if (!class_exists($stepClassName)) {
+            if (!class_exists($extendedStepClassName) &&
+                !class_exists($stepClassName)) {
                 $increaseStep = false;
             } else {
-                $stepClass                      = new $stepClassName($this, null, null, true);
+                if (class_exists($extendedStepClassName)) {
+                    $stepClass = new $extendedStepClassName($this, null, null, true);
+                } else {
+                    $stepClass = new $stepClassName($this, null, null, true);
+                }
                 $this->stepNames[$stepIdx]      = $stepClass->getStepTitle();
                 $this->stepVisibility[$stepIdx] = $stepClass->getStepIsVisible();
             }
