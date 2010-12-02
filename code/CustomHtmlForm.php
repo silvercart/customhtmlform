@@ -1324,9 +1324,6 @@ class CustomHtmlForm extends Form {
         if (isset($this->preferences['submitAction'])) {
             $action = $this->preferences['submitAction'];
         } else {
-            /**
-             *  
-             */
             $action = $this->basePreferences['submitAction'];
         }
 
