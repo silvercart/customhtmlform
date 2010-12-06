@@ -37,7 +37,11 @@ class CustomHtmlFormStepPage extends Page {
      */
     public $allowedOutsideReferers = array(
         '/de/cgi-bin/webscr',
-        '/checkout/customHtmlFormSubmit'
+        '/checkout/customHtmlFormSubmit',
+        '/auktion-erstellen/customHtmlFormSubmit',
+        '/auktion-erstellen/uploadifyUpload',
+        '/auktion-erstellen/uploadifyRefresh',
+        '/auktion-erstellen/uploadifyRemoveFile'
     );
     
     /**
@@ -772,23 +776,25 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      */
     protected function isStepPageCalledFromOutside() {
         $callFromOutside = true;
+        $requestUri      = $_SERVER['REQUEST_URI'];
 
         if (isset($_SERVER['HTTP_REFERER'])) {
             $parsedRefererUrl = parse_url($_SERVER['HTTP_REFERER']);
             $refererUri       = $parsedRefererUrl['path'];
-            $requestUri       = $_SERVER['REQUEST_URI'];
+
+            if (strpos($requestUri, '?') !== false) {
+                $requestUriElems = explode('?', $requestUri);
+                $requestUri      = $requestUriElems[0];
+            }
 
             if (substr($refererUri, -1) != '/') {
                 $refererUri .= '/';
-            }
-            if (substr($requestUri, -1) != '/') {
-                $requestUri .= '/';
             }
 
             if ($refererUri === substr($requestUri, 0, strlen($refererUri))) {
                 $callFromOutside = false;
             }
-
+            
             // Pruefen, ob der Aufruf durch ein Whitelist-Mitglied durchgefuehrt
             // wurde.
             if ($callFromOutside) {
@@ -796,8 +802,10 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
                     $allowedRefererUrl = parse_url($allowedOutsideReferer);
                     $allowedRefererUri = $allowedRefererUrl['path'];
 
-                    if (substr($allowedRefererUri, -1) != '/') {
-                        $allowedRefererUri .= '/';
+                    if (substr($refererUri, -1) == '/') {
+                        if (substr($allowedRefererUri, -1) != '/') {
+                            $allowedRefererUri .= '/';
+                        }
                     }
 
                     if ($refererUri === substr($allowedRefererUri, 0, strlen($refererUri))) {
@@ -805,6 +813,12 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
                         break;
                     }
                 }
+            }
+        } else {
+            // Hack fuer Uploadify-Script!
+            // Dieses ruft durch den Flashplayer auf, der keinen Referer mitschickt.
+            if (strpos($_SERVER['HTTP_USER_AGENT'], 'Adobe') !== false) {
+                $callFromOutside = false;
             }
         }
 

@@ -315,12 +315,12 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
      * @since 03.11.2010
      */
     protected function getFieldObject() {
-        $formName       = 'CreateAuctionFormStep5_customHtmlFormSubmit_1';
+        $formIdentifier = 'CreateAuctionFormStep5';
         $fieldName      = 'UploadImages';
         $fieldReference = '';
 
-        foreach ($this->registeredCustomHtmlForms as $registeredCustomHtmlForm) {
-            if ($formName === $registeredCustomHtmlForm->name) {
+        foreach ($this->registeredCustomHtmlForms as $registeredFormIdentifier => $registeredCustomHtmlForm) {
+            if ($formIdentifier == $registeredFormIdentifier) {
                 break;
             }
         }
