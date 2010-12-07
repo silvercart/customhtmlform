@@ -335,10 +335,10 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         $fieldIdx           = 0;
 
         foreach ($fields as $fieldName => $fieldData) {
-
             if (isset($formSessionData[$fieldName])) {
                 if ($fieldData['type'] == 'OptionSetField' ||
-                    $fieldData['type'] == 'DropdownField') {
+                    $fieldData['type'] == 'DropdownField' ||
+                    $fieldData['type'] == 'ListboxField') {
                     $valueParam = 'selectedValue';
                 } else {
                     $valueParam = 'value';
@@ -490,6 +490,26 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
+     * Springt zum angegebenen Schritt, wenn dieser schon abgeschlossen ist
+     * und laedt die Seite neu.
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 07.12.2010
+     */
+    public function GotoStep() {
+        $stepNr = $this->urlParams['ID'];
+
+        if (in_array($stepNr, $this->getCompletedSteps())) {
+            $this->setCurrentStep($stepNr);
+        }
+        
+        Director::redirect($this->Link(), 302);
+    }
+
+    /**
      * Bricht das Ausfuellen des Formulars ab und leitet den Nutzer zur
      * ersten Seite zurueck.
      *
@@ -582,7 +602,8 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
                 'title'           => $this->stepNames[$stepIdx],
                 'stepIsVisible'   => $this->stepVisibility[$stepIdx],
                 'stepIsCompleted' => $completed,
-                'isCurrentStep'   => $isCurrentStep
+                'isCurrentStep'   => $isCurrentStep,
+                'stepNr'          => $stepIdx
             );
         }
 
