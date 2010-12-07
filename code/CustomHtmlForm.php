@@ -906,6 +906,12 @@ class CustomHtmlForm extends Form {
             } else {
                 $field->setUploadFolder('Uploads');
             }
+
+            if (isset($fieldDefinition['value']) &&
+                is_array($fieldDefinition['value'])) {
+
+                $field->setValue($fieldDefinition['value']);
+            }
         } else {
             $field = new $fieldDefinition['type'](
                 $fieldName,
