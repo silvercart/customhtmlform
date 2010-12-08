@@ -543,9 +543,11 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      */
     public function deleteSessionData() {
         if (isset($_SESSION['CustomHtmlFormStep']) &&
-            isset($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID])) {
+            is_array($_SESSION['CustomHtmlFormStep'])) {
 
-            unset($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]);
+            if (isset($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID])) {
+                unset($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]);
+            }
         }
     }
 
