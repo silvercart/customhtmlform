@@ -814,7 +814,17 @@ class CustomHtmlForm extends Form {
                 $fieldDefinition['multiple'],
                 $fieldDefinition['form']
             );
-        } else if ($fieldDefinition['type'] == 'DropdownField') {
+        } else if ($fieldDefinition['type'] == 'DropdownField' ||
+                   $fieldDefinition['type'] == 'GroupedDropdownField' ||
+                   $fieldDefinition['type'] == 'HTMLDropdownField' ||
+                   $fieldDefinition['type'] == 'CountryDropdownField' ||
+                   $fieldDefinition['type'] == 'LanguageDropdownField' ||
+                   $fieldDefinition['type'] == 'SimpleTreeDropdownField' ||
+                   $fieldDefinition['type'] == 'TreeDropdownField' ||
+                   $fieldDefinition['type'] == 'TreeDropdownField_Readonly' ||
+                   $fieldDefinition['type'] == 'StateProvinceDropdownField_Readonly' ||
+                   $fieldDefinition['type'] == 'Widget_TreeDropdownField_Readonly' ||
+                   $fieldDefinition['type'] == 'StateDropdownField') {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
