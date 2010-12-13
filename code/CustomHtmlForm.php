@@ -125,7 +125,10 @@ class CustomHtmlForm extends Form {
      * @since 25.10.2010
      */
     public function __construct($controller, $params = null, $preferences = null, $barebone = false) {
-        self::$instanceNr++;
+
+        if (!$barebone) {
+            self::$instanceNr++;
+        }
 
         $this->controller   = $controller;
         $name               = $this->getSubmitAction();

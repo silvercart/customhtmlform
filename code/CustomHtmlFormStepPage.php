@@ -152,7 +152,6 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @since 25.10.2010
      */
     public function init() {
-
         if ($this->isStepPageCalledFromOutside()) {
             $this->deleteSessionData();
         }
@@ -162,7 +161,6 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
 
         $formInstance = $this->registerCurrentFormStep();
         $this->processCurrentFormStep($formInstance);
-
         parent::init();
     }
 
@@ -840,8 +838,18 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         } else {
             // Hack fuer Uploadify-Script!
             // Dieses ruft durch den Flashplayer auf, der keinen Referer mitschickt.
-            if (strpos($_SERVER['HTTP_USER_AGENT'], 'Adobe') !== false) {
+            if (strpos($_SERVER['HTTP_USER_AGENT'], 'Adobe') !== false ||
+                strpos($_SERVER['HTTP_USER_AGENT'], 'Shockwave') !== false ||
+                strpos($_SERVER['HTTP_USER_AGENT'], 'Flash') !== false) {
                 $callFromOutside = false;
+            } else {
+                if ($fp = fopen('/var/www/skoehler/fashionbids/silverstripe/log/image.log', 'a')) {
+                    fwrite(
+                        $fp,
+                        "CustomHtmlFormStepPage: isStepPageCalledFromOutside(): Unbekannter User Agent: ".var_export($_SERVER['HTTP_USER_AGENT'], true)."\n"
+                    );
+                    fclose($fp);
+                }
             }
         }
 

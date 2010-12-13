@@ -259,7 +259,8 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
         $fieldReference = $this->getFieldObject();
 
         if ($fieldReference != '') {
-            return $fieldReference->upload();
+            $result = $fieldReference->upload();
+            return $result;
         } else {
             return -1;
         }
@@ -268,7 +269,7 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
     /**
      * Wrapper fuer Action auf Uploadify-Feld.
      *
-	 * @param SS_HTTPRequest $request Die Anfrageparameter
+     * @param SS_HTTPRequest $request Die Anfrageparameter
      *
      * @return void
      *
@@ -326,7 +327,6 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
         }
 
         if ($registeredCustomHtmlForm instanceof CustomHtmlForm) {
-
             foreach ($registeredCustomHtmlForm->SSformFields['fields'] as $field) {
                 if ($field instanceof MultipleImageUploadField) {
                     $fieldReference = $field;
