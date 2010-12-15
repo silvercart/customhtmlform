@@ -103,11 +103,12 @@ class CustomHtmlForm extends Form {
     );
 
     /**
-     * Enthaelt die Nummer der aktuellen Instanziierung.
+     * Enthaelt fuer jede Formularklasse die Nummer der aktuellen
+     * Instanziierung.
      *
-     * @var integer
+     * @var array
      */
-    public static $instanceNr = 0;
+    public static $classInstanceCounter = array();
 
     /**
      * Erstellt ein Formularobjekt, dessen Layout frei in einem Template
@@ -125,10 +126,6 @@ class CustomHtmlForm extends Form {
      * @since 25.10.2010
      */
     public function __construct($controller, $params = null, $preferences = null, $barebone = false) {
-
-        if (!$barebone) {
-            self::$instanceNr++;
-        }
 
         $this->controller   = $controller;
         $name               = $this->getSubmitAction();
@@ -155,8 +152,17 @@ class CustomHtmlForm extends Form {
             new FieldSet()
         );
 
+        // Zaehler fuer die Formularklasse ggfs. initialisieren und erhoehen.
+        if (!isset(self::$classInstanceCounter[$this->class])) {
+            self::$classInstanceCounter[$this->class] = 0;
+        }
+
+        if (!$barebone) {
+            self::$classInstanceCounter[$this->class]++;
+        }
+
         // Nochmaliges Setzen erforderlich, da der Controller in der Form-Klasse ueberschrieben wird.
-        $this->controller   = $controller;
+        $this->controller = $controller;
 
         // Gruppenstruktur erzeugen
         if (isset($this->formFields)) {
@@ -165,7 +171,7 @@ class CustomHtmlForm extends Form {
             $this->fieldGroups['formFields'] = array();
         }
 
-        $this->name               = $this->class.'_'.$name.'_'.self::$instanceNr;
+        $this->name               = $this->class.'_'.$name.'_'.(self::$classInstanceCounter[$this->class]);
         $this->jsName             = str_replace('/', '', $this->name);
         $this->SSformFields       = $this->getForm();
         $this->SSformFields['fields']->setForm($this);
