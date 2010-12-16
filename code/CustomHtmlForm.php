@@ -255,7 +255,7 @@ class CustomHtmlForm extends Form {
                 // Zusaetzliche Attribute einfuegen
                 // ------------------------------------------------------------
                 if (isset($fieldProperties['title'])) {
-                    $titleField = 'title: "'.$fieldProperties['title'].'",';
+                    $titleField = 'title: "'.str_replace('"', '\"', $fieldProperties['title']).'",';
                 } else {
                     $titleField = '';
                 }
