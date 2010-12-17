@@ -881,11 +881,21 @@ class CustomHtmlForm extends Form {
                 }
             }
         } else if ($fieldDefinition['type'] == 'TextareaField') {
+
+            if (!isset($fieldDefinition['rows'])) {
+                $fieldDefinition['rows'] = 10;
+                $fieldReference['rows'] = $fieldDefinition['rows'];
+            }
+            if (!isset($fieldDefinition['cols'])) {
+                $fieldDefinition['cols'] = 10;
+                $fieldReference['cols'] = $fieldDefinition['cols'];
+            }
+
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
-                10,
-                10,
+                $fieldDefinition['rows'],
+                $fieldDefinition['cols'],
                 $fieldDefinition['value'],
                 $fieldDefinition['form']
             );
