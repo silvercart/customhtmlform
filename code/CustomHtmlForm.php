@@ -99,7 +99,8 @@ class CustomHtmlForm extends Form {
         'doJsValidationScrolling'       => true,
         'showJsValidationErrorMessages' => true,
         'stepTitle'                     => '',
-        'stepIsVisible'                 => true
+        'stepIsVisible'                 => true,
+        'fillInRequestValues'           => true
     );
 
     /**
@@ -417,6 +418,28 @@ class CustomHtmlForm extends Form {
      * @since 25.10.2010
      */
     protected function fillInFieldValues() {
+        if ($this->getFillInRequestValues()) {
+            $this->fillInRequestValues();
+        }
+    }
+
+    /**
+     * Befuellt die Formularwerte mit gesendeten Werten aus dem Request-Objekt.
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 20.12.2010
+     */
+    protected function fillInRequestValues() {
+        $request = $this->controller->getRequest();
+
+        foreach ($this->formFields as $fieldName => $fieldDefinition) {
+            if (isset($request[$fieldName])) {
+                $this->formFields[$fieldName]['value'] = Convert::raw2xml($request[$fieldName]);
+            }
+        }
     }
 
     /**
@@ -467,6 +490,14 @@ class CustomHtmlForm extends Form {
      * @since 25.10.2010
      */
     public function submitFailure($data, $form) {
+
+        // Formular befuellen
+        foreach ($this->formFields as $fieldName => $fieldDefinition) {
+            if (isset($data[$fieldName])) {
+                $this->formFields[$fieldName]['value'] = Convert::raw2xml($data[$fieldName]);
+            }
+        }
+
         $this->SSformFields = $this->getForm();
 
         if (empty($form)) {
@@ -476,7 +507,7 @@ class CustomHtmlForm extends Form {
         // aufgetretene Validierungsfehler in Template auswertbar machen
         $data = array(
             'errorMessages' => new DataObjectSet($this->errorMessages),
-            'messages' => new DataObjectSet($this->messages),
+            'messages'      => new DataObjectSet($this->messages),
             $this->SSformFields['fields'],
             $this->SSformFields['actions']
         );
@@ -1320,6 +1351,28 @@ class CustomHtmlForm extends Form {
         }
 
         return $doJsValidationScrolling;
+    }
+
+    /**
+     * Gibt zurueck, ob die Formularfelder mit gesendeten Werten aus dem
+     * Request-Objekt befuellt werden sollen.
+     *
+     * @return bool
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 20.12.2010
+     */
+    protected function getFillInRequestValues() {
+        $fillInRequestValues = true;
+
+        if (isset($this->preferences['fillInRequestValues'])) {
+            $fillInRequestValues = $this->preferences['fillInRequestValues'];
+        } else {
+            $fillInRequestValues = $this->basePreferences['fillInRequestValues'];
+        }
+
+        return $fillInRequestValues;
     }
 
     /**
