@@ -134,21 +134,26 @@ class CheckFormData {
      * @since 25.10.2010
      */
     public function PtCaptchaInput($parameters) {
-        $session_key    = $parameters['formName'].'_'.$parameters['fieldName'];
+        $session_key    = $parameters['fieldName'];
         $success        = false;
         $errorMessage   = '';
-        $checkValue     = $this -> getValueWithoutWhitespace($this -> value);
+        $checkValue     = $this->getValueWithoutWhitespace($this->value);
         $temp_dir       = TEMP_FOLDER;
 
-        $fh     = fopen($temp_dir.'/'.'cap_'.$session_key.'.txt', "r");
-        $hash   = fgets($fh);
-        $hash2  = md5(strtolower($checkValue));
+        if (file_exists($temp_dir.'/'.'cap_'.$session_key.'.txt')) {
+            $fh     = fopen($temp_dir.'/'.'cap_'.$session_key.'.txt', "r");
+            $hash   = fgets($fh);
+            $hash2  = md5(strtolower($checkValue));
 
-        if ($hash2 == $hash) {
-            $success = true;
+            if ($hash2 == $hash) {
+                $success = true;
+            } else {
+                $success        = false;
+                $errorMessage   = _t('Form.CAPTCHAFIELDNOMATCH', 'Diese Eingabe war leider falsch. Bitte versuchen Sie es erneut.');
+            }
         } else {
             $success        = false;
-            $errorMessage   = _t('Form.CAPTCHAFIELDNOMATCH', 'Diese Eingabe war leider falsch. Versuch es erneut!');
+            $errorMessage   = _t('Form.CAPTCHAFIELDNOMATCH', 'Es gab ein technisches Problem. Bitte versuchen Sie es erneut.');
         }
 
         return array(

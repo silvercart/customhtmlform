@@ -437,9 +437,48 @@ class CustomHtmlForm extends Form {
 
         foreach ($this->formFields as $fieldName => $fieldDefinition) {
             if (isset($request[$fieldName])) {
-                $this->formFields[$fieldName]['value'] = Convert::raw2xml($request[$fieldName]);
+                $this->formFields[$fieldName][$this->getFormFieldValueLabel($fieldName)] = Convert::raw2xml($request[$fieldName]);
             }
         }
+    }
+
+    /**
+     * Liefert den Parameter, der zum Setzen des Feldwertes benutzt wird.
+     * Dieser kann je nach Feldtyp "value" oder "selectedValue" sein.
+     *
+     * @param paramType param Description
+     *
+     * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 20.12.2010
+     */
+    protected function getFormFieldValueLabel($fieldName) {
+        $valueLabel = 'value';
+
+        if (isset($this->formFields[$fieldName])) {
+            $fieldDefinition = $this->formFields[$fieldName];
+            
+            if ($fieldDefinition['type'] == 'ListboxField' ||
+                $fieldDefinition['type'] == 'DropdownField' ||
+                $fieldDefinition['type'] == 'GroupedDropdownField' ||
+                $fieldDefinition['type'] == 'HTMLDropdownField' ||
+                $fieldDefinition['type'] == 'CountryDropdownField' ||
+                $fieldDefinition['type'] == 'LanguageDropdownField' ||
+                $fieldDefinition['type'] == 'SimpleTreeDropdownField' ||
+                $fieldDefinition['type'] == 'TreeDropdownField' ||
+                $fieldDefinition['type'] == 'TreeDropdownField_Readonly' ||
+                $fieldDefinition['type'] == 'StateProvinceDropdownField_Readonly' ||
+                $fieldDefinition['type'] == 'Widget_TreeDropdownField_Readonly' ||
+                $fieldDefinition['type'] == 'StateDropdownField' ||
+                $fieldDefinition['type'] == 'OptionsetField') {
+
+                $valueLabel = 'selectedValue';
+            }
+        }
+
+        return $valueLabel;
     }
 
     /**
@@ -494,7 +533,7 @@ class CustomHtmlForm extends Form {
         // Formular befuellen
         foreach ($this->formFields as $fieldName => $fieldDefinition) {
             if (isset($data[$fieldName])) {
-                $this->formFields[$fieldName]['value'] = Convert::raw2xml($data[$fieldName]);
+                $this->formFields[$fieldName][$this->getFormFieldValueLabel($fieldName)] = Convert::raw2xml($data[$fieldName]);
             }
         }
 
@@ -511,6 +550,7 @@ class CustomHtmlForm extends Form {
             $this->SSformFields['fields'],
             $this->SSformFields['actions']
         );
+        
 
         parent::__construct(
             $this->controller,
@@ -518,7 +558,7 @@ class CustomHtmlForm extends Form {
             $this->SSformFields['fields'],
             $this->SSformFields['actions']
         );
-
+        
         // Formular mit Validierungsergebnissen befuellen und rendern
         $outputForm = $this->customise($data)->renderWith(
             array(
@@ -669,6 +709,14 @@ class CustomHtmlForm extends Form {
                             );
                         }
 
+                        // PtCaptchaField
+                        if ($requirement == 'PtCaptchaInput') {
+                            $requiredValue = array(
+                                'formName'  => $this->class,
+                                'fieldName' => $this->name.$fieldName
+                            );
+                        }
+
                         // Callbackfunktion verwenden
                         if ($requirement == 'callBack') {
                             $fieldCheckResult = $this->$requiredValue($data[$fieldName]);
@@ -762,7 +810,7 @@ class CustomHtmlForm extends Form {
                 $this
             )
         );
-
+        
         return array(
             'fields'    => $fields,
             'actions'   => $actions
@@ -783,6 +831,7 @@ class CustomHtmlForm extends Form {
      * @since 25.10.2010
      */
     protected function getFormField($fieldName, $fieldDefinition) {
+        
         if (!isset($fieldDefinition['type'])) {
             throw new Exception(
                 'CustomHtmlForm: Feldtyp muss angegeben werden.'
@@ -881,7 +930,8 @@ class CustomHtmlForm extends Form {
                 $fieldDefinition['form']
             );
         } else if ($fieldDefinition['type'] == 'TextField' ||
-                   $fieldDefinition['type'] == 'EmailField') {
+                   $fieldDefinition['type'] == 'EmailField' ||
+                   $fieldDefinition['type'] == 'PtCaptchaField') {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
@@ -1170,6 +1220,7 @@ class CustomHtmlForm extends Form {
 
         $templatePathAbs    = Director::baseFolder().$templatePathRel;
         $viewableObj        = new ViewableData();
+
         $output = $viewableObj->customise(
             array(
                 'FormName'      => $this->name,

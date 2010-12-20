@@ -327,7 +327,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @copyright 2010 pxieltricks GmbH
      * @since 25.10.2010
      */
-    public function fillFormFields($fields) {
+    public function fillFormFields(&$fields) {
 
         $formSessionData    = $this->getStepData();
         $fieldIdx           = 0;
@@ -842,14 +842,6 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
                 strpos($_SERVER['HTTP_USER_AGENT'], 'Shockwave') !== false ||
                 strpos($_SERVER['HTTP_USER_AGENT'], 'Flash') !== false) {
                 $callFromOutside = false;
-            } else {
-                if ($fp = fopen('/var/www/skoehler/fashionbids/silverstripe/log/image.log', 'a')) {
-                    fwrite(
-                        $fp,
-                        "CustomHtmlFormStepPage: isStepPageCalledFromOutside(): Unbekannter User Agent: ".var_export($_SERVER['HTTP_USER_AGENT'], true)."\n"
-                    );
-                    fclose($fp);
-                }
             }
         }
 
