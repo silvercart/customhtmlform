@@ -208,7 +208,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
             $stepNr = $this->getCurrentStep();
         }
         
-        if (!in_array($this->getCurrentStep(), $this->getCompletedSteps())) {
+        if (!$this->isStepCompleted($stepNr)) {
             $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['completedSteps'][] = $stepNr;
         }
     }
@@ -334,7 +334,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
 
         foreach ($fields as $fieldName => $fieldData) {
             if (isset($formSessionData[$fieldName])) {
-                if ($fieldData['type'] == 'OptionSetField' ||
+                if ($fieldData['type'] == 'OptionsetField' ||
                     $fieldData['type'] == 'DropdownField' ||
                     $fieldData['type'] == 'ListboxField') {
                     $valueParam = 'selectedValue';
@@ -405,7 +405,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         $link = false;
 
         if ($this->getPreviousStep() > 0 &&
-            in_array($this->getPreviousStep(), $this->getCompletedSteps()) ) {
+            $this->isStepCompleted($this->getPreviousStep()) ) {
 
             $link = $this->Link('PreviousStep');
         }
@@ -426,7 +426,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         $link = false;
 
         if ($this->getNextStep() <= $this->getNumberOfSteps() &&
-            in_array($this->getCurrentStep(), $this->getCompletedSteps())) {
+            $this->isStepCompleted()) {
             
             $link = $this->Link('NextStep');
         }
@@ -480,7 +480,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      */
     public function PreviousStep() {
         if ($this->getPreviousStep() > 0 &&
-            in_array($this->getPreviousStep(), $this->getCompletedSteps()) ) {
+            $this->isStepCompleted($this->getPreviousStep()) ) {
 
             $this->setCurrentStep($this->getPreviousStep());
         }
@@ -500,7 +500,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     public function GotoStep() {
         $stepNr = $this->urlParams['ID'];
 
-        if (in_array($stepNr, $this->getCompletedSteps())) {
+        if ($this->isStepCompleted($stepNr)) {
             $this->setCurrentStep($stepNr);
         }
         
@@ -581,16 +581,9 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @since 29.11.2010
      */
     public function getStepList() {
-        $stepList       = array();
-        $completedSteps = $this->getCompletedSteps();
+        $stepList = array();
 
         for ($stepIdx = 1; $stepIdx <= $this->getNumberOfSteps(); $stepIdx++) {
-
-            if (in_array($stepIdx, $completedSteps)) {
-                $completed = true;
-            } else {
-                $completed = false;
-            }
 
             if ($stepIdx == $this->getCurrentStep()) {
                 $isCurrentStep = true;
@@ -601,13 +594,41 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
             $stepList['step'.$stepIdx] = array(
                 'title'           => $this->stepNames[$stepIdx],
                 'stepIsVisible'   => $this->stepVisibility[$stepIdx],
-                'stepIsCompleted' => $completed,
+                'stepIsCompleted' => $this->isStepCompleted($stepIdx),
                 'isCurrentStep'   => $isCurrentStep,
                 'stepNr'          => $stepIdx
             );
         }
 
         return new DataObjectSet($stepList);
+    }
+
+    /**
+     * Prueft, ob der aktuelle oder angegebene Schritt schon als ausgefuellt
+     * markiert wurde.
+     *
+     * @param bool $stepIdx Optional: Nummer des Schritts, der geprueft werden
+     *                      soll.
+     *
+     * @return bool
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 22.12.2010
+     */
+    public function isStepCompleted($stepIdx = false) {
+        
+        $completed = false;
+
+        if ($stepIdx === false) {
+            $stepIdx = $this->getCurrentStep();
+        }
+
+        if (in_array($stepIdx, $this->getCompletedSteps())) {
+            $completed = true;
+        }
+
+        return $completed;
     }
 
     /**

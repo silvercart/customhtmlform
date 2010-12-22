@@ -104,7 +104,7 @@ pixeltricks.forms.validator = function()
                                 }
                                 // Fuer Radiobuttons wird der Wert des selektierten Buttons
                                 // ausgelesen.
-                                if (values == 'OptionSetField') {
+                                if (values == 'OptionsetField') {
                                     checkFormData.setFieldValue(
                                         $('#' + that.formName + that.nameSeparator + fieldName + '  :checked').val()
                                     );
