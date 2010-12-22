@@ -143,6 +143,17 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     protected $stepVisibility = array();
 
     /**
+     * Speichert die Formularobjekte fuer jeden Schritt
+     *
+     * @var array
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 22.12.2010
+     */
+    protected $stepObjects = array();
+
+    /**
      * Initialisiert die Formularreihe.
      *
      * @return void
@@ -596,7 +607,8 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
                 'stepIsVisible'   => $this->stepVisibility[$stepIdx],
                 'stepIsCompleted' => $this->isStepCompleted($stepIdx),
                 'isCurrentStep'   => $isCurrentStep,
-                'stepNr'          => $stepIdx
+                'stepNr'          => $stepIdx,
+                'step'            => $this->stepObjects[$stepIdx]
             );
         }
 
@@ -771,6 +783,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
                 }
                 $this->stepNames[$stepIdx]      = $stepClass->getStepTitle();
                 $this->stepVisibility[$stepIdx] = $stepClass->getStepIsVisible();
+                $this->stepObjects[$stepIdx]    = $stepClass;
             }
 
             if ($increaseStep) {
