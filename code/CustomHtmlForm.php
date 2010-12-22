@@ -665,6 +665,7 @@ class CustomHtmlForm extends Form {
                 $errorMessages['CSRF'] = array(
                     'message'   => 'CSRF Attacke!',
                     'fieldname' => 'CSRF',
+                    'title'     => 'Ihre Session ist abgelaufenen. Bitte laden Sie die Seite neu und füllen Sie das Formular nochmals aus.',
                     'CSRF' => array(
                         'message' => 'CSRF Attacke!'
                     )
