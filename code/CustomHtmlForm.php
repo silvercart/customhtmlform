@@ -324,7 +324,7 @@ class CustomHtmlForm extends Form {
 
                 $checkRequirementStr .= $requirement.': {';
                 $checkRequirementStr .= $subCheckRequirementStr;
-                $checkRequirementStr .= '},';
+                $checkRequirementStr .= '},\n';
             }
         } else {
             if (is_bool($definition)) {
@@ -337,6 +337,10 @@ class CustomHtmlForm extends Form {
 
             $checkRequirementStr .= $requirement.": ".$definitionStr.",\n";
         }
+
+		if (!empty($checkRequirementStr)) {
+			$checkRequirementStr = substr($checkRequirementStr, 0, -1);
+		}
 
         return $checkRequirementStr;
     }
