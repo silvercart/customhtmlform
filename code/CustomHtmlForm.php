@@ -1363,6 +1363,50 @@ class CustomHtmlForm extends Form {
     }
 
     /**
+     * Prueft, ob der aktuelle oder angegebene Schritt schon als ausgefuellt
+     * markiert wurde.
+     *
+     * @return bool
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 22.12.2010
+     */
+    public function isStepCompleted() {
+        
+        $completed = false;
+        $stepIdx   = $this->getStepNr();
+
+        if (in_array($stepIdx, $this->controller->getCompletedSteps())) {
+            $completed = true;
+        }
+
+        return $completed;
+    }
+
+    /**
+     * Prueft, ob der vorherige Schritt schon als ausgefuellt
+     * markiert wurde.
+     *
+     * @return bool
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 23.12.2010
+     */
+    public function isPreviousStepCompleted() {
+        
+        $completed = false;
+        $stepIdx   = $this->getStepNr() - 1;
+
+        if (in_array($stepIdx, $this->controller->getCompletedSteps())) {
+            $completed = true;
+        }
+
+        return $completed;
+    }
+
+    /**
      * Gibt die Schrittnummer dieses Formularobjekts zurueck.
      *
      * @return int
@@ -1375,7 +1419,7 @@ class CustomHtmlForm extends Form {
         $stepNr = str_replace(
             $this->controller->basename,
             '',
-            $this->ClassName
+            $this->class
         );
 
         return $stepNr;

@@ -511,7 +511,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     public function GotoStep() {
         $stepNr = $this->urlParams['ID'];
 
-        if ($this->isStepCompleted($stepNr)) {
+        if ($this->isPreviousStepCompleted($stepNr)) {
             $this->setCurrentStep($stepNr);
         }
         
@@ -662,13 +662,12 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
 
         if ($stepIdx === false) {
             $stepIdx = $this->getCurrentStep() - 1;
+        } else {
+            $stepIdx -= 1;
         }
 
-        if ($stepIdx < 2) {
-            $stepIdx = 2;
-        }
-
-        if (in_array($stepIdx, $this->getCompletedSteps())) {
+        if ($stepIdx === 0 ||
+            in_array($stepIdx, $this->getCompletedSteps())) {
             $completed = true;
         }
 
