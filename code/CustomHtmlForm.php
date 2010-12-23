@@ -1341,6 +1341,47 @@ class CustomHtmlForm extends Form {
     }
 
     /**
+     * Gibt zurueck, ob der angegebene Schritt der aktuelle ist.
+     *
+     * @param bool $stepIdx Optional: Nummer des Schritts, der geprueft werden
+     *                      soll.
+     *
+     * @return bool
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 23.12.2010
+     */
+    public function getIsCurrentStep() {
+        $isCurrentStep = false;
+
+        if ($this->controller->getCurrentStep() == $this->getStepNr()) {
+            $isCurrentStep = true;
+        }
+
+        return $isCurrentStep;
+    }
+
+    /**
+     * Gibt die Schrittnummer dieses Formularobjekts zurueck.
+     *
+     * @return int
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 23.12.2010
+     */
+    protected function getStepNr() {
+        $stepNr = str_replace(
+            $this->controller->basename,
+            '',
+            $this->ClassName
+        );
+
+        return $stepNr;
+    }
+
+    /**
      * Liefert die Beschriftung fuer den Submitbutton des Formulars.
      *
      * @return string

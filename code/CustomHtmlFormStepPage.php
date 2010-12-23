@@ -676,33 +676,6 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
-     * Gibt zurueck, ob der angegebene Schritt der aktuelle ist.
-     *
-     * @param bool $stepIdx Optional: Nummer des Schritts, der geprueft werden
-     *                      soll.
-     *
-     * @return bool
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 22.12.2010
-     */
-    public function isCurrentStep($stepIdx = false) {
-
-        $isCurrentStep = false;
-
-        if ($stepIdx === false) {
-            $stepIdx = $this->getCurrentStep();
-        }
-
-        if ($this->getCurrentStep() == $stepIdx) {
-            $isCurrentStep = true;
-        }
-
-        return $isCurrentStep;
-    }
-
-    /**
      * Registriert das Formular fuer den aktuellen Schritt.
      *
      * @return Object
