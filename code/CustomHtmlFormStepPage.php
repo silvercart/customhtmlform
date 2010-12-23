@@ -330,7 +330,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * Befuellt die Felder des mitgelieferten Formulars mit den ggfs. in der
      * Session gespeicherten Werten.
      * 
-     * @param array $fields Die zu befuellenden Felder
+     * @param array &$fields Die zu befuellenden Felder
      *
      * @return void
      *
@@ -641,6 +641,65 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         }
 
         return $completed;
+    }
+
+    /**
+     * Prueft, ob der vorherige Schritt schon als ausgefuellt
+     * markiert wurde.
+     *
+     * @param bool $stepIdx Optional: Nummer des Schritts, der geprueft werden
+     *                      soll.
+     *
+     * @return bool
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 23.12.2010
+     */
+    public function isPreviousStepCompleted($stepIdx = false) {
+        
+        $completed = false;
+
+        if ($stepIdx === false) {
+            $stepIdx = $this->getCurrentStep() - 1;
+        }
+
+        if ($stepIdx < 2) {
+            $stepIdx = 2;
+        }
+
+        if (in_array($stepIdx, $this->getCompletedSteps())) {
+            $completed = true;
+        }
+
+        return $completed;
+    }
+
+    /**
+     * Gibt zurueck, ob der angegebene Schritt der aktuelle ist.
+     *
+     * @param bool $stepIdx Optional: Nummer des Schritts, der geprueft werden
+     *                      soll.
+     *
+     * @return bool
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 22.12.2010
+     */
+    public function isCurrentStep($stepIdx = false) {
+
+        $isCurrentStep = false;
+
+        if ($stepIdx === false) {
+            $stepIdx = $this->getCurrentStep();
+        }
+
+        if ($this->getCurrentStep() == $stepIdx) {
+            $isCurrentStep = true;
+        }
+
+        return $isCurrentStep;
     }
 
     /**
