@@ -22,7 +22,7 @@ class CustomHtmlForm extends Form {
      *
      * @var array
      */
-    protected $formFields;
+    protected $formFields = array();
 
     /**
      * Enthaelt beliebige Gruppen, in denen Felder gesammelt werden koennen.

@@ -37,11 +37,11 @@ class CustomHtmlFormStepPage extends Page {
      */
     public $allowedOutsideReferers = array(
         '/de/cgi-bin/webscr',
-        '/checkout/customHtmlFormSubmit',
         '/auktion-erstellen/customHtmlFormSubmit',
         '/auktion-erstellen/uploadifyUpload',
         '/auktion-erstellen/uploadifyRefresh',
-        '/auktion-erstellen/uploadifyRemoveFile'
+        '/auktion-erstellen/uploadifyRemoveFile',
+        '/checkout/customHtmlFormSubmit'
     );
     
     /**
@@ -907,6 +907,15 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
                 strpos($_SERVER['HTTP_USER_AGENT'], 'Shockwave') !== false ||
                 strpos($_SERVER['HTTP_USER_AGENT'], 'Flash') !== false) {
                 $callFromOutside = false;
+            } else {
+                if (Director::isDev()) {
+                    $callFromOutside = false;
+                } else {
+                    if ($fp = fopen('/var/www/skoehler/silvercart/webshop/sources/checkout_base/log/dev.log', 'a')) {
+                        fwrite($fp, var_export($_SERVER, true));
+                        fclose($fp);
+                    }
+                }
             }
         }
 
