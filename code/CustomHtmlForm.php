@@ -93,14 +93,15 @@ class CustomHtmlForm extends Form {
      * @var array
      */
     protected $basePreferences  = array(
-        'submitButtonTitle'             => 'Abschicken',
-        'submitAction'                  => 'customHtmlFormSubmit',
-        'doJsValidation'                => true,
-        'doJsValidationScrolling'       => true,
-        'showJsValidationErrorMessages' => true,
-        'stepTitle'                     => '',
-        'stepIsVisible'                 => true,
-        'fillInRequestValues'           => true
+        'submitButtonTitle'                 => 'Abschicken',
+        'submitAction'                      => 'customHtmlFormSubmit',
+        'doJsValidation'                    => true,
+        'doJsValidationScrolling'           => true,
+        'showJsValidationErrorMessages'     => true,
+        'stepTitle'                         => '',
+        'stepIsVisible'                     => true,
+        'ShowCustomHtmlFormStepNavigation'  => true,
+        'fillInRequestValues'               => true
     );
 
     /**
@@ -1536,6 +1537,28 @@ class CustomHtmlForm extends Form {
         }
 
         return $showMessages;
+    }
+    
+    /**
+     * Gibt zurueck, ob die Navigation zum Springen auf andere Seiten ange-
+     * zeigt werden soll.
+     *
+     * @return bool
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pixeltricks GmbH
+     * @since 07.01.2011
+     */
+    protected function getShowCustomHtmlFormStepNavigation() {
+        $showNavigation = false;
+        
+        if (isset($this->preferences['ShowCustomHtmlFormStepNavigation'])) {
+            $showNavigation = $this->preferences['ShowCustomHtmlFormStepNavigation'];
+        } else {
+            $showNavigation = $this->basePreferences['ShowCustomHtmlFormStepNavigation'];
+        }
+        
+        return $showNavigation;
     }
 
     /**
