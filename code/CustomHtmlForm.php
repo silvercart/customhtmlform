@@ -1125,6 +1125,27 @@ class CustomHtmlForm extends Form {
     }
 
     /**
+     * Gibt zurueck, ob eine Gruppe mit dem angegebenen Namen existiert.
+     * 
+     * @param string $groupName Der Name der Gruppe
+     *
+     * @return bool
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pixeltricks GmbH
+     * @since 13.01.2011
+     */
+    public function CustomHtmlFormFieldGroupExists($groupName) {
+        $groupExists = false;
+        
+        if (isset($this->fieldGroups[$groupName])) {
+            $groupExists = true;
+        }
+        
+        return $groupExists;
+    }
+    
+    /**
      * Liefert den HTML-Code fuer eine Gruppe von Feldern zurueck.
      *
      * @param string $groupName Name der Gruppe
