@@ -295,6 +295,7 @@ class CustomHtmlForm extends Form {
      *
      * @param string $requirement Der Name des Requirements
      * @param mixed  $definition  Die Definition
+     * 
      * @return string
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
@@ -339,9 +340,9 @@ class CustomHtmlForm extends Form {
             $checkRequirementStr .= $requirement.": ".$definitionStr.",\n";
         }
 
-		if (!empty($checkRequirementStr)) {
-			$checkRequirementStr = substr($checkRequirementStr, 0, -1);
-		}
+        if (!empty($checkRequirementStr)) {
+            $checkRequirementStr = substr($checkRequirementStr, 0, -1);
+        }
 
         return $checkRequirementStr;
     }
@@ -451,7 +452,7 @@ class CustomHtmlForm extends Form {
      * Liefert den Parameter, der zum Setzen des Feldwertes benutzt wird.
      * Dieser kann je nach Feldtyp "value" oder "selectedValue" sein.
      *
-     * @param paramType param Description
+     * @param string $fieldName Der Name des Feldes
      *
      * @return string
      *
@@ -1369,9 +1370,6 @@ class CustomHtmlForm extends Form {
     /**
      * Gibt zurueck, ob der angegebene Schritt der aktuelle ist.
      *
-     * @param bool $stepIdx Optional: Nummer des Schritts, der geprueft werden
-     *                      soll.
-     *
      * @return bool
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
@@ -1688,10 +1686,9 @@ class CustomHtmlForm extends Form {
     /**
      * Erzeugt rekursiv einen Json-String aus einem Array.
      *
+     * @param array $structure Das Array, aus dem der JSON-String erzeugt werden soll
+     * 
      * @return string
-     *
-     * @param array $structure
-     * @param string $output
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
      * @copyright 2010 pixeltricks GmbH
