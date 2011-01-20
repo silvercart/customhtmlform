@@ -151,7 +151,7 @@ pixeltricks.forms.checkFormData = function()
         {
             var checkValue = this.getValueWithoutWhitespace(this.fieldValue);
 
-            if (checkValue == '')
+            if (checkValue === '')
             {
                 isFilledIn = false;
             }

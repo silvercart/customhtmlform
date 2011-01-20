@@ -180,7 +180,7 @@ class CheckFormData {
         $errorMessage   = '';
         $checkValue     = $this -> getValueWithoutWhitespace($this -> value);
 
-        if (empty($checkValue)) {
+        if ($checkValue === '') {
             $isFilledIn = false;
         }
 

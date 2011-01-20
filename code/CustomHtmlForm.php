@@ -1172,7 +1172,6 @@ class CustomHtmlForm extends Form {
         }
 
         foreach ($this->fieldGroups[$groupName] as $fieldName => $fieldDefinitions) {
-
             $fieldGroup->push(
                 new ArrayData(
                     array(
