@@ -189,26 +189,46 @@ class CustomHtmlForm extends Form {
         // Einbindung ins Formular erfolgt in Methode "FormAttributes()".
         // -------------------------------------------------------------------
         if (!$barebone) {
-            $validatorFields    = $this->generateJsValidatorFields();
-            $currentTheme       = SSViewer::current_theme();
-        
-            $this->controller->addJavascriptSnippet('
-                var '.$this->jsName.';
-            ');
+            $javascriptSnippets = $this->getJavascriptValidatorInitialisation();
 
-            $this->controller->addJavascriptOnloadSnippet('
-                '.$this->jsName.' = new pixeltricks.forms.validator();
-                '.$this->jsName.'.setFormFields(
-                    {
-                        '.$validatorFields.'
-                    }
-                );
-                '.$this->jsName.'.setFormName(\''.$this->jsName.'\');
-                '.$this->jsName.'.setPreference(\'doJsValidationScrolling\', '.($this->getDoJsValidationScrolling() ? 'true' : 'false').');
-                '.$this->jsName.'.setPreference(\'showJsValidationErrorMessages\', '.($this->getShowJsValidationErrorMessages() ? 'true' : 'false').');
-                '.$this->jsName.'.bindEvents();
-            ');
+            $this->controller->addJavascriptSnippet($javascriptSnippets['javascriptSnippets']);
+            $this->controller->addJavascriptOnloadSnippet($javascriptSnippets['javascriptOnloadSnippets']);
         }
+    }
+
+    /**
+     * Gibt die Javascriptbefehle zur Initialisierung des Javascript-Validators
+     * zurueck.
+     *
+     * @return array
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pixeltricks GmbH
+     * @since 21.01.2011
+     */
+    public function getJavascriptValidatorInitialisation() {
+        $validatorFields    = $this->generateJsValidatorFields();
+        $javascriptSnippets = '
+            var '.$this->jsName.';
+        ';
+
+        $javascriptOnloadSnippets = '
+            '.$this->jsName.' = new pixeltricks.forms.validator();
+            '.$this->jsName.'.setFormFields(
+                {
+                    '.$validatorFields.'
+                }
+            );
+            '.$this->jsName.'.setFormName(\''.$this->jsName.'\');
+            '.$this->jsName.'.setPreference(\'doJsValidationScrolling\', '.($this->getDoJsValidationScrolling() ? 'true' : 'false').');
+            '.$this->jsName.'.setPreference(\'showJsValidationErrorMessages\', '.($this->getShowJsValidationErrorMessages() ? 'true' : 'false').');
+            '.$this->jsName.'.bindEvents();
+        ';
+
+        return array(
+            'javascriptSnippets'        => $javascriptSnippets,
+            'javascriptOnloadSnippets'  => $javascriptOnloadSnippets
+        );
     }
 
     /**
