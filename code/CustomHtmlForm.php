@@ -232,6 +232,28 @@ class CustomHtmlForm extends Form {
     }
 
     /**
+     * Set a custom parameter on the given form field.
+     *
+     * @param string $identifier The identifier of the field
+     * @param string $value      The value of the field
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pixeltricks GmbH
+     * @since 25.01.2011
+     */
+    public function setFormFieldValue($identifier, $value) {
+        if (isset($this->fieldGroups['formFields'][$identifier])) {
+            $this->fieldGroups['formFields'][$identifier]['value'] = $value;
+        }
+
+        $this->SSformFields = $this->getForm();
+        $this->SSformFields['fields']->setForm($this);
+        $this->SSformFields['actions']->setForm($this);
+    }
+
+    /**
      * Erstellt einen String mit Javascript-Code, der die Formularfelder an
      * den Javascript-Validator uebergibt.
      *

@@ -96,6 +96,24 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
     }
 
     /**
+     * Returns the CustomHtmlForm object with the given identifier; if it's not
+     * found a boolean false is returned.
+     *
+     * @param string $formIdentifier The identifier of the form
+     *
+     * @return mixed CustomHtmlForm|bool false
+     */
+    public function getRegisteredCustomHtmlForm($formIdentifier) {
+        $formObj = false;
+
+        if (isset($this->registeredCustomHtmlForms[$formIdentifier])) {
+            $formObj = $this->registeredCustomHtmlForms[$formIdentifier];
+        }
+
+        return $formObj;
+    }
+
+    /**
      * Liefert den HTML-Quelltext des angeforderten Formulars zurueck.
      *
      * @param string $formIdentifier   Eindeutiger Name des Formulars, mit dem es in Templates aufgerufen werden kann.
