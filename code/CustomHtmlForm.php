@@ -189,26 +189,68 @@ class CustomHtmlForm extends Form {
         // Einbindung ins Formular erfolgt in Methode "FormAttributes()".
         // -------------------------------------------------------------------
         if (!$barebone) {
-            $validatorFields    = $this->generateJsValidatorFields();
-            $currentTheme       = SSViewer::current_theme();
-        
-            $this->controller->addJavascriptSnippet('
-                var '.$this->jsName.';
-            ');
+            $javascriptSnippets = $this->getJavascriptValidatorInitialisation();
 
-            $this->controller->addJavascriptOnloadSnippet('
-                '.$this->jsName.' = new pixeltricks.forms.validator();
-                '.$this->jsName.'.setFormFields(
-                    {
-                        '.$validatorFields.'
-                    }
-                );
-                '.$this->jsName.'.setFormName(\''.$this->jsName.'\');
-                '.$this->jsName.'.setPreference(\'doJsValidationScrolling\', '.($this->getDoJsValidationScrolling() ? 'true' : 'false').');
-                '.$this->jsName.'.setPreference(\'showJsValidationErrorMessages\', '.($this->getShowJsValidationErrorMessages() ? 'true' : 'false').');
-                '.$this->jsName.'.bindEvents();
-            ');
+            $this->controller->addJavascriptSnippet($javascriptSnippets['javascriptSnippets']);
+            $this->controller->addJavascriptOnloadSnippet($javascriptSnippets['javascriptOnloadSnippets']);
         }
+    }
+
+    /**
+     * Gibt die Javascriptbefehle zur Initialisierung des Javascript-Validators
+     * zurueck.
+     *
+     * @return array
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pixeltricks GmbH
+     * @since 21.01.2011
+     */
+    public function getJavascriptValidatorInitialisation() {
+        $validatorFields    = $this->generateJsValidatorFields();
+        $javascriptSnippets = '
+            var '.$this->jsName.';
+        ';
+
+        $javascriptOnloadSnippets = '
+            '.$this->jsName.' = new pixeltricks.forms.validator();
+            '.$this->jsName.'.setFormFields(
+                {
+                    '.$validatorFields.'
+                }
+            );
+            '.$this->jsName.'.setFormName(\''.$this->jsName.'\');
+            '.$this->jsName.'.setPreference(\'doJsValidationScrolling\', '.($this->getDoJsValidationScrolling() ? 'true' : 'false').');
+            '.$this->jsName.'.setPreference(\'showJsValidationErrorMessages\', '.($this->getShowJsValidationErrorMessages() ? 'true' : 'false').');
+            '.$this->jsName.'.bindEvents();
+        ';
+
+        return array(
+            'javascriptSnippets'        => $javascriptSnippets,
+            'javascriptOnloadSnippets'  => $javascriptOnloadSnippets
+        );
+    }
+
+    /**
+     * Set a custom parameter on the given form field.
+     *
+     * @param string $identifier The identifier of the field
+     * @param string $value      The value of the field
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pixeltricks GmbH
+     * @since 25.01.2011
+     */
+    public function setFormFieldValue($identifier, $value) {
+        if (isset($this->fieldGroups['formFields'][$identifier])) {
+            $this->fieldGroups['formFields'][$identifier]['value'] = $value;
+        }
+
+        $this->SSformFields = $this->getForm();
+        $this->SSformFields['fields']->setForm($this);
+        $this->SSformFields['actions']->setForm($this);
     }
 
     /**
@@ -295,6 +337,7 @@ class CustomHtmlForm extends Form {
      *
      * @param string $requirement Der Name des Requirements
      * @param mixed  $definition  Die Definition
+     * 
      * @return string
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
@@ -339,9 +382,9 @@ class CustomHtmlForm extends Form {
             $checkRequirementStr .= $requirement.": ".$definitionStr.",\n";
         }
 
-		if (!empty($checkRequirementStr)) {
-			$checkRequirementStr = substr($checkRequirementStr, 0, -1);
-		}
+        if (!empty($checkRequirementStr)) {
+            $checkRequirementStr = substr($checkRequirementStr, 0, -1);
+        }
 
         return $checkRequirementStr;
     }
@@ -451,7 +494,7 @@ class CustomHtmlForm extends Form {
      * Liefert den Parameter, der zum Setzen des Feldwertes benutzt wird.
      * Dieser kann je nach Feldtyp "value" oder "selectedValue" sein.
      *
-     * @param paramType param Description
+     * @param string $fieldName Der Name des Feldes
      *
      * @return string
      *
@@ -1171,7 +1214,6 @@ class CustomHtmlForm extends Form {
         }
 
         foreach ($this->fieldGroups[$groupName] as $fieldName => $fieldDefinitions) {
-
             $fieldGroup->push(
                 new ArrayData(
                     array(
@@ -1368,9 +1410,6 @@ class CustomHtmlForm extends Form {
 
     /**
      * Gibt zurueck, ob der angegebene Schritt der aktuelle ist.
-     *
-     * @param bool $stepIdx Optional: Nummer des Schritts, der geprueft werden
-     *                      soll.
      *
      * @return bool
      *
@@ -1688,10 +1727,9 @@ class CustomHtmlForm extends Form {
     /**
      * Erzeugt rekursiv einen Json-String aus einem Array.
      *
+     * @param array $structure Das Array, aus dem der JSON-String erzeugt werden soll
+     * 
      * @return string
-     *
-     * @param array $structure
-     * @param string $output
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
      * @copyright 2010 pixeltricks GmbH
