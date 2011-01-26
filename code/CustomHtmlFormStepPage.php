@@ -163,8 +163,9 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @since 25.10.2010
      */
     public function init() {
+
         if ($this->isStepPageCalledFromOutside()) {
-            $this->deleteSessionData();
+            $this->deleteSessionData(false);
         }
 
         $this->initialiseSessionData();
@@ -910,11 +911,6 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
             } else {
                 if (Director::isDev()) {
                     $callFromOutside = false;
-                } else {
-                    if ($fp = fopen('/var/www/skoehler/silvercart/webshop/sources/checkout_base/log/dev.log', 'a')) {
-                        fwrite($fp, var_export($_SERVER, true));
-                        fclose($fp);
-                    }
                 }
             }
         }
