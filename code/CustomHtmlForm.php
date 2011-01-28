@@ -113,6 +113,20 @@ class CustomHtmlForm extends Form {
     public static $classInstanceCounter = array();
 
     /**
+     * Contains the registered modules. This list is used by all methods that
+     * fetch templates.
+     * 
+     * @var array
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pxieltricks GmbH
+     * @since 28.01.2011
+     */
+    public static $registeredModules = array(
+        'pixeltricks_module' => 1
+    );
+
+    /**
      * Erstellt ein Formularobjekt, dessen Layout frei in einem Template
      * gestaltet werden kann.
      *
@@ -128,6 +142,7 @@ class CustomHtmlForm extends Form {
      * @since 25.10.2010
      */
     public function __construct($controller, $params = null, $preferences = null, $barebone = false) {
+        global $project;
 
         $this->controller   = $controller;
         $name               = $this->getSubmitAction();
@@ -194,6 +209,28 @@ class CustomHtmlForm extends Form {
             $this->controller->addJavascriptSnippet($javascriptSnippets['javascriptSnippets']);
             $this->controller->addJavascriptOnloadSnippet($javascriptSnippets['javascriptOnloadSnippets']);
         }
+
+        // Register the default module directory from mysite/_config.php
+        self::registerModule($project);
+    }
+
+    /**
+     * Add a module for the template pull methods.
+     *
+     * You can give a priority ranging from 1 to 100. The standard priority
+     * for the project given in "mysite/_config.php" is 50. The
+     * pixeltricks_module priority is 1. To override both you would give a
+     * priority of 51 or higher.
+     *
+     * @param string $moduleName The name of the module
+     * @param int    $priority   The priority
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pixeltricks GmbH
+     * @since 28.01.2011
+     */
+    public static function registerModule($moduleName, $priority = 51) {
+        self::$registeredModules[$moduleName] = $priority;
     }
 
     /**
@@ -1246,6 +1283,7 @@ class CustomHtmlForm extends Form {
     public function CustomHtmlFormFieldByName($fieldName, $template = null) {
 
         $fieldReference = '';
+        $templatePath   = '';
 
         foreach ($this->fieldGroups as $groupName => $groupFields) {
             if (isset($groupFields[$fieldName])) {
@@ -1259,48 +1297,53 @@ class CustomHtmlForm extends Form {
             );
         }
 
-        $defaultTemplatePath = '/pixeltricks_module/templates/forms/CustomHtmlFormField.ss';
-
-        if (!empty($template)) {
-
-            // Template aus dem Modul oder Standardverzeicnis holen
-            if (strpos($template, '.') === false) {
-                $workingTemplate = THEMES_DIR.'/'.SSViewer::current_theme().'/templates/Layout/'.$template.'.ss';
-            } else {
-                list($module, $workingTemplate) = explode('.', $template);
-                $workingTemplate = $module.'/templates/forms/'.$workingTemplate.'.ss';
-            }
-
-            if (Director::fileExists($workingTemplate)) {
-                // Template wurde im Theme- oder Modulverzeichnis gefunden
-                $templatePathRel = '/'.$workingTemplate;
-            } else {
-                // Wenn Template nicht gefunden wurde, dann im eigenen Modulverzeichnis suchen
-                $workingTemplate = 'pixeltricks_module/templates/forms/'.$template.'.ss';
-                if (Director::fileExists($workingTemplate)) {
-                    $templatePathRel = '/'.$workingTemplate;
-                } else {
-                    $templatePathRel = $defaultTemplatePath;
-                }
-            }
-        } else {
-            $templatePathRel = $defaultTemplatePath;
+        // set the default template
+        if (empty($template)) {
+            $template = 'CustomHtmlFormField';
         }
 
-        $templatePathAbs    = Director::baseFolder().$templatePathRel;
-        $viewableObj        = new ViewableData();
+        // sort the registered modules, so that the highest priority ones
+        // are search first.
+        $registeredModules = self::$registeredModules;
+        arsort($registeredModules);
 
-        $output = $viewableObj->customise(
-            array(
-                'FormName'      => $this->name,
-                'FieldName'     => $fieldName,
-                'Label'         => isset($fieldReference['title']) ? $fieldReference['title'] : '',
-                'errorMessage'  => isset($this->errorMessages[$fieldName]) ?  $this->errorMessages[$fieldName] : '',
-                'FieldTag'      => $this->SSformFields['fields']->fieldByName($fieldName)->Field(),
-                'FieldHolder'   => $this->SSformFields['fields']->fieldByName($fieldName)->FieldHolder(),
-                'Parent'        => $this,
-            )
-        )->renderWith($templatePathAbs);
+        // the paths inside modules that could contain templates
+        $templateDirs = array(
+            '/templates/',
+            '/templates/Layout/',
+            '/templates/forms/',
+        );
+
+        // search the template in a variety of possible paths
+        foreach ($registeredModules as $moduleName => $priority) {
+            foreach ($templateDirs as $templateDir) {
+                $templatePath = $moduleName.$templateDir.$template.'.ss';
+
+                if (Director::fileExists($templatePath)) {
+                    break(2);
+                }
+            }
+        }
+
+        if (!empty($templatePath)) {
+            $templatePathRel    = '/'.$templatePath;
+            $templatePathAbs    = Director::baseFolder().$templatePathRel;
+            $viewableObj        = new ViewableData();
+
+            $output = $viewableObj->customise(
+                array(
+                    'FormName'      => $this->name,
+                    'FieldName'     => $fieldName,
+                    'Label'         => isset($fieldReference['title']) ? $fieldReference['title'] : '',
+                    'errorMessage'  => isset($this->errorMessages[$fieldName]) ?  $this->errorMessages[$fieldName] : '',
+                    'FieldTag'      => $this->SSformFields['fields']->fieldByName($fieldName)->Field(),
+                    'FieldHolder'   => $this->SSformFields['fields']->fieldByName($fieldName)->FieldHolder(),
+                    'Parent'        => $this,
+                )
+            )->renderWith($templatePathAbs);
+        } else {
+            $output = 'Template '.$template.' could not be found!';
+        }
 
         return $output;
     }
