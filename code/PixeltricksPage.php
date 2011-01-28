@@ -231,10 +231,7 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
                 '.$snippetStr.'
 
                 $(document).ready(function() {
-                console.log(QuickSearchForm_customHtmlFormSubmit_1);
                     '.$onLoadSnippetStr.'
-console.log(QuickSearchForm_customHtmlFormSubmit_1);
-
                 });
             ');
         }
