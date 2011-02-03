@@ -531,7 +531,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      */
     public function Cancel() {
         $this->setCurrentStep($this->defaultStartStep);
-        $this->deleteSessionData();
+        $this->deleteSessionData(false);
 
         if ($this->cancelPageID) {
             $link = DataObject::get_by_id('Page', $this->cancelPageID)->Link();
