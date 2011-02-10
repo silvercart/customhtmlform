@@ -199,16 +199,7 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
         Requirements::javascript('pixeltricks_module/script/jquery.pixeltricks.forms.validator.js');
     }
 
-    /**
-     * Erweitert die init-Methode des erweiterten Controllers.
-     *
-     * @return void
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
-     * @since 25.10.2010
-     */
-    public function init() {
+    public function onAfterInit() {
         // -------------------------------------------------------------------
         // Javascript Onload Snippets einfuegen
         // -------------------------------------------------------------------
