@@ -539,7 +539,9 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
             $link = $this->Link();
         }
 
-        Director::redirect($link, 302);
+        if (!Director::redirected_to($link)) {
+            Director::redirect($link, 302);
+        }
     }
 
     /**
