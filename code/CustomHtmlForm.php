@@ -105,6 +105,17 @@ class CustomHtmlForm extends Form {
     );
 
     /**
+     * Contains custom preferences that can be set in the form object.
+     *
+     * @var array
+
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pxieltricks GmbH
+     * @since 23.02.2011
+     */
+    protected $preferences = array();
+
+    /**
      * Enthaelt fuer jede Formularklasse die Nummer der aktuellen
      * Instanziierung.
      *
