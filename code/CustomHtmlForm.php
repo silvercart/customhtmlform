@@ -150,6 +150,10 @@ class CustomHtmlForm extends Form {
         if (is_array($params)) {
             $this->customParameters = $params;
         }
+
+        // Hook for setting preferences via a method call
+        $this->preferences();
+
         if (is_array($preferences)) {
             foreach ($preferences as $title => $setting) {
                 if (!empty($title)) {
@@ -212,6 +216,17 @@ class CustomHtmlForm extends Form {
 
         // Register the default module directory from mysite/_config.php
         self::registerModule($project);
+    }
+
+    /**
+     * Here you can set the preferences. This is an alternative to setting
+     * them via the $preferences class variable.
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pixeltricks GmbH
+     * @since 23.02.2011
+     */
+    public function preferences() {
     }
 
     /**
