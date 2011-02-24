@@ -136,6 +136,11 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
             );
         }
 
+        // Inject controller
+        $customFields = array(
+            'Controller' => $this->owner
+        );
+
         if ($renderWithObject !== null) {
             if (is_array($renderWithObject)) {
                 foreach ($renderWithObject as $renderWithSingleObject) {
@@ -156,23 +161,13 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
                     unset($customFields['RecordClassName']);
                 }
             }
-        } else {
-            $customFields = null;
         }
 
-        if ($customFields) {
-            $outputForm = $this->registeredCustomHtmlForms[$formIdentifier]->customise($customFields)->renderWith(
-                array(
-                    $this->registeredCustomHtmlForms[$formIdentifier]->class,
-                )
-            );
-        } else {
-            $outputForm = $this->registeredCustomHtmlForms[$formIdentifier]->renderWith(
-                array(
-                    $this->registeredCustomHtmlForms[$formIdentifier]->class,
-                )
-            );
-        }
+        $outputForm = $this->registeredCustomHtmlForms[$formIdentifier]->customise($customFields)->renderWith(
+            array(
+                $this->registeredCustomHtmlForms[$formIdentifier]->class,
+            )
+        );
 
         return $outputForm;
     }
