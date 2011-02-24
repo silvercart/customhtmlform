@@ -105,6 +105,13 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @var integer
      */
     protected $currentStep;
+
+    /**
+     * Contains the current form instance.
+     * 
+     * @var CustomHtmlForm
+     */
+    protected $currentFormInstance;
     
     /**
      * Voreinstellungen fuer die Formularreihe.
@@ -171,9 +178,22 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         $this->initialiseSessionData();
         $this->nrOfSteps = $this->getNumberOfSteps();
 
-        $formInstance = $this->registerCurrentFormStep();
-        $this->processCurrentFormStep($formInstance);
+        $this->currentFormInstance = $this->registerCurrentFormStep();
+        $this->processCurrentFormStep($this->currentFormInstance);
         parent::init();
+    }
+
+    /**
+     * Returns the current form instance object
+     *
+     * @return CustomHtmlForm
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pxieltricks GmbH
+     * @since 24.02.2011
+     */
+    public function getCurrentFormInstance() {
+        return $this->currentFormInstance;
     }
 
     /**
