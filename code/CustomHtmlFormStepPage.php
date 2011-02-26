@@ -1,16 +1,34 @@
 <?php
+/*
+ * Copyright 2010, 2011 pixeltricks GmbH
+ *
+ * This file is part of CustomHtmlForms.
+ *
+ * CustomHtmlForms is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * CustomHtmlForms is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with CustomHtmlForms.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 /**
- * Der Seitentyp, der im CMS als Seite fuer eine Formularreihe angelegt wird.
- * 
- * Es muss ein Basisname (Feld "basename") fuer die Formularobject- und
- * Templatedateien angegeben werden, die zur Darstellung der Schritte
- * verwendet werden sollen.
+ * page type that must be instanciated in the backend for a multi step form
+ *
+ * A base name (field "basename" for the form object and the template files of
+ * the form must be defined
  *
  * @package pixeltricks_module
  * @author Sascha Koehler <skoehler@pixeltricks.de>
  * @copyright 2010 pxieltricks GmbH
  * @since 25.10.2010
- * @license none
+ * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
 class CustomHtmlFormStepPage extends Page {
 
@@ -26,8 +44,7 @@ class CustomHtmlFormStepPage extends Page {
     );
 
     /**
-     * Liste von URLs, die die Stepreihe aufrufen duerfen, ohne dass diese
-     * sich zuruecksetzt.
+     * list of URL from which the step form can be call without resetting the form
      *
      * @var array
      *
@@ -45,7 +62,7 @@ class CustomHtmlFormStepPage extends Page {
     );
     
     /**
-     * Erweitert die Eingabemaske des Admins.
+     * defines the CMS interface for $this
      * 
      * @return FieldSet
      *
@@ -69,38 +86,33 @@ class CustomHtmlFormStepPage extends Page {
 }
 
 /**
- * Der Seitentyp, der im CMS als Seite fuer eine Formularreihe angelegt wird.
+ * corresponding controller
  *
- * Es muss ein Basisname (Feld "basename") fuer die Formularobject- und
- * Templatedateien angegeben werden, die zur Darstellung der Schritte
- * verwendet werden sollen.
+ * a base name (field "basename") must be specified
  *
- * @package pixeltricks_module
  * @author Sascha Koehler <skoehler@pixeltricks.de>
  * @copyright 2010 pxieltricks GmbH
  * @since 25.10.2010
- * @license none
+ * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
 class CustomHtmlFormStepPage_Controller extends Page_Controller {
 
     /**
-     * Wird von der Init-Methode befuellt. Enthaelt die Anzahl der Formular-
-     * objekte.
+     * number of form objects; set by init()
      * 
      * @var integer
      */
     protected $nrOfSteps = -1;
 
     /**
-     * Der Schritt, der als erstes angezeigt werden soll, wenn noch kein
-     * Schritt gesetzt worden ist.
+     * step to be shown if no step is specified
      *
      * @var integer
      */
     protected $defaultStartStep = 1;
     
     /**
-     * Enthaelt die Nummer des aktuellen Schritts.
+     * number of current step
      * 
      * @var integer
      */
@@ -114,7 +126,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     protected $currentFormInstance;
     
     /**
-     * Voreinstellungen fuer die Formularreihe.
+     * preferences for the step form
      *
      * @return array
      *
@@ -123,12 +135,13 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @since 17.11.2010
      */
     protected $basePreferences = array(
+        // directory where to search for the templates
         'templateDir' => '' // Das Verzeichnis, in dem die Templates fuer die
                             // Formularreihe gesucht werden sollen
     );
 
     /**
-     * Enthaelt die Namen der Schritte.
+     * contains the step's names
      *
      * @var array
      *
@@ -139,7 +152,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     protected $stepNames = array();
 
     /**
-     * Speichert fuer jeden Schritt, ob er sichtbar ist oder nicht.
+     * defines a steps visibility
      *
      * @var array
      *
@@ -150,7 +163,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     protected $stepVisibility = array();
 
     /**
-     * Speichert die Formularobjekte fuer jeden Schritt
+     * Contains the form objects for every step
      *
      * @var array
      *
@@ -161,7 +174,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     protected $stepObjects = array();
 
     /**
-     * Initialisiert die Formularreihe.
+     * initializes the step form
      *
      * @return void
      *
@@ -197,7 +210,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
-     * Liefert die Nummer des aktuellen Schritts zurueck.
+     * returns the id of the current step
      *
      * @return int
      *
@@ -210,8 +223,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
-     * Liefert die als abgeschlossen markierten Schritte als numerisches Array
-     * zurueck.
+     * returns the completed steps as a numeric array
      *
      * @return array
      *
@@ -224,9 +236,10 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
-     * Speichert einen Schritt als abgeschlossen.
+     * records a step to be completed
      *
-     * @param int $stepNr Nummer des aktuellen Schritts. Wenn weggelassen, wird der aktuelle Schritt automatisch eingesetzt.
+     * @param int $stepNr id of the step; if not defined the current step will
+     *                    be chosen
      *
      * @return void
      *
@@ -246,10 +259,11 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
+     * call to the parent method; the corresponding parameters will be set
      * Ruft die gleichnamige Methode der Elternseite auf und erstellt den
      * passenden Parameter.
      *
-     * @param string $formIdentifier Die eindeutige Kennung des Formulars.
+     * @param string $formIdentifier the forms unique id
      *
      * @return string
      *
@@ -275,11 +289,11 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
-     * Speichert die Formulardaten des aktuellen Schritts.
+     * saves form data of the present step
      *
-     * @param array $formData Die Formulardaten fuer diesen Schritt.
-     * @param int   $stepNr   Die Nummer des Schritts, fuer den die Formulardaten gespeichert werden sollen.
-     *                        Wird nichts angegeben, wird der aktuelle Schritt genommen.
+     * @param array $formData form data for this step
+     * @param int   $stepNr   id of the step; if not defined the current step will
+     *                        be chosen
      *
      * @return void
      *
@@ -297,11 +311,11 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
-     * Liefert die Daten des aktuellen Schritts als assoziatives Array. Sind
-     * keine Daten vorhanden, wird false zurueckgegeben.
+     * returns the data of the current step as an associative array;
+     * if there is no data false will be returned
      *
-     * @param int $stepNr Die Nummer des Schritts, fuer den die Formulardaten gespeichert werden sollen.
-     *                    Wird nichts angegeben, wird der aktuelle Schritt genommen.
+     * @param int $stepNr id of the step; if not defined the current step will
+     *                    be chosen
      *
      * @return array | boolean false
      *
@@ -323,8 +337,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
-     * Liefert alle in der Session gespeicherten Daten als assoziatives Array
-     * zurueck.
+     * returns all session data as an associative array
      *
      * @return array
      *
@@ -348,8 +361,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
-     * Befuellt die Felder des mitgelieferten Formulars mit den ggfs. in der
-     * Session gespeicherten Werten.
+     * fills in the form fields with available session data
      * 
      * @param array &$fields Die zu befuellenden Felder
      *
@@ -380,7 +392,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
-     * Gibt die Nummer des vorhergehenden Schritts zurueck.
+     * returns the id of the previous step
      *
      * @return integer
      *
@@ -395,7 +407,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
-     * Gibt die Nummer des folgenden Schritts zurueck.
+     * returns the id of the next step
      *
      * @return integer
      *
@@ -410,9 +422,9 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
-     * Setzt die Nummer des aktuellen Schritts
+     * sets the id of the current step
      *
-     * @param integer $stepNr Die Nummer, die dem aktuellen Schritt zugewiesen werden soll.
+     * @param integer $stepNr id to be assigned
      *
      * @return void
      *
@@ -425,7 +437,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
-     * Gibt den Link zur vorhergehenden Seite zurueck.
+     * returns the link to the previous step
      *
      * @return string | boolean false
      *
@@ -446,7 +458,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
-     * Gibt den Link zur folgenden Seite zurueck.
+     * returns the link to the next step
      *
      * @return string | boolean false
      *
@@ -467,7 +479,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
-     * Gibt den Link zurueck, mit dem man Abbrechen kann.
+     * returns the canel link
      *
      * @return string | boolean false
      *
@@ -486,7 +498,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
-     * Erhoeht den aktuellen Schritt und laedt die Seite neu.
+     * increments the present step and reloads page
      *
      * @return void
      *
@@ -502,7 +514,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
-     * Vermindert den aktuellen Schritt und laedt die Seite neu.
+     * decrements the current step an reloads the page
      *
      * @return void
      *
@@ -520,8 +532,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
-     * Springt zum angegebenen Schritt, wenn dieser schon abgeschlossen ist
-     * und laedt die Seite neu.
+     * jumps to the defined step if it is compleated and relods the page
      *
      * @return void
      *
@@ -540,8 +551,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
-     * Bricht das Ausfuellen des Formulars ab und leitet den Nutzer zur
-     * ersten Seite zurueck.
+     * cancels all form data an redirects to the first step
      *
      * @return void
      *
@@ -565,7 +575,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
-     * Loescht die Daten aller Schritte aus der Session
+     *deletes all step data from session
      *
      * @return void
      *
@@ -584,10 +594,9 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
-     * Gibt den Titel des angegegeben Schrittes zurueck.
+     * returns the defined steps title
      *
-     * @param int $stepNr Der Index des Schrittes, dessen Name geliefert werden
-     *                    soll.
+     * @param int $stepNr step index
      *
      * @return string
      *
@@ -606,7 +615,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
-     * Liefert alle Schritte als DataObjectSet zurueck.
+     * returns all steps as DataObjectSet
      *
      * @return DataObjectSet
      *
@@ -639,11 +648,9 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
-     * Prueft, ob der aktuelle oder angegebene Schritt schon als ausgefuellt
-     * markiert wurde.
+     * Is the current or defined step completed?
      *
-     * @param bool $stepIdx Optional: Nummer des Schritts, der geprueft werden
-     *                      soll.
+     * @param bool $stepIdx Optional: index of step to be checked
      *
      * @return bool
      *
@@ -667,11 +674,9 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
-     * Prueft, ob der vorherige Schritt schon als ausgefuellt
-     * markiert wurde.
+     * has the previous step been completed?
      *
-     * @param bool $stepIdx Optional: Nummer des Schritts, der geprueft werden
-     *                      soll.
+     * @param bool $stepIdx Optional: index of step to be checked
      *
      * @return bool
      *
@@ -698,7 +703,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
-     * Registriert das Formular fuer den aktuellen Schritt.
+     * registers form for the current step
      *
      * @return Object
      *
@@ -725,10 +730,9 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
-     * Fuehrt eine Prozessormethode auf dem aktuellen Formularobjekt aus,
-     * wenn diese vorhanden ist.
+     * executes a processor method on the current form if it exists
      *
-     * @param Object $formInstance Die Instanz des aktuellen Formularobjekts.
+     * @param Object $formInstance instance of current form
      *
      * @return void
      *
@@ -755,8 +759,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
-     * Legt die fuer die CustomHtmlFormStep benoetigte Datenstruktur in der
-     * Session an.
+     * stes the data structure for the CustomHtmlFormStep in the session
      *
      * $_SESSION
      *   CustomHtmlFormStep
@@ -790,14 +793,12 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
-     * Gibt die Anzahl der Formularschritte zurueck.
-     * Diese wird folgendermassen bestimmt:
-     * - Pruefung, ob Template mit Namensschema "{basename}{schritt}.ss"
-     *   existiert.
-     * - Pruefung, ob Klasse mit Namensschema "{basename}{schritt}.php"
-     *   deklariert ist.
-     * Die Schritte werden in einer Schleife hochgezaehlt; ist eine der beiden
-     * Bedingungen nicht erfuellt, wird die Schleife abgebrochen.
+     * returns the number of form steps
+     * it will be determined like this:
+     * - does a template with name scheme {basename}{step}.ss exist?
+     * - does a class with name scheme {basename}{step}.php exist?
+     * the steps get counted by a loop. if one of those two conditions not true
+     * the loop will be aborted
      *
      * @return integer
      *
@@ -851,8 +852,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
     
     /**
-     * Wenn das Templateverzeichnis in den Preferences definiert ist, wird es
-     * zurueckgeliefert.
+     * if the template directory is defined via preferences it will be returned
      *
      * @return string
      *
@@ -874,8 +874,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
-     * Gibt an, ob die Step-Seite sich selbst aufgerufen hat, oder ob der
-     * Aufruf von einer anderen Seite aus erfolgte.
+     * Has the step page been called by itself or from the outside?
      *
      * @return void
      *
@@ -903,7 +902,8 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
             if ($refererUri === substr($requestUri, 0, strlen($refererUri))) {
                 $callFromOutside = false;
             }
-            
+
+            // did a member of the whitelist make this call?
             // Pruefen, ob der Aufruf durch ein Whitelist-Mitglied durchgefuehrt
             // wurde.
             if ($callFromOutside) {
@@ -924,7 +924,8 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
                 }
             }
         } else {
-            // Hack fuer Uploadify-Script!
+            // Hack for Uploadify-Script!
+            // The Uploadify-Script calls the flasplayer which does not send a referer
             // Dieses ruft durch den Flashplayer auf, der keinen Referer mitschickt.
             if (strpos($_SERVER['HTTP_USER_AGENT'], 'Adobe') !== false ||
                 strpos($_SERVER['HTTP_USER_AGENT'], 'Shockwave') !== false ||

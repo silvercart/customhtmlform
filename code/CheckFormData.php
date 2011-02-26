@@ -1,36 +1,55 @@
 <?php
+/*
+ * Copyright 2010, 2011 pixeltricks GmbH
+ *
+ * This file is part of CustomHtmlForms.
+ *
+ * CustomHtmlForms is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * CustomHtmlForms is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with CustomHtmlForms.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 /**
- * Stellt Methoden zur Pruefung von Formularwerten zur Verfuegung.
+ * Offers methods for form input validation
  *
  * @package pixeltricks_module
  * @author Sascha Koehler <skoehler@pixeltricks.de>
  * @copyright 2010 pxieltricks GmbH
  * @since 25.10.2010
- * @license none
+ * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
 class CheckFormData {
 
     /**
-     * Der Wert des zu pruefenden Ausdrucks.
+     * value of expression to be checked
      *
      * @var mixed
      */
     protected $value;
 
     /**
-     * Erstellt einen neuen zu pruefenden Ausdruck.
+     * creates a new expression
      *
-     * @param mixed $value Der Wert des zu pruefenden Ausdrucks
+     * @param mixed $value value of expression to be checked
      */
     public function __construct($value) {
         $this -> value = $value;
     }
 
     /**
-     * Prueft, ob die Eingabe Sonderzeichen enthaelt und dieses Resultat dem
-     * erwarteten Resultat entspricht.
+     * Checks if input containes special chars and if the result corresponds to
+     * the expected result
      * 
-     * @param boolean $expectedResult Das erwartete Resultat.
+     * @param boolean $expectedResult expected result
      *
      * @return array
      *
@@ -73,6 +92,7 @@ class CheckFormData {
     }
 
     /**
+     * Is the input formally an email address?
      * Prueft, ob die Eingabe formal einer Email Adresse entspricht und
      * dieses Resultat dem erwarteten Resultat entspricht.
      *
@@ -119,9 +139,9 @@ class CheckFormData {
     }
 
     /**
-     * Prueft, ob die Eingabe in ein Captchafield korrekt war.
+     * checks captcha field input
      *
-     * @param array $parameters Name des Formulars und Feldes:
+     * @param array $parameters form's and field's name
      *      array(
      *          'formName'  => string,
      *          'fieldName' => string
@@ -163,10 +183,9 @@ class CheckFormData {
     }
 
     /**
-     * Prueft, ob ein Feld leer ist und dieses Resultat dem erwarteten Resultat
-     * entspricht.
+     * Checks if a field is empty and if this result is expected
      *
-     * @param boolean $expectedResult Das erwartete Resultat.
+     * @param boolean $expectedResult the expected result
      *
      * @return array
      *
@@ -203,11 +222,10 @@ class CheckFormData {
     }
 
     /**
-     * Prueft, ob der Wert eines Feldes leer ist; ob ein Fehler zurueckgegeben
-     * wird, haengt davon ab, ob das als Abhaengigkeit gegebene Feld
-     * ausgefuellt ist.
+     * Is the field empty? If a dependent field is not filled in an error will
+     * be returned
      *
-     * @param array $parameters Die zu pruefenden Werte:
+     * @param array $parameters fields to be checked
      *      array(
      *          array(
      *              'field'     => string,
@@ -259,11 +277,9 @@ class CheckFormData {
     }
 
     /**
-     * Prueft, ob die Laenge des Wertes der angegebenen Mindestlaenge
-     * entspricht. Whitespaces am Anfang und Ende des Wertes werden fuer den
-     * Vergleich entfernt.
+     * Does the input strings have the minimum length? Whitespaces do not count
      *
-     * @param int $minLength Die Mindestlaenge, die der Ausdruck haben muss.
+     * @param int $minLength the expression#s minimum length
      *
      * @return array(
      *      'success'       => bool,
@@ -291,11 +307,9 @@ class CheckFormData {
     }
 
     /**
-     * Prueft, ob die Laenge des Wertes der angegebenen Laenge
-     * entspricht. Whitespaces am Anfang und Ende des Wertes werden fuer den
-     * Vergleich entfernt.
+     * Does the input string match the length defined? Whitespaces do not count
      *
-     * @param int $length Die Laenge, die der Ausdruck exakt haben muss.
+     * @param int $length tthe expressions exact length
      *
      * @return array(
      *      'success'       => bool,
@@ -323,13 +337,12 @@ class CheckFormData {
     }
 
     /**
-     * Prueft ob der Wert eines Feldes dem Wert eines anderen Feldes
-     * entspricht.
+     * Do the values of two fields match?
      *
-     * @param array $parameters Der zu pruefende Feldname und Wert:
+     * @param array $parameters Value and field name to be compared
      *      array (
-     *          'value'      => string: Wert den das Feld haben muss
-     *          'fieldName'  => string: Name des anderen Feldes
+     *          'value'      => string: the value the field must have
+     *          'fieldName'  => string: Name of the other field
      *      )
      *
      * @return array(
@@ -361,13 +374,12 @@ class CheckFormData {
     }
 
     /**
-     * Prueft ob der Wert eines Feldes dem Wert eines anderen Feldes
-     * nicht entspricht.
+     * checks if two field values do NOT match (inversion of mustEqual())
      *
-     * @param array $parameters Der zu pruefende Feldname und Wert:
+     * @param array $parameters Value and field name to be compared
      *      array (
-     *          'value'      => string: Wert den das Feld nicht haben darf
-     *          'fieldName'  => string: Name des anderen Feldes
+     *          'value'      => string: value the field must NOT have
+     *          'fieldName'  => string: Name of the other field
      *      )
      *
      * @return array(
@@ -399,9 +411,9 @@ class CheckFormData {
     }
 
     /**
-     * Prueft, ob ein Feld ausschliesslich aus Zahlen besteht.
+     * Does a field contain number only
      *
-     * @param boolean $expectedResult Das erwartete Resultat.
+     * @param boolean $expectedResult the expected result can be true or false
      *
      * @return array(
      *      'success'       => bool,
@@ -437,9 +449,9 @@ class CheckFormData {
     }
 
     /**
-     * Prueft, ob der Wert eines Feldes einer Waehrungsangabe entspricht.
+     * Checks if the field input is a currency
      *
-     * @param mixed $expectedResult Das erwartete Resultat.
+     * @param mixed $expectedResult the expected result
      *
      * @return array(
      *      'success'       => bool,
@@ -468,9 +480,9 @@ class CheckFormData {
     }
 
     /**
-     * Prueft, ob der Wert eines Feldes einer Datumsangabe entspricht.
+     * Checks if the field input is a date
      *
-     * @param mixed $expectedResult Das erwartete Resultat.
+     * @param mixed $expectedResult programmers expectation to be met
      *
      * @return array(
      *      'success'       => bool,
@@ -499,12 +511,11 @@ class CheckFormData {
     }
 
     /**
-     * Entfernt alle Whitespaces aus dem uebergebenen Wert und gibt das
-     * Ergebnis zurueck.
+     * removes a values whitespaces and returns the value cleaned
      *
-     * @param string $value Der zu bearbeitende Wert.
+     * @param string $value value to be cleaned of whitespaces
      *
-     * @return string
+     * @return string the cheaned value
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
      * @copyright 2010 pxieltricks GmbH

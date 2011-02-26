@@ -1,40 +1,58 @@
 <?php
+/*
+ * Copyright 2010, 2011 pixeltricks GmbH
+ *
+ * This file is part of CustomHtmlForms.
+ *
+ * CustomHtmlForms is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * CustomHtmlForms is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with CustomHtmlForms.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 /**
- * Stellt Funktionalitaet bereit, die fuer Formulare mit frei anpassbarem
- * HTML-Code nuetzlich ist.
+ * Provide functionallity for forms with freely configurable HTML code
  *
  * @package pixeltricks_module
  * @author Sascha Koehler <skoehler@pixeltricks.de>
  * @copyright 2010 pxieltricks GmbH
  * @since 25.10.2010
- * @license none
+ * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
 class CustomHtmlForm extends Form {
     /**
-     * Speichert den Controller der aufrufenden Klasse.
+     * saves controller of calling class
      *
      * @var Controller
      */
     protected $controller;
 
     /**
-     * Enthaelt die CustomHtmlForm-Definitionen der Formularfelder.
+     * contains form definitions of form fields
      *
      * @var array
      */
     protected $formFields = array();
 
     /**
-     * Enthaelt beliebige Gruppen, in denen Felder gesammelt werden koennen.
+     * contains groups in which fields can be collected
      *
      * @var array
      */
     protected $fieldGroups;
 
     /**
-     * Enthaelt die fuer Silverstripe aufbereiteten Formularfelder.
+     * contains the form fields prepared for sapphire
      *
-     * Aufbau:
+     * scheme:
      * $SSformFields = array(
      *     'fields' => array(FieldSet),
      *     'actions' => array(FieldSet)
@@ -45,50 +63,44 @@ class CustomHtmlForm extends Form {
     protected $SSformFields;
 
     /**
-     * Der Name des Objekts.
+     * the objects name
      *
      * @var string
      */
     protected $name;
 
     /**
-     * Der Name des Objekts, der fuer die Javascript-Validatoren verwendet
-     * wird.
+     * name of the objects which should be used for the JS validators
      *
      * @var string
      */
     protected $jsName;
 
     /**
-     * Enthaelt die Fehlermeldungen fuer ein Formular.
+     * contains the error message for a form field
      *
      * @var array
      */
     protected $errorMessages;
 
     /**
-     * Enthaelt die Benachrichtigungen fuer ein Formular.
+     * contains the messages for a form
      *
      * @var array
      */
     protected $messages;
 
     /**
-     * Enthaelt ein assoziatives Array mit Werten, die fuer die Instanz des
-     * Formulars als Hiddenfields eingefuegt werden. Diese Felder werden
-     * keiner Validierung unterzogen und dienen nur der Weitergabe von
-     * Daten zur Steuerung der Auswertung.
+     * Contains an associative array with values that are passed to the form as
+     * hidden fields. These values will not be validated, they only contain data
+     * for control and evaluation.
      *
      * @var array
      */
     protected $customParameters;
 
     /**
-     * Enthaelt die Voreinstellungen fuer das Formular.
-     *
-     * Diese Einstellungen koennen ueberschrieben werden, indem in der
-     * Formularinstanz ein Array "preferences" angelegt wird, in dem die
-     * hier definierten Werte ueberschrieben werden.
+     * the forms preferences; can be overwritten in the instance
      *
      * @var array
      */
@@ -116,6 +128,8 @@ class CustomHtmlForm extends Form {
     protected $preferences = array();
 
     /**
+     * Instances of $this will have a unique ID
+     *
      * Enthaelt fuer jede Formularklasse die Nummer der aktuellen
      * Instanziierung.
      *
@@ -138,13 +152,12 @@ class CustomHtmlForm extends Form {
     );
 
     /**
-     * Erstellt ein Formularobjekt, dessen Layout frei in einem Template
-     * gestaltet werden kann.
+     * creates a form object with a free configurable markup
      *
-     * @param ContentController $controller  Das aufrufende Controller-Objekt
-     * @param array             $params      Optionale Parameter
-     * @param array             $preferences Optionale Voreinstellungen
-     * @param bool              $barebone    Gibt an, ob das Formular nur instanziiert werden soll, oder ob es tatsaechlich benutzt wird.
+     * @param ContentController $controller  the calling controller instance
+     * @param array             $params      optional parameters
+     * @param array             $preferences optional preferences
+     * @param bool              $barebone    defines if a form should only be instanciated or be used too
      *
      * @return void
      *
@@ -184,6 +197,7 @@ class CustomHtmlForm extends Form {
             new FieldSet()
         );
 
+        // Counter for the form class, init or increment
         // Zaehler fuer die Formularklasse ggfs. initialisieren und erhoehen.
         if (!isset(self::$classInstanceCounter[$this->class])) {
             self::$classInstanceCounter[$this->class] = 0;
@@ -193,9 +207,11 @@ class CustomHtmlForm extends Form {
             self::$classInstanceCounter[$this->class]++;
         }
 
+        // new assignment required, because the controller will be overwritten in the form class
         // Nochmaliges Setzen erforderlich, da der Controller in der Form-Klasse ueberschrieben wird.
         $this->controller = $controller;
 
+        // create group structure
         // Gruppenstruktur erzeugen
         if (isset($this->formFields)) {
             $this->fieldGroups['formFields'] = $this->formFields;
@@ -211,9 +227,14 @@ class CustomHtmlForm extends Form {
         parent::setFields($this->SSformFields['fields']);
         parent::setActions($this->SSformFields['actions']);
 
+        // define form action
         // Action fuer das Formular setzen
         $this->setFormAction(Controller::join_links($this->getFormController($controller, $preferences)->Link(), $name));
 
+        /*
+         * load and init JS validators
+         * form integration via FormAttributes()
+         */
         // -------------------------------------------------------------------
         // Javascript-Validator laden und initialisieren.
         // Einbindung ins Formular erfolgt in Methode "FormAttributes()".
@@ -236,6 +257,7 @@ class CustomHtmlForm extends Form {
      * @author Sascha Koehler <skoehler@pixeltricks.de>
      * @copyright 2011 pixeltricks GmbH
      * @since 23.02.2011
+     * @return void
      */
     public function preferences() {
     }
@@ -254,14 +276,14 @@ class CustomHtmlForm extends Form {
      * @author Sascha Koehler <skoehler@pixeltricks.de>
      * @copyright 2011 pixeltricks GmbH
      * @since 28.01.2011
+     * @return void
      */
     public static function registerModule($moduleName, $priority = 51) {
         self::$registeredModules[$moduleName] = $priority;
     }
 
     /**
-     * Gibt die Javascriptbefehle zur Initialisierung des Javascript-Validators
-     * zurueck.
+     * Returns JS commands for JS validators init
      *
      * @return array
      *
@@ -317,8 +339,7 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Erstellt einen String mit Javascript-Code, der die Formularfelder an
-     * den Javascript-Validator uebergibt.
+     * Creates a string with JS measures that passes the form fields to the JS Validators
      *
      * @return string
      *
@@ -335,7 +356,7 @@ class CustomHtmlForm extends Form {
                 $eventStr               = '';
 
                 // ------------------------------------------------------------
-                // Javascript Requirements erzeugen
+                // create JS requirements
                 // ------------------------------------------------------------
                 if (isset($fieldProperties['checkRequirements'])) {
                     foreach ($fieldProperties['checkRequirements'] as $requirement => $definition) {
@@ -347,7 +368,7 @@ class CustomHtmlForm extends Form {
                 }
 
                 // ------------------------------------------------------------
-                // Javascript Events erzeugen
+                // create JS event
                 // ------------------------------------------------------------
                 if (isset($fieldProperties['jsEvents'])) {
                     foreach ($fieldProperties['jsEvents'] as $event => $definition) {
@@ -359,7 +380,7 @@ class CustomHtmlForm extends Form {
                 }
 
                 // ------------------------------------------------------------
-                // Zusaetzliche Attribute einfuegen
+                // add additional attributes
                 // ------------------------------------------------------------
                 if (isset($fieldProperties['title'])) {
                     $titleField = 'title: "'.str_replace('"', '\"', $fieldProperties['title']).'",';
@@ -395,11 +416,10 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Liefert einen String mit Javascript-Code, der sich aus den uebergebenen
-     * Parametern ergibt.
+     * Returns a string of JS code created from the passed parameters
      *
-     * @param string $requirement Der Name des Requirements
-     * @param mixed  $definition  Die Definition
+     * @param string $requirement name of the requirement
+     * @param mixed  $definition  the definition
      * 
      * @return string
      *
@@ -453,11 +473,10 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Liefert einen String mit Javascript-Code, der sich aus den uebergebenen
-     * Parametern ergibt.
+     * Returns a string of JS code created from the passed parameters
      *
-     * @param string $event      Der Name des Events
-     * @param mixed  $definition Die Definition
+     * @param string $event      events name
+     * @param mixed  $definition the definition
      *
      * @return string
      *
@@ -519,8 +538,7 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Diese Methode kann optional in den abgeleiteten Klassen implementiert
-     * werden.
+     * this method can be implemented optionally in child classes
      *
      * @return void
      *
@@ -535,7 +553,7 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Befuellt die Formularwerte mit gesendeten Werten aus dem Request-Objekt.
+     * fills form fields with values from the request
      *
      * @return void
      *
@@ -554,10 +572,11 @@ class CustomHtmlForm extends Form {
     }
 
     /**
+     * Returns the parameter used to set the field value; might be "value" or "selectedValue"
      * Liefert den Parameter, der zum Setzen des Feldwertes benutzt wird.
      * Dieser kann je nach Feldtyp "value" oder "selectedValue" sein.
      *
-     * @param string $fieldName Der Name des Feldes
+     * @param string $fieldName name of the field
      *
      * @return string
      *
@@ -593,12 +612,11 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Verarbeitet das gesendete Formular. Treten Validierungsfehler auf,
-     * wird das Formular mit den entsprechenden Hinweisen angezeigt, ansonsten
-     * wird der neue User eingeloggt und auf die Accountseite weitergeleitet.
+     * Processes the submitted form; If there are validation errors the form will
+     * be returned with error messages.
      *
-     * @param SS_HTTPRequest $data Die gesendeten Rohdaten
-     * @param Form           $form Das Formularobjekt
+     * @param SS_HTTPRequest $data submit data
+     * @param Form           $form form object
      *
      * @return ViewableData
      *
@@ -627,11 +645,11 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Die Validierung des Formulars ist fehlgeschlagen, also wird hier das
-     * Formular mit den entsprechenden Fehlermeldungen ausgegeben.
+     * In calse of validation errors the form will be returned with error
+     * messages
      *
-     * @param SS_HTTPRequest $data Die gesendeten Rohdaten
-     * @param Form           $form Das Formularobjekt
+     * @param SS_HTTPRequest $data submit data
+     * @param Form           $form form object
      *
      * @return ViewableData
      *
@@ -641,7 +659,7 @@ class CustomHtmlForm extends Form {
      */
     public function submitFailure($data, $form) {
 
-        // Formular befuellen
+        // fill in the form
         foreach ($this->formFields as $fieldName => $fieldDefinition) {
             if (isset($data[$fieldName])) {
                 $this->formFields[$fieldName][$this->getFormFieldValueLabel($fieldName)] = Convert::raw2xml($data[$fieldName]);
@@ -654,6 +672,7 @@ class CustomHtmlForm extends Form {
             $form = $this->class;
         }
 
+        // prepare validation errors for template
         // aufgetretene Validierungsfehler in Template auswertbar machen
         $data = array(
             'errorMessages' => new DataObjectSet($this->errorMessages),
@@ -669,7 +688,8 @@ class CustomHtmlForm extends Form {
             $this->SSformFields['fields'],
             $this->SSformFields['actions']
         );
-        
+
+        // fill in form with validation results and render it
         // Formular mit Validierungsergebnissen befuellen und rendern
         $outputForm = $this->customise($data)->renderWith(
             array(
@@ -677,6 +697,7 @@ class CustomHtmlForm extends Form {
             )
         );
 
+        // pass rendered form to the controller
         // Gerendertes Formular an Controller uebergeben
         return $this->controller->customise(
             array(
@@ -686,12 +707,11 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Wird ausgefuehrt, wenn nach dem Senden des Formulars keine Validierungs-
-     * fehler aufgetreten sind.
+     * This method will be call if there are no validation error
      *
-     * @param SS_HTTPRequest $data     Die gesendeten Rohdaten
-     * @param Form           $form     Das Formularobjekt
-     * @param array          $formData Die abgesicherten Formulardaten
+     * @param SS_HTTPRequest $data     input data
+     * @param Form           $form     form object
+     * @param array          $formData secured form data
      *
      * @return void
      *
@@ -704,13 +724,12 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Uebertraegt die Werte aus einem SS_HTTPRequest-Objekt in die definierten
-     * Formularfelder. Nicht uebermittelte Werte werden auf false gesetzt.
+     * Passes the values from the SS_HTTPRequest object to the defined form;
+     * missing values will be set to false
      *
-     * Bei der Uebertragung werden die gesendeten Werte datenbanksicher
-     * gemacht.
+     * during the transmission the values will become SQL secure
      *
-     * @param SS_HTTPRequest $request Die gesendeten Rohdaten.
+     * @param SS_HTTPRequest $request the submitted data
      *
      * @return array
      *
@@ -725,6 +744,7 @@ class CustomHtmlForm extends Form {
             $formData['SecurityID'] = Convert::raw2sql($request['SecurityID']);
         }
 
+        // read defined form fields
         // Definierte Formularfelder auslesen
         foreach ($this->fieldGroups as $groupName => $groupFields) {
             foreach ($groupFields as $fieldName => $fieldDefinition) {
@@ -736,6 +756,7 @@ class CustomHtmlForm extends Form {
             }
         }
 
+        // read dynamically added form fields
         // Dynamisch hinzugefuegte Formularfelder auslesen
         if (isset($this->customParameters)) {
             foreach ($this->customParameters as $customParameterKey => $customParameterValue) {
@@ -751,7 +772,7 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Prueft alle Formularfelder und gibt das Ergebnis als Array zurueck.
+     * checks all form fields and returns them as array
      *
      * @param SS_HTTPRequest $data Die zu pruefenden Formulardaten.
      *
@@ -872,10 +893,10 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Erstellt die Eingabe- und Aktionsfelder fuer das Formular und befuellt
-     * fehlende Angaben in der Felddefinition mit Standardwerten.
+     * creates the form's input fieldsand action fields and fills missing data
+     * with standard values
      *
-     * @return array Liefert die Fields und Actions des Formulars:
+     * @return array retunrs form fields and form actions
      *      array(
      *          'fields'    => FieldSet,
      *          'actions'   => FieldSet
@@ -889,7 +910,7 @@ class CustomHtmlForm extends Form {
         $fields = new FieldSet();
 
         // --------------------------------------------------------------------
-        // Metadaten fuer das Formular setzen
+        // define meta data
         // --------------------------------------------------------------------
         if (!empty($this->customParameters)) {
             foreach ($this->customParameters as $customParameterKey => $customParameterValue) {
@@ -902,7 +923,7 @@ class CustomHtmlForm extends Form {
         $fields->push($field);
 
         // --------------------------------------------------------------------
-        // Fieldset aus den Definitionen erstellen
+        // create field set from definition
         // --------------------------------------------------------------------
         foreach ($this->fieldGroups as $groupName => $groupFields) {
             foreach ($groupFields as $fieldName => $fieldDefinition) {
@@ -930,11 +951,11 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Erstellt ein Formularfeld anhand der uebergebenen Definition. Setzt die
-     * Felddefinitionen auf Standardwerte, wenn nicht definiert.
+     * creates a form field from the definition; sets standard values if they
+     * are not defined
      *
-     * @param string $fieldName       Der Name des Feldes
-     * @param array  $fieldDefinition Die Definition des Feldes
+     * @param string $fieldName       the field's name
+     * @param array  $fieldDefinition the field definitions
      *
      * @return Field
      *
@@ -957,8 +978,7 @@ class CustomHtmlForm extends Form {
             }
         }
 
-        // Erforderliche Felder mit Standardwerten befuellen, wenn sie
-        // nicht angegeben sind.
+        // fill required field with standard values if they where not specified
         if (!isset($fieldDefinition['isRequired'])) {
             $fieldDefinition['isRequired'] = false;
             $fieldReference['isRequired'] = $fieldDefinition['isRequired'];
@@ -1004,7 +1024,7 @@ class CustomHtmlForm extends Form {
             $fieldReference['form'] = $fieldDefinition['form'];
         }
 
-        // Feld erstellen
+        // create field
         if ($fieldDefinition['type'] == 'ListboxField') {
             $field = new $fieldDefinition['type'](
                 $fieldName,
@@ -1143,7 +1163,7 @@ class CustomHtmlForm extends Form {
             );
         }
 
-        // Wenn eine Fehlermeldung fuer dieses Feld existiert, dann einbauen
+        // add error message for a field if defined
         if (isset($this->errorMessages[$fieldName])) {
             $field->errorMessage = new ArrayData(array(
                 'message' => $this->errorMessages[$fieldName]['message']
@@ -1154,7 +1174,7 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Liefert den Namen des Formularobjekts zurueck.
+     * returns the form objects name
      *
      * @return string
      *
@@ -1167,7 +1187,7 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Liefert die Attribute fuer den HTML-Formtag.
+     * returns the attributes for the <form>-tag
      *
      * @return string
      *
@@ -1186,9 +1206,9 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Setzt eine neue Nachricht fuer das Formular.
+     * defines a new message for the form
      *
-     * @param string $message Der Nachrichtentext
+     * @param string $message the message's text
      *
      * @return void
      *
@@ -1201,9 +1221,8 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Setzt die Metadaten fuer die Formularverarbeitung in das Formular-
-     * template ein.
-     * Wird vom Template aus aufgerufen.
+     * passes the meta data for form submission to the template;
+     * called by the template
      *
      * @return string
      *
@@ -1214,12 +1233,13 @@ class CustomHtmlForm extends Form {
     public function CustomHtmlFormMetadata() {
         $metadata = '';
 
-        // Formularname
+        // form name
         $metadata .= $this->dataFieldByName('CustomHtmlFormName')->Field();
 
         // SecurityID
         $metadata .= $this->dataFieldByName('SecurityID')->Field();
 
+        // custom data fields
         // Eigene Datenfelder
         if (!empty($this->customParameters)) {
             foreach ($this->customParameters as $customParameterKey => $customParameterValue) {
@@ -1231,9 +1251,9 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Gibt zurueck, ob eine Gruppe mit dem angegebenen Namen existiert.
+     * does a group with the passed name exist?
      * 
-     * @param string $groupName Der Name der Gruppe
+     * @param string $groupName the group's name
      *
      * @return bool
      *
@@ -1252,10 +1272,11 @@ class CustomHtmlForm extends Form {
     }
     
     /**
-     * Liefert den HTML-Code fuer eine Gruppe von Feldern zurueck.
+     * returns HTML code for a field group
      *
-     * @param string $groupName Name der Gruppe
-     * @param string $template  Name des Templates, das fuer alle Felder der Gruppe verwendet werden soll
+     * @param string $groupName group's name
+     * @param string $template  name of the template that should be used for all
+     *                          fields of the group
      *
      * @return string
      *
@@ -1290,15 +1311,15 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Liefert den HTML-Code fuer das angegebene Feld zurueck. Dieser wird
-     * mit dem Standardtemplate fuer Felder erzeugt.
+     * Returns the HTML code for the passed field; created with the standard
+     * template for fields
      *
-     * @param string $fieldName Der Feldname
-     * @param string $template  optional. Pfad zum Template-Snippet, ausgehend
-     *      relativ vom Siteroot. Durch Setzen eines Punkts kann die Suche in
-     *      einem Modulverzeichnis veranlasst werden:
-     *          "modul.meinTemplate" sucht in Modulverzeichnis "modul" im
-     *          Ordner "templates" nach dem Template "meinTemplate.ss"
+     * @param string $fieldName the field's name
+     * @param string $template  optional; path to template snippet, relative to
+     *                  the sit root; by dot notation search in modul directory
+     *                  can be set:
+     *                  "module.myTemplate" searches in the modul directory
+     *                  "modul/templates" for the template "myTemplate.ss
      *
      * @return string
      *
@@ -1375,9 +1396,9 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Liefert die Fehlermeldungen als HTML-Text zurueck.
+     * returns error message as HTML text
      *
-     * @param string $template optional. Name des Templates, das zum Rendern der Meldungen benutzt werden soll.
+     * @param string $template optional; rendering template's name
      *
      * @return string
      *
@@ -1387,6 +1408,7 @@ class CustomHtmlForm extends Form {
      */
     public function CustomHtmlFormErrorMessages($template = null) {
 
+        // make validation errors in the template evaluable
         // aufgetretene Validierungsfehler in Template auswertbar machen
         $data = array(
             'errorMessages' => new DataObjectSet($this->errorMessages),
@@ -1419,7 +1441,7 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Liefert den Name des Formulars.
+     * returns the form's name
      *
      * @return string
      *
@@ -1436,7 +1458,7 @@ class CustomHtmlForm extends Form {
     }
     
     /**
-     * Gibt den Titel des Formulars zurueck.
+     * returns the form step's title
      *
      * @return string
      *
@@ -1457,7 +1479,7 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Gibt zurueck, ob das Formular sichtbar ist.
+     * is the form visible?
      *
      * @return boolean
      *
@@ -1478,7 +1500,7 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Gibt zurueck, ob der angegebene Schritt der aktuelle ist.
+     * is the defined step the recent step?
      *
      * @return bool
      *
@@ -1497,8 +1519,7 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Prueft, ob der aktuelle oder angegebene Schritt schon als ausgefuellt
-     * markiert wurde.
+     * is the step completed already
      *
      * @return bool
      *
@@ -1519,8 +1540,7 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Prueft, ob der vorherige Schritt schon als ausgefuellt
-     * markiert wurde.
+     * Is the previous step completed?
      *
      * @return bool
      *
@@ -1541,7 +1561,7 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Gibt die Schrittnummer dieses Formularobjekts zurueck.
+     * returns the step number of this form
      *
      * @return int
      *
@@ -1560,7 +1580,7 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Liefert die Beschriftung fuer den Submitbutton des Formulars.
+     * returns submit button title
      *
      * @return string
      *
@@ -1581,8 +1601,7 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Gibt zurueck, ob die Javascript-Validierung des Formulars gewuenscht
-     * ist.
+     * is JS validation defined?
      *
      * @return bool
      *
@@ -1603,8 +1622,7 @@ class CustomHtmlForm extends Form {
     }
     
     /**
-     * Gibt zurueck, ob die Javascript-Validierung zum ersten Fehler im
-     * Formular scrollen soll.
+     * Should the form scroll to the first field after validation?
      *
      * @return bool
      *
@@ -1625,8 +1643,7 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Gibt zurueck, ob die Formularfelder mit gesendeten Werten aus dem
-     * Request-Objekt befuellt werden sollen.
+     * Should the form fields be filled with submitted values from the request object?
      *
      * @return bool
      *
@@ -1647,8 +1664,7 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Gibt zurueck, ob die Javascript-Fehlermeldungen eingeblendet werden
-     * sollen.
+     * Should JS validation messages be shown?
      *
      * @return bool
      *
@@ -1669,8 +1685,7 @@ class CustomHtmlForm extends Form {
     }
     
     /**
-     * Gibt zurueck, ob die Navigation zum Springen auf andere Seiten ange-
-     * zeigt werden soll.
+     * Should the step navigation be shown?
      *
      * @return bool
      *
@@ -1691,7 +1706,7 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Liefert die Beschriftung fuer den Submitbutton des Formulars.
+     * returns the submit button's title
      *
      * @return string
      *
@@ -1712,11 +1727,11 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Fuegt ein Feld zu einer Gruppe hinzu.
+     * adds a field to the group
      *
-     * @param string $groupName        Name der Gruppe, zu der das Feld hinzugefuegt werden soll
-     * @param string $fieldName        Name des Feldes
-     * @param array  $fieldDefinitions Die Definition des Feldes
+     * @param string $groupName        the group's name
+     * @param string $fieldName        the field's name
+     * @param array  $fieldDefinitions the field definitions
      *
      * @return void
      *
@@ -1725,12 +1740,12 @@ class CustomHtmlForm extends Form {
      * @since 27.10.2010
      */
     protected function addFieldToGroup($groupName, $fieldName, $fieldDefinitions) {
-        // Gruppe erstellen, wenn sie noch nicht existiert
+        // create group if it does not exist yet
         if (!isset($this->fieldGroups[$groupName])) {
             $this->fieldGroups[$groupName] = array();
         }
 
-        // Pruefen, ob schon ein Feld mit dem gleichen Namen in dieser Gruppe existiert.
+        // check if a field with the same name exists already in the group
         if (isset($this->fieldGroups[$groupName][$fieldName])) {
             throw new Exception(
                 sprintf(
@@ -1745,10 +1760,10 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Liefert das Controller-Objekt zurueck, das verwendet werden soll.
+     * returns the controller object that should be used
      *
-     * @param ContentController $controller  Das aufrufende Controller-Objekt
-     * @param array             $preferences Die optionalen Voreinstellungen
+     * @param ContentController $controller  the calling controller
+     * @param array             $preferences optional preferences
      *
      * @return ContentController
      *
@@ -1765,10 +1780,9 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Nimmt eine Array-Struktur entgegen und liefert einen String im
-     * Json-Format zurueck.
+     * accepts a array and returns a string in Json format
      *
-     * @param array $structure Ein beliebig strukturiertes Array.
+     * @param array $structure array of any structure
      *
      * @return string
      *
@@ -1794,9 +1808,9 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Erzeugt rekursiv einen Json-String aus einem Array.
+     * creartes a Json string from an array recursively
      *
-     * @param array $structure Das Array, aus dem der JSON-String erzeugt werden soll
+     * @param array $structure the array to be converted to a Json string
      * 
      * @return string
      *

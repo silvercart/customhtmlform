@@ -1,18 +1,38 @@
 <?php
+/*
+ * Copyright 2010, 2011 pixeltricks GmbH
+ *
+ * This file is part of CustomHtmlForms.
+ *
+ * CustomHtmlForms is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * CustomHtmlForms is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with CustomHtmlForms.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 /**
- * Stellt zusaetzliche Methoden und Mechanismen fuer die Page.php bereit, die von Pixeltricks-
- * modulen verwendet werden.
+ * Provides additional methods for Page.php used by the CustomHtmlForms module
  *
  * @package pixeltricks_module
  * @author Sascha Koehler <skoehler@pixeltricks.de>
  * @copyright 2010 pxieltricks GmbH
  * @since 25.10.2010
- * @license none
+ * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
 class PixeltricksPage_Controller extends DataObjectDecorator {
 
     /**
-     * Definiert die erlaubten Methoden.
+     * defines allowed methods
+     *
+     * defines the event to be jumped after form submission
      *
      * Hier wird das zentrale Event fuer die CustomHtmlForm definiert, das
      * nach dem Absenden eines Formulars angesprungen wird.
@@ -27,31 +47,31 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
     );
 
     /**
-     * Enthaelt alle Javascriptbloecke, die im onload-Event ausgefuehrt werden sollen.
+     * Contains all JS blocks to be added to the onload-event
      *
      * @var array
      */
     protected $JavascriptOnloadSnippets = array();
 
     /**
-     * Enthaelt alle Javascriptbloecke, die nicht im onload-Event ausgefuehrt
-     * werden sollen.
+     * Contains all JS blocks NOT to be added to the onload-event
      *
      * @var array
      */
     protected $JavascriptSnippets = array();
 
     /**
-     * Enthaelt eine Liste der registrierten CustomHtmlForm-Formulare.
+     * contains a list of registerd custom html forms
      *
      * @var array
      */
     protected $registeredCustomHtmlForms = array();
 
     /**
+     * adds a snippet to the list of JS onload events
      * Fuegt ein Snippet in die Liste der Javascript Onload-Events ein.
      *
-     * @param string $snippet Textblock mit Javascript-Anweisungen
+     * @param string $snippet text block with JS statements
      *
      * @return void
      *
@@ -64,8 +84,7 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
     }
 
     /**
-     * Fuegt ein Snippet in die Liste der Javascripte ein, die im Headbereich
-     * eingefuegt werden sollen.
+     * adds a snippet to the JS list to be added in the documents header
      *
      * @param string $snippet Textblock mit Javascript-Anweisungen
      *
@@ -80,10 +99,10 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
     }
 
     /**
-     * Registriert ein Formularobjekt.
+     * registers a form object
      *
-     * @param string         $formIdentifier Eindeutiger Name des Formulars, mit dem es in Templates aufgerufen werden kann.
-     * @param CustomHtmlForm $formObj        Das Formularobjekt mit Felddefinitionen und Verarbeitungsmethoden.
+     * @param string         $formIdentifier unique form name which can be called via template
+     * @param CustomHtmlForm $formObj        The form object with field definitions and preocessing methods
      *
      * @return void
      *
@@ -114,10 +133,10 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
     }
 
     /**
-     * Liefert den HTML-Quelltext des angeforderten Formulars zurueck.
+     * returns HTML markup for the requested form
      *
-     * @param string $formIdentifier   Eindeutiger Name des Formulars, mit dem es in Templates aufgerufen werden kann.
-     * @param Object $renderWithObject Array mit Objekten, in deren Kontext das Formular erstellt werden soll.
+     * @param string $formIdentifier   unique form name which can be called via template
+     * @param Object $renderWithObject object array; in those objects context the forms shall be created
      *
      * @return CustomHtmlForm
      *
@@ -173,7 +192,7 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
     }
 
     /**
-     * Eigene Requirements als erste laden.
+     * load some requirements first
      *
      * @return void
      *
@@ -185,7 +204,7 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
         Validator::set_javascript_validation_handler('none');
 
         // -------------------------------------------------------------------
-        // Scripte laden
+        // load scripts
         // -------------------------------------------------------------------
         Requirements::javascript('pixeltricks_module/script/jquery.js');
         Requirements::javascript('pixeltricks_module/script/jquery.scrollTo.min.js');
@@ -194,9 +213,18 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
         Requirements::javascript('pixeltricks_module/script/jquery.pixeltricks.forms.validator.js');
     }
 
+    /**
+     * hook
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 25.10.2010
+     */
     public function onAfterInit() {
         // -------------------------------------------------------------------
-        // Javascript Onload Snippets einfuegen
+        // add Javascript Onload Snippets
         // -------------------------------------------------------------------
         $onLoadSnippetStr   = '';
         $snippetStr         = '';
@@ -224,11 +252,11 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
     }
 
     /**
-     * Verarbeitungsmethode fuer alle CustomHtmlFormObjekte.
+     * processor method for all customhtmlform forms
      *
-     * @param Form $form Das sendende Formularobjekt
+     * @param Form $form the submitting form object
      *
-     * @return mixed (abhaengig von der verarbeitenden Formularmethode)
+     * @return mixed depends on processing form method
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
      * @copyright 2010 pxieltricks GmbH
@@ -249,7 +277,7 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
     }
 
     /**
-     * Wrapper fuer Action auf Uploadify-Feld.
+     * wrapper for action to uploadify field
      *
      * @return void
      *
@@ -270,9 +298,9 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
     }
 
     /**
-     * Wrapper fuer Action auf Uploadify-Feld.
+     * wrapper for action to uploadify field
      *
-     * @param SS_HTTPRequest $request Die Anfrageparameter
+     * @param SS_HTTPRequest $request the request parameter
      *
      * @return void
      *
@@ -291,7 +319,7 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
     }
 
     /**
-     * Wrapper fuer Action auf Uploadify-Feld.
+     * wrapper for action to uploadify field
      *
      * @return void
      *
