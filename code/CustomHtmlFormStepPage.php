@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * Copyright 2010, 2011 pixeltricks GmbH
  *
  * This file is part of CustomHtmlForms.
@@ -16,6 +16,8 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with CustomHtmlForms.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @package CustomHtmlForm
  */
 
 /**
@@ -24,7 +26,7 @@
  * A base name (field "basename" for the form object and the template files of
  * the form must be defined
  *
- * @package pixeltricks_module
+ * @package CustomHtmlForm
  * @author Sascha Koehler <skoehler@pixeltricks.de>
  * @copyright 2010 pxieltricks GmbH
  * @since 25.10.2010
@@ -90,6 +92,7 @@ class CustomHtmlFormStepPage extends Page {
  *
  * a base name (field "basename") must be specified
  *
+ * @package CustomHtmlForm
  * @author Sascha Koehler <skoehler@pixeltricks.de>
  * @copyright 2010 pxieltricks GmbH
  * @since 25.10.2010

@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * Copyright 2010, 2011 pixeltricks GmbH
  *
  * This file is part of CustomHtmlForms.
@@ -16,12 +16,14 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with CustomHtmlForms.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @package CustomHtmlForm
  */
 
 /**
  * Provide functionallity for forms with freely configurable HTML code
  *
- * @package pixeltricks_module
+ * @package CustomHtmlForm
  * @author Sascha Koehler <skoehler@pixeltricks.de>
  * @copyright 2010 pxieltricks GmbH
  * @since 25.10.2010
@@ -148,7 +150,7 @@ class CustomHtmlForm extends Form {
      * @since 28.01.2011
      */
     public static $registeredModules = array(
-        'pixeltricks_module' => 1
+        'customhtmlform' => 1
     );
 
     /**
@@ -267,7 +269,7 @@ class CustomHtmlForm extends Form {
      *
      * You can give a priority ranging from 1 to 100. The standard priority
      * for the project given in "mysite/_config.php" is 50. The
-     * pixeltricks_module priority is 1. To override both you would give a
+     * customhtmlform priority is 1. To override both you would give a
      * priority of 51 or higher.
      *
      * @param string $moduleName The name of the module
@@ -1415,7 +1417,7 @@ class CustomHtmlForm extends Form {
             'messages' => new DataObjectSet($this->messages)
         );
 
-        $defaultTemplatePath = '/pixeltricks_module/templates/forms/CustomHtmlFormErrorMessages.ss';
+        $defaultTemplatePath = '/customhtmlform/templates/forms/CustomHtmlFormErrorMessages.ss';
 
         if (!empty($template)) {
 

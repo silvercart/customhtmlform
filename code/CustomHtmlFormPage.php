@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * Copyright 2010, 2011 pixeltricks GmbH
  *
  * This file is part of CustomHtmlForms.
@@ -16,18 +16,20 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with CustomHtmlForms.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @package CustomHtmlForm
  */
 
 /**
  * Provides additional methods for Page.php used by the CustomHtmlForms module
  *
- * @package pixeltricks_module
+ * @package CustomHtmlForm
  * @author Sascha Koehler <skoehler@pixeltricks.de>
  * @copyright 2010 pxieltricks GmbH
  * @since 25.10.2010
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
-class PixeltricksPage_Controller extends DataObjectDecorator {
+class CustomHtmlFormPage_Controller extends DataObjectDecorator {
 
     /**
      * defines allowed methods
@@ -206,11 +208,11 @@ class PixeltricksPage_Controller extends DataObjectDecorator {
         // -------------------------------------------------------------------
         // load scripts
         // -------------------------------------------------------------------
-        Requirements::javascript('pixeltricks_module/script/jquery.js');
-        Requirements::javascript('pixeltricks_module/script/jquery.scrollTo.min.js');
-        Requirements::javascript('pixeltricks_module/script/jquery.pixeltricks.forms.checkFormData.js');
-        Requirements::javascript('pixeltricks_module/script/jquery.pixeltricks.forms.events.js');
-        Requirements::javascript('pixeltricks_module/script/jquery.pixeltricks.forms.validator.js');
+        Requirements::javascript('customhtmlform/script/jquery.js');
+        Requirements::javascript('customhtmlform/script/jquery.scrollTo.min.js');
+        Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.checkFormData.js');
+        Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.events.js');
+        Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.validator.js');
     }
 
     /**

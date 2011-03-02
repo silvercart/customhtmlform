@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * Copyright 2010, 2011 pixeltricks GmbH
  *
  * This file is part of CustomHtmlForms.
@@ -16,12 +16,14 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with CustomHtmlForms.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @package CustomHtmlForm
  */
 
 /**
  * Offers methods for form input validation
  *
- * @package pixeltricks_module
+ * @package CustomHtmlForm
  * @author Sascha Koehler <skoehler@pixeltricks.de>
  * @copyright 2010 pxieltricks GmbH
  * @since 25.10.2010
