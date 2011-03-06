@@ -74,9 +74,9 @@ class CustomHtmlFormStepPage extends Page {
      */
     public function getCMSFields() {
 
-        $basenameField       = new TextField('basename', 'Basisname für Formular Objekt- und Templatedateien: ');
-        $showCancelLinkField = new CheckboxField('showCancelLink', 'Abbrechen Link anzeigen');
-        $cancelLinkField     = new TreeDropdownField('cancelPageID', 'Auf welche Seite soll der Abbrechen-Link fuehren: ', 'SiteTree');
+        $basenameField       = new TextField('basename', _t('CustomHtmlFormStepPage.BASE_NAME', 'base name for form object and template files: ', null, 'Basisname für Formular Objekt- und Templatedateien: '));
+        $showCancelLinkField = new CheckboxField('showCancelLink', _t('CustomHtmlFormStepPage.SHOW_CANCEL', 'show cancel link'));
+        $cancelLinkField     = new TreeDropdownField('cancelPageID', _t('CustomHtmlFormStepPage.CANCEL_TARGET', 'To which page should the cancel link direct: ', null, 'Auf welche Seite soll der Abbrechen-Link fuehren: '), 'SiteTree');
 
         $fields = parent::getCMSFields();
         $fields->addFieldToTab('Root.Content.MultistepConfiguration', $basenameField);

@@ -1,7 +1,7 @@
 <% if errorMessages %>
     <div class="error">
         <p>
-            <strong>Bitte pr&uuml;fen Sie Ihre Eingaben in folgenden Feldern:</strong>
+            <strong><% _t('CustomHtmlFormErrorMessages.CHECK_FIELDS','Please check your input on the following fields:') %></strong>
         </p>
         <ul>
             <% control errorMessages %>

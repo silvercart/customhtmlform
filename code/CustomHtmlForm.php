@@ -969,7 +969,7 @@ class CustomHtmlForm extends Form {
         
         if (!isset($fieldDefinition['type'])) {
             throw new Exception(
-                'CustomHtmlForm: Feldtyp muss angegeben werden.'
+                'CustomHtmlForm: Field type must be specified.'
             );
         }
 
@@ -1293,7 +1293,7 @@ class CustomHtmlForm extends Form {
         if (!isset($this->fieldGroups[$groupName])) {
             throw new Exception(
                 sprintf(
-                    'Die CustomHtmlForm Feldgruppe "%s" wird aufgerufen, aber ist nicht definiert.',
+                    'The CustomHtmlForm fieldgroup "%s" is called but not defiened.',
                     $groupName
                 )
             );
@@ -1342,7 +1342,7 @@ class CustomHtmlForm extends Form {
         }
         if ($fieldReference === '') {
             throw new Exception(
-                printf('Das Feld "%s" wird im Template aufgerufen, ist aber nicht im Formularobjekt definiert.', $fieldName)
+                printf('The field "%s" is called via template but not defiened on the form object.', $fieldName)
             );
         }
 
@@ -1751,7 +1751,7 @@ class CustomHtmlForm extends Form {
         if (isset($this->fieldGroups[$groupName][$fieldName])) {
             throw new Exception(
                 sprintf(
-                    'In der CustomHtmlForm Feldgruppe "%s" ist das Feld "%s" schon definiert.',
+                    'In the CustomHtmlForm fieldgroup "%s" the field "%s" is already defiened.',
                     $groupName,
                     $fieldName
                 )

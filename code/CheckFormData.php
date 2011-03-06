@@ -81,9 +81,9 @@ class CheckFormData {
             $success = false;
 
             if ($match) {
-                $errorMessage = _t('Form.HASNOSPECIALSIGNS', 'Dieses Feld muss Sonderzeichen enthalten (andere Zeichen als Buchstaben, Zahlen und die Zeichen "@" und ".").');
+                $errorMessage = _t('Form.HASNOSPECIALSIGNS', 'This field must contain special signs (other signs than letters, numbers and the signs "@" and ".").');
             } else {
-                $errorMessage = _t('Form.HASSPECIALSIGNS', 'Dieses Feld darf nur Buchstaben, Zahlen und die Zeichen "@" und "." enthalten.');
+                $errorMessage = _t('Form.HASSPECIALSIGNS', 'This field must not contain special signs (letters, numbers and the signs "@" and ".").');
             }
         }
 
@@ -128,9 +128,9 @@ class CheckFormData {
             $success = false;
 
             if ($match) {
-                $errorMessage = _t('Form.MUSTNOTBEEMAILADDRESS', 'Bitte geben Sie keine Email Adresse an.');
+                $errorMessage = _t('Form.MUSTNOTBEEMAILADDRESS', 'Please don\'t enter an email address.');
             } else {
-                $errorMessage = _t('Form.MUSTBEEMAILADDRESS', 'Bitte geben Sie eine gültige Email Adresse an.');
+                $errorMessage = _t('Form.MUSTBEEMAILADDRESS', 'Please enter a valid email address.');
             }
         }
 
@@ -171,11 +171,11 @@ class CheckFormData {
                 $success = true;
             } else {
                 $success        = false;
-                $errorMessage   = _t('Form.CAPTCHAFIELDNOMATCH', 'Diese Eingabe war leider falsch. Bitte versuchen Sie es erneut.');
+                $errorMessage   = _t('Form.CAPTCHAFIELDNOMATCH', 'Your entry was not correct. Please try again!');
             }
         } else {
             $success        = false;
-            $errorMessage   = _t('Form.CAPTCHAFIELDNOMATCH', 'Es gab ein technisches Problem. Bitte versuchen Sie es erneut.');
+            $errorMessage   = _t('Form.CAPTCHAFIELDNOMATCH');
         }
 
         return array(
@@ -211,9 +211,9 @@ class CheckFormData {
 
         if (!$success) {
             if ($isFilledIn) {
-                $errorMessage = _t('Form.FIELD_MUST_BE_EMPTY', 'Dieses Feld muss leer sein.');
+                $errorMessage = _t('Form.FIELD_MUST_BE_EMPTY', 'This field must be empty.');
             } else {
-                $errorMessage = _t('Form.FIELD_MAY_NOT_BE_EMPTY', 'Dieses Feld darf nicht leer sein.');
+                $errorMessage = _t('Form.FIELD_MAY_NOT_BE_EMPTY', 'This field may not be empty.');
             }
         }
 
@@ -257,7 +257,7 @@ class CheckFormData {
                 !isset($parameters[0]['hasValue'])) {
 
                 throw new Exception(
-                    'Feld ist falsch konfiguriert fuer Pruefung "CheckFormData->isFilledInDependantOn".'
+                    'Field is misconfigured for "CheckFormData->isFilledInDependantOn".'
                 );
             }
 
@@ -268,13 +268,13 @@ class CheckFormData {
             }
         } else {
             throw new Exception(
-                'Feld ist falsch konfiguriert fuer Pruefung "CheckFormData->isFilledInDependantOn".'
+                'Field is misconfigured for "CheckFormData->isFilledInDependantOn".'
             );
         }
 
         return array(
             'success'       => $isFilledInCorrectly,
-            'errorMessage'  => _t('Form.FIELD_MUST_BE_FILLED_IN', 'Dieses Feld muss ausgefuellt sein.')
+            'errorMessage'  => _t('Form.FIELD_MUST_BE_FILLED_IN', 'Please fill in this field.')
         );
     }
 
@@ -304,7 +304,7 @@ class CheckFormData {
 
         return array(
             'success'       => $hasMinLength,
-            'errorMessage'  => sprintf(_t('Form.MIN_CHARS', 'Bitte geben Sie mindestens %s Zeichen ein.'), $minLength)
+            'errorMessage'  => sprintf(_t('Form.MIN_CHARS', 'Enter at least %s characters.'), $minLength)
         );
     }
 
@@ -334,7 +334,7 @@ class CheckFormData {
 
         return array(
             'success'       => $hasLength,
-            'errorMessage'  => sprintf(_t('Form.FIED_REQUIRES_NR_OF_CHARS', 'Dieses Feld erfordert %s Zeichen.'), $length)
+            'errorMessage'  => sprintf(_t('Form.FIED_REQUIRES_NR_OF_CHARS', 'This field requires exactly %s characters.'), $length)
         );
     }
 
@@ -371,7 +371,7 @@ class CheckFormData {
 
         return array(
             'success'       => $isEqual,
-            'errorMessage'  => sprintf(_t('Form.REQUIRES_SAME_VALUE_AS_IN_FIELD', 'Bitte geben Sie den gleichen Wert ein wie im Feld "%s".'), $refererField)
+            'errorMessage'  => sprintf(_t('Form.REQUIRES_SAME_VALUE_AS_IN_FIELD', 'Please enter the same value as in field "%s".'), $refererField)
         );
     }
 
@@ -408,7 +408,7 @@ class CheckFormData {
 
         return array(
             'success'       => $isNotEqual,
-            'errorMessage'  => sprintf(_t('Form.REQUIRES_OTHER_VALUE_AS_IN_FIELD', 'Dieses Feld darf nicht den gleichen Wert wie das Feld "%s" haben.'), $refererField)
+            'errorMessage'  => sprintf(_t('Form.REQUIRES_OTHER_VALUE_AS_IN_FIELD', 'This field may not have the same value as field "%s".'), $refererField)
         );
     }
 
@@ -446,7 +446,7 @@ class CheckFormData {
 
         return array(
             'success'       => $success,
-            'errorMessage'  => _t('Form.NUMBERS_ONLY', 'Dieses Feld darf nur Zahlen enthalten.')
+            'errorMessage'  => _t('Form.NUMBERS_ONLY', 'This field may consist of numbers only.')
         );
     }
 
@@ -477,7 +477,7 @@ class CheckFormData {
 
         return array(
             'success'       => $success,
-            'errorMessage'  => _t('Form.CURRENCY_ONLY', 'In dieses Feld muss eine Währungsangabe (z.B. "1499,95") eingetragen werden.')
+            'errorMessage'  => _t('Form.CURRENCY_ONLY', 'Please enter a valid currency amount (e.g. 1499,00).')
         );
     }
 
@@ -508,7 +508,7 @@ class CheckFormData {
 
         return array(
             'success'       => $success,
-            'errorMessage'  => _t('Form.DATE_ONLY', 'In dieses Feld muss ein Datum im Format "tt.mm.jjjj" eingetragen werden.')
+            'errorMessage'  => _t('Form.DATE_ONLY', 'Please enter a valid german date (e.g. "dd.mm.yyyy").')
         );
     }
 
