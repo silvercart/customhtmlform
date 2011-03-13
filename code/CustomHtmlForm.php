@@ -806,10 +806,10 @@ class CustomHtmlForm extends Form {
                 empty($data['SecurityID']) ||
                 $data['SecurityID'] != $securityID) {
 
-                $error                      = true;
+                $error                 = true;
                 $errorMessages['CSRF'] = array(
                     'message'   => 'CSRF Attacke!',
-                    'fieldname' => 'CSRF',
+                    'fieldname' => 'Ihre Session ist abgelaufenen. Bitte laden Sie die Seite neu und füllen Sie das Formular nochmals aus.',
                     'title'     => 'Ihre Session ist abgelaufenen. Bitte laden Sie die Seite neu und füllen Sie das Formular nochmals aus.',
                     'CSRF' => array(
                         'message' => 'CSRF Attacke!'
