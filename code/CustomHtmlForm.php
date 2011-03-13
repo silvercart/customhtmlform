@@ -122,12 +122,23 @@ class CustomHtmlForm extends Form {
      * Contains custom preferences that can be set in the form object.
      *
      * @var array
-
+     *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
      * @copyright 2011 pxieltricks GmbH
      * @since 23.02.2011
      */
     protected $preferences = array();
+
+    /**
+     * Contains fields that shall not be validated.
+     *
+     * @var array
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pxieltricks GmbH
+     * @since 13.03.2011
+     */
+    protected $noValidationFields = array();
 
     /**
      * Instances of $this will have a unique ID
@@ -816,6 +827,11 @@ class CustomHtmlForm extends Form {
 
                     // Formale Erfordernisse pruefen, die dieses Feld erfuellen muss.
                     if (!isset($fieldDefinition['checkRequirements'])) {
+                        continue;
+                    }
+
+                    // Check if the field shall be validated
+                    if (in_array($fieldName, $this->noValidationFields)) {
                         continue;
                     }
 
@@ -1579,6 +1595,46 @@ class CustomHtmlForm extends Form {
         );
 
         return $stepNr;
+    }
+
+    /**
+     * Deactivate Validation for the given field.
+     *
+     * @param string $fieldName The name of the field
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pxieltricks GmbH
+     * @since 13.03.2011
+     */
+    protected function deactivateValidationFor($fieldName) {
+        if (!in_array($fieldName, $this->noValidationFields)) {
+            $this->noValidationFields[] = $fieldName;
+        }
+    }
+
+    /**
+     * Activate Validation for the given field.
+     *
+     * @param string $fieldName The name of the field
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pxieltricks GmbH
+     * @since 13.03.2011
+     */
+    protected function activateValidationFor($fieldName) {
+        if (in_array($fieldName, $this->noValidationFields)) {
+            for ($index = 0; $index < count($this->noValidationFields); $index++) {
+                if ($fieldName == $this->noValidationFields[$index]) {
+                    break;
+                }
+            }
+            unset($this->noValidationFields[$index]);
+            $this->noValidationFields = array_values($this->noValidationFields);
+        }
     }
 
     /**

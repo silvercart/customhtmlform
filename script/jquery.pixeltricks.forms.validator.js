@@ -40,6 +40,12 @@ pixeltricks.forms.validator = function()
      *   FAILURE -> Validierung ist fehlgeschlagen
      */
     this.validationResult = 'PENDING';
+    /**
+     * Contains fields that shall not be validated
+     *
+     * @var array
+     */
+    this.noValidationFields = [];
     
     /**
      * Enthaelt die Voreinstellungen.
@@ -71,135 +77,149 @@ pixeltricks.forms.validator = function()
         var fieldName;
         var requirements;
         var result;
-        var errors = false;
-        var checkFormData = new pixeltricks.forms.checkFormData();
-        var errorMessages = {};
+        var errors            = false;
+        var checkFormData     = new pixeltricks.forms.checkFormData();
+        var errorMessages     = {};
+        var noValidationField = '';
+        var doFieldValidation = true;
         
         $.each(
             this.formFields,
             function(fieldName, definitions)
             {
+                doFieldValidation = true;
+
+                // Check if a validation exception is set for this field
+                for (noValidationField in that.noValidationFields) {
+                    if (that.noValidationFields[noValidationField] == fieldName) {
+                        doFieldValidation = false;
+                        break;
+                    }
+                }
+
                 // Dieser Wert kann je nach Feldtyp noch ueberschrieben werden
                 // (siehe z.B. CheckboxFields)
                 checkFormData.setFieldValue(
                     that.getFormFieldValue(that.formName + that.nameSeparator + fieldName)
                 );
 
-                $.each(
-                    definitions,
-                    function(definition, values)
-                    {
-                        // Requirements pruefen
-                        if (definition == 'type')
+                if (doFieldValidation) {
+                    $.each(
+                        definitions,
+                        function(definition, values)
                         {
-                            if (!restrictCheckToField || (restrictCheckToField == fieldName)) {
-                                checkFormData.setFieldType(values);
+                            // Requirements pruefen
+                            if (definition == 'type')
+                            {
+                                if (!restrictCheckToField || (restrictCheckToField == fieldName)) {
+                                    checkFormData.setFieldType(values);
 
-                                // Fuer Checkboxen uebergeben wir als Feldwert den
-                                // Zustand der Box (checked / unchecked) als Boolean-Wert
-                                if (values == 'CheckboxField') {
-                                    checkFormData.setFieldValue(
-                                        $('#' + that.formName + that.nameSeparator + fieldName).attr('checked')
-                                    );
-                                }
-                                // Fuer Radiobuttons wird der Wert des selektierten Buttons
-                                // ausgelesen.
-                                if (values == 'OptionsetField') {
-                                    checkFormData.setFieldValue(
-                                        $('#' + that.formName + that.nameSeparator + fieldName + '  :checked').val()
-                                    );
+                                    // Fuer Checkboxen uebergeben wir als Feldwert den
+                                    // Zustand der Box (checked / unchecked) als Boolean-Wert
+                                    if (values == 'CheckboxField') {
+                                        checkFormData.setFieldValue(
+                                            $('#' + that.formName + that.nameSeparator + fieldName).attr('checked')
+                                        );
+                                    }
+                                    // Fuer Radiobuttons wird der Wert des selektierten Buttons
+                                    // ausgelesen.
+                                    if (values == 'OptionsetField') {
+                                        checkFormData.setFieldValue(
+                                            $('#' + that.formName + that.nameSeparator + fieldName + '  :checked').val()
+                                        );
+                                    }
                                 }
                             }
-                        }
-                        else if (definition == 'checkRequirements')
-                        {
-                            // ------------------------------------------------
-                            // Eingaben validieren
-                            // ------------------------------------------------
-                            var fieldErrorMessages  = [];
-                            var fieldErrors         = false;
+                            else if (definition == 'checkRequirements')
+                            {
+                                // ------------------------------------------------
+                                // Eingaben validieren
+                                // ------------------------------------------------
+                                var fieldErrorMessages  = [];
+                                var fieldErrors         = false;
 
-                            $.each(
-                                values,
-                                function(requirement, requiredValue)
-                                {
-                                    if (!restrictCheckToField || (restrictCheckToField == fieldName)) {
-                                        // ----------------------------------------
-                                        // Sonderfaelle bearbeiten
-                                        // ----------------------------------------
+                                $.each(
+                                    values,
+                                    function(requirement, requiredValue)
+                                    {
+                                        if (!restrictCheckToField || (restrictCheckToField == fieldName)) {
+                                            // ----------------------------------------
+                                            // Sonderfaelle bearbeiten
+                                            // ----------------------------------------
 
-                                        // Feld muss ausgefuellt sein, wenn anderes Feld
-                                        // ausgefuellt ist
-                                        if (requirement == 'isFilledInDependantOn')
-                                        {
-                                            requiredValue = [
-                                                requiredValue,
-                                                {
-                                                    formName:       that.formName,
-                                                    nameSeparator:  that.nameSeparator
-                                                }
-                                            ];
-                                        }
-
-                                        // Kriterium bezieht sich auf ein anderes Feld
-                                        if (requirement == 'mustEqual' ||
-                                            requirement == 'mustNotEqual')
-                                        {
-                                            requiredValue = {
-                                                fieldName:  that.formFields[requiredValue].title ? that.formFields[requiredValue].title : requiredValue,
-                                                value:      $('#' + that.formName + that.nameSeparator + requiredValue).val()
-                                            };
-                                        }
-
-                                        if (requirement == 'PtCaptchaInput') {
-                                            requiredValue = {
-                                                formName:   that.formName,
-                                                fieldName:  fieldName
-                                            };
-                                        }
-
-                                        // Callbackfunktion verwenden
-                                        if (requirement == 'callBack')
-                                        {
-                                            var strFun  = requiredValue;
-                                            var fun     = eval(strFun);
-
-                                            fieldCheckResult = fun(that, fieldName);
-                                        }
-                                        else
-                                        {
-                                            fieldCheckResult = checkFormData[requirement](requiredValue);
-                                        }
-
-                                        // Fehler speichern
-                                        if (fieldCheckResult)
-                                        {
-                                            if (!fieldCheckResult.success)
+                                            // Feld muss ausgefuellt sein, wenn anderes Feld
+                                            // ausgefuellt ist
+                                            if (requirement == 'isFilledInDependantOn')
                                             {
-                                                fieldErrorMessages.push(fieldCheckResult.errorMessage);
-                                                fieldErrors = true;
+                                                requiredValue = [
+                                                    requiredValue,
+                                                    {
+                                                        formName:       that.formName,
+                                                        nameSeparator:  that.nameSeparator
+                                                    }
+                                                ];
+                                            }
+
+                                            // Kriterium bezieht sich auf ein anderes Feld
+                                            if (requirement == 'mustEqual' ||
+                                                requirement == 'mustNotEqual')
+                                            {
+                                                requiredValue = {
+                                                    fieldName:  that.formFields[requiredValue].title ? that.formFields[requiredValue].title : requiredValue,
+                                                    value:      $('#' + that.formName + that.nameSeparator + requiredValue).val()
+                                                };
+                                            }
+
+                                            if (requirement == 'PtCaptchaInput') {
+                                                requiredValue = {
+                                                    formName:   that.formName,
+                                                    fieldName:  fieldName
+                                                };
+                                            }
+
+                                            // Callbackfunktion verwenden
+                                            if (requirement == 'callBack')
+                                            {
+                                                var strFun  = requiredValue;
+                                                var fun     = eval(strFun);
+
+                                                fieldCheckResult = fun(that, fieldName);
+                                            }
+                                            else
+                                            {
+                                                fieldCheckResult = checkFormData[requirement](requiredValue);
+                                            }
+
+                                            // Fehler speichern
+                                            if (fieldCheckResult)
+                                            {
+                                                if (!fieldCheckResult.success)
+                                                {
+                                                    fieldErrorMessages.push(fieldCheckResult.errorMessage);
+                                                    fieldErrors = true;
+                                                }
                                             }
                                         }
                                     }
-                                }
-                            );
+                                );
 
-                            // Bei diesem Feld sind ein oder mehrere Fehler aufgetreten,
-                            // die hier zusammengefasst und ausgeben werdeb.
-                            if (fieldErrors)
-                            {
-                                errorMessages[fieldName] = fieldErrorMessages;
-                                errors                   = true;
-                            }
-                            else
-                            {
-                                if (!restrictCheckToField || (restrictCheckToField == fieldName)) {
-                                    errorMessages[fieldName] = -1;
+                                // Bei diesem Feld sind ein oder mehrere Fehler aufgetreten,
+                                // die hier zusammengefasst und ausgeben werdeb.
+                                if (fieldErrors)
+                                {
+                                    errorMessages[fieldName] = fieldErrorMessages;
+                                    errors                   = true;
+                                }
+                                else
+                                {
+                                    if (!restrictCheckToField || (restrictCheckToField == fieldName)) {
+                                        errorMessages[fieldName] = -1;
+                                    }
                                 }
                             }
                         }
-                    }
-                );
+                    );
+                }
             }
         );
         
@@ -479,5 +499,43 @@ pixeltricks.forms.validator = function()
      */
     this.setPreference = function(preference, value) {
         that.preferences[preference] = value;
+    }
+
+    /**
+     * Activate Validation for the given field.
+     *
+     * To achieve this we simply delete the given fieldname from the
+     * noValidationFields array.
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pxieltricks GmbH
+     * @since 13.03.2011
+     */
+    this.activateValidationFor = function(fieldName) {
+        this.noValidationFields = jQuery.grep(
+            this.noValidationFields,
+            function(value, index) {
+                return value != fieldName;
+            }
+        );
+    }
+
+    /**
+     * Deactivate Validation for the given field.
+     *
+     * @param string $fieldName The name of the field
+     * 
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pxieltricks GmbH
+     * @since 13.03.2011
+     */
+    this.deactivateValidationFor = function(fieldName) {
+        if (jQuery.inArray(this.noValidationFields, fieldName) === -1) {
+            this.noValidationFields.push(fieldName);
+        }
     }
 }

@@ -140,6 +140,30 @@ pixeltricks.forms.events = function()
     }
 
     /**
+     * Bind a generic event and function call to this element.
+     *
+     * @param array definition The event instructions:
+     *          'type' => The event type, e.g. 'onclick'
+     *          'callFunction' => The function to call on event
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pixeltricks GmbH
+     * @since 13.03.2011
+     */
+    this.setEventHandler = function(definition) {
+        var fieldId = that.formName + that.nameSeparator + that.fieldName;
+
+        if (definition.type &&
+            definition.callFunction) {
+            $('#' + fieldId).bind(
+                definition.type,
+                eval(definition.callFunction)
+            );
+        }
+
+    }
+
+    /**
      * Bindet ein onChange-Event an ein Referenzfeld, das die Werte eines
      * anderen Feldes aendert, wenn sich der Wert des Referenzfelds aendert.
      *
