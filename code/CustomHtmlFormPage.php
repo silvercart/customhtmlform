@@ -216,7 +216,16 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
     }
 
     /**
-     * hook
+     * The onload and other javascript instructions are generated here.
+     *
+     * If you want a onload snippet to be loaded at the very end of the
+     * definition you have to define it as array and provide the string
+     * 'loadInTheEnd' as second parameter:
+     * 
+     * $controller->addJavascriptOnloadSnippet(
+     *     'var yourJavascriptSnippet;',
+     *     'loadInTheEnd'
+     * );
      *
      * @return void
      *
@@ -225,14 +234,22 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
      * @since 25.10.2010
      */
     public function onAfterInit() {
-        // -------------------------------------------------------------------
-        // add Javascript Onload Snippets
-        // -------------------------------------------------------------------
-        $onLoadSnippetStr   = '';
-        $snippetStr         = '';
+        $onLoadSnippetStr           = '';
+        $onLoadInTheEndSnippetStr   = '';
+        $snippetStr                 = '';
 
         foreach ($this->JavascriptOnloadSnippets as $snippet) {
-            $onLoadSnippetStr .= $snippet;
+            if (is_array($snippet)) {
+                if (isset($snippet[1]) &&
+                    $snippet[1] == 'loadInTheEnd') {
+
+                    $onLoadInTheEndSnippetStr .= $snippet[0];
+                } else {
+                    $onLoadSnippetStr .= $snippet[0];
+                }
+            } else {
+                $onLoadSnippetStr .= $snippet;
+            }
         }
 
         foreach ($this->JavascriptSnippets as $snippet) {
@@ -248,6 +265,7 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
 
                 $(document).ready(function() {
                     '.$onLoadSnippetStr.'
+                    '.$onLoadInTheEndSnippetStr.'
                 });
             ');
         }
