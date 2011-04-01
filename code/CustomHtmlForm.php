@@ -1506,7 +1506,7 @@ class CustomHtmlForm extends Form {
      * @since 29.11.2010
      */
     public function getStepIsVisible() {
-        $isVisible = '';
+        $isVisible = false;
 
         if (isset($this->preferences['stepIsVisible'])) {
             $isVisible = $this->preferences['stepIsVisible'];
