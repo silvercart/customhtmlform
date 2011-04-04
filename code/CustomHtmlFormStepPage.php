@@ -271,10 +271,19 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @since 25.10.2010
      */
     public function InsertCustomHtmlForm($formIdentifier = null) {
-        $formClassName = $this->stepMapping[$this->getCurrentStep()]['object']->class;
+        global $project;
 
-        if (class_exists($formClassName)) {
-            return parent::InsertCustomHtmlForm($formClassName);
+        if ($formIdentifier === null) {
+            $formIdentifier = $this->stepMapping[$this->getCurrentStep()]['class'];
+        }
+
+        $projectPrefix          = ucfirst($project);
+        $extendedFormIdentifier = $projectPrefix.$formIdentifier;
+
+        if (class_exists($extendedFormIdentifier)) {
+            return parent::InsertCustomHtmlForm($extendedFormIdentifier);
+        } else {
+            return parent::InsertCustomHtmlForm($formIdentifier);
         }
     }
 
@@ -626,13 +635,15 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
             }
 
             if (isset($this->stepMapping[$stepIdx])) {
+                $stepClassName = $this->stepMapping[$stepIdx]['class'];
+
                 $stepList['step'.$stepIdx] = array(
                     'title'           => $this->stepMapping[$stepIdx]['name'],
                     'stepIsVisible'   => $this->stepMapping[$stepIdx]['visibility'],
                     'stepIsCompleted' => $this->isStepCompleted($stepIdx),
                     'isCurrentStep'   => $isCurrentStep,
                     'stepNr'          => $stepIdx,
-                    'step'            => $this->stepMapping[$stepIdx]['object']
+                    'step'            => new $stepClassName($this, null, null ,false)
                 );
             }
         }
@@ -705,8 +716,8 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @since 25.10.2010
      */
     protected function registerCurrentFormStep() {
-        $formClassName = $this->stepMapping[$this->getCurrentStep()]['object']->class;
-        $formInstance  = $this->stepMapping[$this->getCurrentStep()]['object'];
+        $formClassName = $this->stepMapping[$this->getCurrentStep()]['class'];
+        $formInstance  = new $formClassName($this);
         $this->registerCustomHtmlForm($formClassName, $formInstance);
         
         return $formInstance;
@@ -724,7 +735,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @since 16.11.2010
      */
     protected function processCurrentFormStep($formInstance) {
-        $formClassName = $this->stepMapping[$this->getCurrentStep()]['object']->class;
+        $formClassName = $this->stepMapping[$this->getCurrentStep()]['class'];
         $checkClass = new ReflectionClass($formClassName);
         
         if ($checkClass->hasMethod('process')) {
@@ -871,13 +882,15 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
 
             if (class_exists($extendedStepClassName)) {
                 $stepClass = new $extendedStepClassName($this, null, null, true);
+                $stepClassNameUnified = $extendedStepClassName;
             } else {
                 $stepClass = new $stepClassName($this, null, null, true);
+                $stepClassNameUnified = $stepClassName;
             }
             $this->stepMapping[$stepIdx] = array(
                 'name'        => $stepClass->getStepTitle(),
-                'visibility'  => $stepClass->getStepIsVisible(),
-                'object'      => $stepClass
+                'class'       => $stepClassNameUnified,
+                'visibility'  => $stepClass->getStepIsVisible()
             );
             $stepIdx++;
         }
@@ -937,8 +950,8 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
 
                 $this->stepMapping[$stepIdx] = array(
                     'name'        => $stepClass->getStepTitle(),
-                    'visibility'  => $stepClass->getStepIsVisible(),
-                    'object'      => $stepClass
+                    'class'       => $stepClassName,
+                    'visibility'  => $stepClass->getStepIsVisible()
                 );
                 $moduleStepIdx++;
                 $stepIdx++;
