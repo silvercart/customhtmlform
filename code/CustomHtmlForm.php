@@ -1588,11 +1588,15 @@ class CustomHtmlForm extends Form {
      * @since 23.12.2010
      */
     protected function getStepNr() {
-        $stepNr = str_replace(
-            $this->controller->basename,
-            '',
-            $this->class
-        );
+        $stepList = $this->controller->getStepList();
+        $stepNr   = 1;
+
+        foreach ($stepList as $step) {
+            if ($step->step->class == $this->class) {
+                $stepNr = $step->stepNr;
+                break;
+            }
+        }
 
         return $stepNr;
     }

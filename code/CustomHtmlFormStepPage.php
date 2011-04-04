@@ -144,37 +144,26 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     );
 
     /**
-     * contains the step's names
+     * Contains a list of all steps, their titles, visibility, etc.
      *
      * @var array
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 29.11.2010
+     * @copyright 2011 pixeltricks GmbH
+     * @since 04.04.2011
      */
-    protected $stepNames = array();
+    protected $stepMapping = array();
 
     /**
-     * defines a steps visibility
+     * Contains a list of directories where additional steps are located.
      *
      * @var array
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 29.11.2010
+     * @copyright 2011 pixeltricks GmbH
+     * @since 04.04.2011
      */
-    protected $stepVisibility = array();
-
-    /**
-     * Contains the form objects for every step
-     *
-     * @var array
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 22.12.2010
-     */
-    protected $stepObjects = array();
+    protected $stepDirectories = array();
 
     /**
      * initializes the step form
@@ -192,9 +181,16 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         }
 
         $this->initialiseSessionData();
-        $this->nrOfSteps = $this->getNumberOfSteps();
 
+        if (empty($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['stepDirectories'])) {
+            $this->saveStepDirectoriesInSession();
+        }
+        
+        $this->generateStepMapping();
+
+        $this->nrOfSteps           = $this->getNumberOfSteps();
         $this->currentFormInstance = $this->registerCurrentFormStep();
+        
         $this->processCurrentFormStep($this->currentFormInstance);
         parent::init();
     }
@@ -275,19 +271,10 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @since 25.10.2010
      */
     public function InsertCustomHtmlForm($formIdentifier = null) {
-        global $project;
+        $formClassName = $this->stepMapping[$this->getCurrentStep()]['object']->class;
 
-        if ($formIdentifier === null) {
-            $formIdentifier = $this->basename.$this->getCurrentStep();
-        }
-
-        $projectPrefix          = ucfirst($project);
-        $extendedFormIdentifier = $projectPrefix.$formIdentifier;
-
-        if (class_exists($extendedFormIdentifier)) {
-            return parent::InsertCustomHtmlForm($extendedFormIdentifier);
-        } else {
-            return parent::InsertCustomHtmlForm($formIdentifier);
+        if (class_exists($formClassName)) {
+            return parent::InsertCustomHtmlForm($formClassName);
         }
     }
 
@@ -610,8 +597,9 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     public function getStepName($stepNr) {
         $stepName = '';
 
-        if (isset($this->stepNames[$stepNr])) {
-            $stepName = $this->stepNames[$stepNr];
+        if (isset($this->stepMapping[$stepNr]) &&
+            isset($this->stepMapping[$stepNr]['name'])) {
+            $stepName = $this->stepMapping[$stepNr]['name'];
         }
 
         return $stepName;
@@ -637,14 +625,16 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
                 $isCurrentStep = false;
             }
 
-            $stepList['step'.$stepIdx] = array(
-                'title'           => $this->stepNames[$stepIdx],
-                'stepIsVisible'   => $this->stepVisibility[$stepIdx],
-                'stepIsCompleted' => $this->isStepCompleted($stepIdx),
-                'isCurrentStep'   => $isCurrentStep,
-                'stepNr'          => $stepIdx,
-                'step'            => $this->stepObjects[$stepIdx]
-            );
+            if (isset($this->stepMapping[$stepIdx])) {
+                $stepList['step'.$stepIdx] = array(
+                    'title'           => $this->stepMapping[$stepIdx]['name'],
+                    'stepIsVisible'   => $this->stepMapping[$stepIdx]['visibility'],
+                    'stepIsCompleted' => $this->isStepCompleted($stepIdx),
+                    'isCurrentStep'   => $isCurrentStep,
+                    'stepNr'          => $stepIdx,
+                    'step'            => $this->stepMapping[$stepIdx]['object']
+                );
+            }
         }
 
         return new DataObjectSet($stepList);
@@ -715,19 +705,9 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @since 25.10.2010
      */
     protected function registerCurrentFormStep() {
-        global $project;
-
-        $projectPrefix         = ucfirst($project);
-        $formClassName         = $this->basename.$this->getCurrentStep();
-        $extendedFormClassName = $projectPrefix.$formClassName;
-
-        if (class_exists($extendedFormClassName)) {
-            $formInstance  = new $extendedFormClassName($this);
-            $this->registerCustomHtmlForm($extendedFormClassName, $formInstance);
-        } else {
-            $formInstance  = new $formClassName($this);
-            $this->registerCustomHtmlForm($formClassName, $formInstance);
-        }
+        $formClassName = $this->stepMapping[$this->getCurrentStep()]['object']->class;
+        $formInstance  = $this->stepMapping[$this->getCurrentStep()]['object'];
+        $this->registerCustomHtmlForm($formClassName, $formInstance);
         
         return $formInstance;
     }
@@ -744,17 +724,8 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @since 16.11.2010
      */
     protected function processCurrentFormStep($formInstance) {
-        global $project;
-
-        $projectPrefix         = ucfirst($project);
-        $formClassName         = $this->basename.$this->getCurrentStep();
-        $extendedFormClassName = $projectPrefix.$formClassName;
-
-        if (class_exists($extendedFormClassName)) {
-            $checkClass = new ReflectionClass($extendedFormClassName);
-        } else {
-            $checkClass = new ReflectionClass($formClassName);
-        }
+        $formClassName = $this->stepMapping[$this->getCurrentStep()]['object']->class;
+        $checkClass = new ReflectionClass($formClassName);
         
         if ($checkClass->hasMethod('process')) {
             $formInstance->process();
@@ -793,6 +764,9 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         if (!isset($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['steps'])) {
             $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['steps'] = array();
         }
+        if (!isset($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['stepDirectories'])) {
+            $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['stepDirectories'] = array();
+        }
     }
 
     /**
@@ -810,48 +784,193 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @since 25.10.2010
      */
     protected function getNumberOfSteps() {
+        return count($this->stepMapping);
+    }
+
+    /**
+     * Generates a map of all steps with links, names, etc.
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pxieltricks GmbH
+     * @since 04.04.2011
+     */
+    public function generateStepMapping() {
+        $this->resetStepMapping();
+
+        // --------------------------------------------------------------------
+        // Get steps from theme- or moduledirectories
+        // --------------------------------------------------------------------
+        $this->getStepsFromModuleOrThemeDirectory();
+
+        // --------------------------------------------------------------------
+        // Get Steps from additional directories
+        // --------------------------------------------------------------------
+        $this->getStepsFromAdditionalDirectories();
+    }
+
+    /**
+     * Save the step mapping in the session.
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pxieltricks GmbH
+     * @since 04.04.2011
+     */
+    public function saveStepDirectoriesInSession() {
+        $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['stepDirectories'] = $this->stepDirectories;
+    }
+
+    /**
+     * Clears the step mapping variable.
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pxieltricks GmbH
+     * @since 04.04.2011
+     */
+    public function resetStepMapping() {
+        $this->stepMapping = array();
+    }
+
+    /**
+     * Fill class variable $stepMapping with steps from the module- or
+     * themedirectory.
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pxieltricks GmbH
+     * @since 04.04.2011
+     */
+    private function getStepsFromModuleOrThemeDirectory() {
         global $project;
 
-        if ($this->nrOfSteps > -1) {
-            return $this->nrOfSteps;
-        }
-        
         $themePath      = $this->getTemplateDir();
+        $projectPrefix  = ucfirst($project);
         $increaseStep   = true;
         $stepIdx        = 1;
-        $pathIdx        = 0;
-        $projectPrefix  = ucfirst($project);
 
-         while ($increaseStep) {
+        while ($increaseStep) {
             $stepClassName         = $this->basename.$stepIdx;
             $extendedStepClassName = $projectPrefix.$this->basename.$stepIdx;
-            
+
             if (!Director::fileExists($themePath.$extendedStepClassName.'.ss') &&
                 !Director::fileExists($themePath.$stepClassName.'.ss')) {
                 $increaseStep = false;
+                continue;
             }
             if (!class_exists($extendedStepClassName) &&
                 !class_exists($stepClassName)) {
                 $increaseStep = false;
-            } else {
-                if (class_exists($extendedStepClassName)) {
-                    $stepClass = new $extendedStepClassName($this, null, null, true);
-                } else {
-                    $stepClass = new $stepClassName($this, null, null, true);
-                }
-                $this->stepNames[$stepIdx]      = $stepClass->getStepTitle();
-                $this->stepVisibility[$stepIdx] = $stepClass->getStepIsVisible();
-                $this->stepObjects[$stepIdx]    = $stepClass;
+                continue;
             }
 
-            if ($increaseStep) {
+            if (class_exists($extendedStepClassName)) {
+                $stepClass = new $extendedStepClassName($this, null, null, true);
+            } else {
+                $stepClass = new $stepClassName($this, null, null, true);
+            }
+            $this->stepMapping[$stepIdx] = array(
+                'name'        => $stepClass->getStepTitle(),
+                'visibility'  => $stepClass->getStepIsVisible(),
+                'object'      => $stepClass
+            );
+            $stepIdx++;
+        }
+    }
+
+    /**
+     * Fill class variable $stepMapping with steps from the additional
+     * directories.
+     *
+     * @param mixed string|array The directory definition
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pxieltricks GmbH
+     * @since 04.04.2011
+     */
+    private function getStepsFromAdditionalDirectories() {
+        $mappingIdx = count($this->stepMapping);
+        $stepIdx    = $mappingIdx + 1;
+        
+        if (!isset($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['stepDirectories'])) {
+            return false;
+        }
+
+        foreach ($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['stepDirectories'] as $directory) {
+
+            $prefix = $this->basename;
+            
+            if (is_array($directory)) {
+                list($directory, $definition) = each($directory);
+
+                if (isset($definition['prefix'])) {
+                    $prefix = $definition['prefix'];
+                }
+            }
+            
+            // ----------------------------------------------------------------
+            // Get steps from each directory
+            // ----------------------------------------------------------------
+            $increaseStep   = true;
+            $moduleStepIdx  = 1;
+
+            while ($increaseStep) {
+                $stepClassName = $prefix.$moduleStepIdx;
+
+                if (!Director::fileExists($directory.$stepClassName.'.ss')) {
+                    $increaseStep = false;
+                    continue;
+                }
+                if (!class_exists($stepClassName)) {
+                    $increaseStep = false;
+                    continue;
+                }
+
+                $stepClass = new $stepClassName($this, null, null, true);
+
+                $this->stepMapping[$stepIdx] = array(
+                    'name'        => $stepClass->getStepTitle(),
+                    'visibility'  => $stepClass->getStepIsVisible(),
+                    'object'      => $stepClass
+                );
+                $moduleStepIdx++;
                 $stepIdx++;
             }
         }
+    }
 
-        $this->nrOfSteps = $stepIdx - 1;
+    /**
+     * Register an additional directory where CustomHtmlFormStepForms are
+     * located.
+     *
+     * @param string $templateDirectory The directory where the additional
+     *                                  StepForm templates are located.
+     * 
+     * @return boolean Indicates wether the given directory has been added
+     *                 to the directory list. Returns also true, if the
+     *                 directory has already been in the list.
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pxieltricks GmbH
+     * @since 04.04.2011
+     */
+    public function registerStepDirectory($templateDirectory) {
+        if (!isset($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['stepDirectories'])) {
+            $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['stepDirectories'] = array();
+        }
 
-        return $this->nrOfSteps;
+        if (!in_array($templateDirectory,  $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['stepDirectories'])) {
+            $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['stepDirectories'][] = $templateDirectory;
+        }
+
+        return true;
     }
     
     /**
