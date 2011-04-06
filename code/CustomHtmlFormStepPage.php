@@ -962,7 +962,6 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         }
 
         foreach ($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['stepDirectories'] as $directory) {
-
             $prefix = $this->basename;
             
             if (is_array($directory)) {
