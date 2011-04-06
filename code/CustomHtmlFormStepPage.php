@@ -108,6 +108,16 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     protected $nrOfSteps = -1;
 
     /**
+     * Contains the list of steps as DataObjectSet.
+     *
+     * @var DataObjectSet
+     * 
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 06.04.2011
+     */
+    protected $stepList;
+
+    /**
      * step to be shown if no step is specified
      *
      * @var integer
@@ -166,6 +176,18 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     protected $stepDirectories = array();
 
     /**
+     * Contains the output of a CustomHtmlForm object that was rendered by
+     * this controller.
+     *
+     * @var string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pixeltricks GmbH
+     * @since 06.04.2011
+     */
+    protected $initOutput = '';
+
+    /**
      * initializes the step form
      *
      * @return void
@@ -175,7 +197,6 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @since 25.10.2010
      */
     public function init() {
-
         if ($this->isStepPageCalledFromOutside()) {
             $this->deleteSessionData(false);
         }
@@ -188,11 +209,26 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         
         $this->generateStepMapping();
 
-        $this->nrOfSteps           = $this->getNumberOfSteps();
-        $this->currentFormInstance = $this->registerCurrentFormStep();
+        $this->nrOfSteps            = $this->getNumberOfSteps();
+        $this->currentFormInstance  = $this->registerCurrentFormStep();
+        $this->initOutput           = $this->callMethodOnCurrentFormStep($this->currentFormInstance, 'init');
+        $this->callMethodOnCurrentFormStep($this->currentFormInstance, 'process');
         
-        $this->processCurrentFormStep($this->currentFormInstance);
         parent::init();
+    }
+
+    /**
+     * Returns the output of a form that was initialised by a
+     * CustomHtmlFormStepPage object.
+     *
+     * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pixeltricks GmbH
+     * @since 06.04.2011
+     */
+    public function getInitOutput() {
+        return $this->initOutput;
     }
 
     /**
@@ -624,31 +660,36 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @since 29.11.2010
      */
     public function getStepList() {
-        $stepList = array();
+        
+        if (empty($this->stepList)) {
+            $stepList = array();
 
-        for ($stepIdx = 1; $stepIdx <= $this->getNumberOfSteps(); $stepIdx++) {
+            for ($stepIdx = 1; $stepIdx <= $this->getNumberOfSteps(); $stepIdx++) {
 
-            if ($stepIdx == $this->getCurrentStep()) {
-                $isCurrentStep = true;
-            } else {
-                $isCurrentStep = false;
+                if ($stepIdx == $this->getCurrentStep()) {
+                    $isCurrentStep = true;
+                } else {
+                    $isCurrentStep = false;
+                }
+
+                if (isset($this->stepMapping[$stepIdx])) {
+                    $stepClassName = $this->stepMapping[$stepIdx]['class'];
+
+                    $stepList['step'.$stepIdx] = array(
+                        'title'           => $this->stepMapping[$stepIdx]['name'],
+                        'stepIsVisible'   => $this->stepMapping[$stepIdx]['visibility'],
+                        'stepIsCompleted' => $this->isStepCompleted($stepIdx),
+                        'isCurrentStep'   => $isCurrentStep,
+                        'stepNr'          => $stepIdx,
+                        'step'            => new $stepClassName($this, null, null ,false)
+                    );
+                }
             }
-
-            if (isset($this->stepMapping[$stepIdx])) {
-                $stepClassName = $this->stepMapping[$stepIdx]['class'];
-
-                $stepList['step'.$stepIdx] = array(
-                    'title'           => $this->stepMapping[$stepIdx]['name'],
-                    'stepIsVisible'   => $this->stepMapping[$stepIdx]['visibility'],
-                    'stepIsCompleted' => $this->isStepCompleted($stepIdx),
-                    'isCurrentStep'   => $isCurrentStep,
-                    'stepNr'          => $stepIdx,
-                    'step'            => new $stepClassName($this, null, null ,false)
-                );
-            }
+            
+            $this->stepList = new DataObjectSet($stepList);
         }
 
-        return new DataObjectSet($stepList);
+        return $this->stepList;
     }
 
     /**
@@ -724,9 +765,10 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
-     * executes a processor method on the current form if it exists
+     * Calls a method on the given form instance.
      *
-     * @param Object $formInstance instance of current form
+     * @param CustomHtmlForm $formInstance instance of current form
+     * @param string         $methodName   The name of the method to call
      *
      * @return void
      *
@@ -734,13 +776,16 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @copyright 2010 pxieltricks GmbH
      * @since 16.11.2010
      */
-    protected function processCurrentFormStep($formInstance) {
-        $formClassName = $this->stepMapping[$this->getCurrentStep()]['class'];
-        $checkClass = new ReflectionClass($formClassName);
+    protected function callMethodOnCurrentFormStep($formInstance, $methodName) {
+        $formClassName  = $this->stepMapping[$this->getCurrentStep()]['class'];
+        $checkClass     = new ReflectionClass($formClassName);
+        $output         = '';
         
-        if ($checkClass->hasMethod('process')) {
-            $formInstance->process();
+        if ($checkClass->hasMethod($methodName)) {
+            $output = $formInstance->$methodName();
         }
+
+        return $output;
     }
 
     /**

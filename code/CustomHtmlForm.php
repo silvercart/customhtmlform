@@ -1579,6 +1579,47 @@ class CustomHtmlForm extends Form {
     }
 
     /**
+     * Returns true if this is the last step.
+     *
+     * @return boolean
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pixeltricks GmbH
+     * @since 06.04.2011
+     */
+    public function isLastStep() {
+        $stepIdx            = $this->getStepNr();
+        $stepList           = $this->controller->getStepList();
+        $nrOfVisibleSteps   = 0;
+
+        foreach ($stepList as $stepListEntry) {
+
+            if ($stepListEntry->stepIsVisible) {
+                $nrOfVisibleSteps++;
+            }
+        }
+
+        if ($stepIdx === $nrOfVisibleSteps) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns the output of a form that was initialised by a
+     * CustomHtmlFormStepPage object.
+     *
+     * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pixeltricks GmbH
+     * @since 06.04.2011
+     */
+    public function CustomHtmlFormInitOutput() {
+        return $this->controller->getInitOutput();
+    }
+
+    /**
      * returns the step number of this form
      *
      * @return int
