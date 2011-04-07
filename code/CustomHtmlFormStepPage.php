@@ -165,17 +165,6 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     protected $stepMapping = array();
 
     /**
-     * Contains a list of directories where additional steps are located.
-     *
-     * @var array
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pixeltricks GmbH
-     * @since 04.04.2011
-     */
-    protected $stepDirectories = array();
-
-    /**
      * Contains the output of a CustomHtmlForm object that was rendered by
      * this controller.
      *
@@ -202,11 +191,6 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         }
 
         $this->initialiseSessionData();
-
-        if (empty($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['stepDirectories'])) {
-            $this->saveStepDirectoriesInSession();
-        }
-        
         $this->generateStepMapping();
 
         $this->nrOfSteps            = $this->getNumberOfSteps();
@@ -853,8 +837,6 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @since 04.04.2011
      */
     public function generateStepMapping() {
-        $this->resetStepMapping();
-
         // --------------------------------------------------------------------
         // Get steps from theme- or moduledirectories
         // --------------------------------------------------------------------
@@ -864,19 +846,6 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         // Get Steps from additional directories
         // --------------------------------------------------------------------
         $this->getStepsFromAdditionalDirectories();
-    }
-
-    /**
-     * Save the step mapping in the session.
-     *
-     * @return void
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pxieltricks GmbH
-     * @since 04.04.2011
-     */
-    public function saveStepDirectoriesInSession() {
-        $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['stepDirectories'] = $this->stepDirectories;
     }
 
     /**
@@ -890,6 +859,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      */
     public function resetStepMapping() {
         $this->stepMapping = array();
+        $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['stepDirectories'] = array();
     }
 
     /**
@@ -1023,9 +993,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
             $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['stepDirectories'] = array();
         }
 
-        if (!in_array($templateDirectory,  $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['stepDirectories'])) {
-            $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['stepDirectories'][] = $templateDirectory;
-        }
+        $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['stepDirectories'][] = $templateDirectory;
 
         return true;
     }
