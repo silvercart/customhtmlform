@@ -166,6 +166,16 @@ class CustomHtmlForm extends Form {
     );
 
     /**
+     * Contains a list of registerd custom html forms
+     *
+     * @var array
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 08.04.2011
+     */
+    protected $registeredCustomHtmlForms = array();
+
+    /**
      * creates a form object with a free configurable markup
      *
      * @param ContentController $controller  the calling controller instance
@@ -1240,6 +1250,50 @@ class CustomHtmlForm extends Form {
     }
 
     /**
+     * Defines a new message for a form field
+     *
+     * @param string $fieldName The name of the field
+     * @param string $message   The message's text
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pxieltricks GmbH
+     * @since 08.04.2011
+     */
+    public function addErrorMessage($fieldName, $message) {
+        $this->errorMessages[$fieldName] = array(
+            'message'   => $message,
+            'fieldname' => $fieldName,
+            $fieldName  => array(
+                'message' => $message
+            )
+        );
+    }
+
+    /**
+     * Returns the CustomHtmlForm object with the given identifier; if it's not
+     * found a boolean false is returned.
+     *
+     * @param string $formIdentifier The identifier of the form
+     *
+     * @return mixed CustomHtmlForm|bool false
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pxieltricks GmbH
+     * @since 08.04.2011
+     */
+    public function getRegisteredCustomHtmlForm($formIdentifier) {
+        $formObj = false;
+
+        if (isset($this->registeredCustomHtmlForms[$formIdentifier])) {
+            $formObj = $this->registeredCustomHtmlForms[$formIdentifier];
+        }
+
+        return $formObj;
+    }
+
+    /**
      * passes the meta data for form submission to the template;
      * called by the template
      *
@@ -1431,7 +1485,7 @@ class CustomHtmlForm extends Form {
         // aufgetretene Validierungsfehler in Template auswertbar machen
         $data = array(
             'errorMessages' => new DataObjectSet($this->errorMessages),
-            'messages' => new DataObjectSet($this->messages)
+            'messages'      => new DataObjectSet($this->messages)
         );
 
         $defaultTemplatePath = '/customhtmlform/templates/forms/CustomHtmlFormErrorMessages.ss';
@@ -1474,6 +1528,80 @@ class CustomHtmlForm extends Form {
         } else {
             return $this->name;
         }
+    }
+
+    /**
+     * Returns HTML markup for the requested form
+     *
+     * @param string $formIdentifier   unique form name which can be called via template
+     * @param Object $renderWithObject object array; in those objects context the forms shall be created
+     *
+     * @return CustomHtmlForm
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pxieltricks GmbH
+     * @since 08.04.2011
+     */
+    public function InsertCustomHtmlForm($formIdentifier, $renderWithObject = null) {
+        if (!isset($this->registeredCustomHtmlForms[$formIdentifier])) {
+            throw new Exception(
+                printf(
+                    'The requested CustomHtmlForm "%s" is not registered.',
+                    $formIdentifier
+                )
+            );
+        }
+
+        // Inject controller
+        $customFields = array(
+            'Controller' => $this->controller
+        );
+
+        if ($renderWithObject !== null) {
+            if (is_array($renderWithObject)) {
+                foreach ($renderWithObject as $renderWithSingleObject) {
+                    if ($renderWithSingleObject instanceof DataObject) {
+                        if (isset($customFields)) {
+                            $customFields = array_merge($customFields, $renderWithSingleObject->getAllFields());
+                        } else {
+                            $customFields = $renderWithSingleObject->getAllFields();
+                        }
+                        unset($customFields['ClassName']);
+                        unset($customFields['RecordClassName']);
+                    }
+                }
+            } else {
+                if ($renderWithObject instanceof DataObject) {
+                    $customFields = $renderWithObject->getAllFields();
+                    unset($customFields['ClassName']);
+                    unset($customFields['RecordClassName']);
+                }
+            }
+        }
+
+        $outputForm = $this->registeredCustomHtmlForms[$formIdentifier]->customise($customFields)->renderWith(
+            array(
+                $this->registeredCustomHtmlForms[$formIdentifier]->class,
+            )
+        );
+
+        return $outputForm;
+    }
+
+    /**
+     * Registers a form object
+     *
+     * @param string         $formIdentifier unique form name which can be called via template
+     * @param CustomHtmlForm $formObj        The form object with field definitions and preocessing methods
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pxieltricks GmbH
+     * @since 08.04.2010
+     */
+    public function registerCustomHtmlForm($formIdentifier, CustomHtmlForm $formObj) {
+        $this->registeredCustomHtmlForms[$formIdentifier] = $formObj;
     }
     
     /**

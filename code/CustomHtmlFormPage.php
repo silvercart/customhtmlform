@@ -283,16 +283,25 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
      * @since 25.10.2010
      */
     public function customHtmlFormSubmit($form) {
-        $formName = $this->owner->request->postVar('CustomHtmlFormName');
+        $formName                    = $this->owner->request->postVar('CustomHtmlFormName');
+        $registeredCustomHtmlFormObj = false;
 
         foreach ($this->registeredCustomHtmlForms as $registeredCustomHtmlForm) {
             if ($formName === $registeredCustomHtmlForm->name) {
+                $registeredCustomHtmlFormObj = $registeredCustomHtmlForm;
                 break;
+            }
+
+            foreach ($registeredCustomHtmlForm->registeredCustomHtmlForms as $customHtmlFormRegisteredCustomHtmlForm) {
+                if ($formName === $customHtmlFormRegisteredCustomHtmlForm->name) {
+                    $registeredCustomHtmlFormObj = $customHtmlFormRegisteredCustomHtmlForm;
+                    break(2);
+                }
             }
         }
 
-        if ($registeredCustomHtmlForm instanceof CustomHtmlForm) {
-            return $registeredCustomHtmlForm->submit($form, null);
+        if ($registeredCustomHtmlFormObj instanceof CustomHtmlForm) {
+            return $registeredCustomHtmlFormObj->submit($form, null);
         }
     }
 
