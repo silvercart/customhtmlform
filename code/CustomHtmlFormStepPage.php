@@ -875,14 +875,16 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     private function getStepsFromModuleOrThemeDirectory() {
         global $project;
 
-        $themePath      = $this->getTemplateDir();
-        $projectPrefix  = ucfirst($project);
-        $increaseStep   = true;
-        $stepIdx        = 1;
+        $themePath          = $this->getTemplateDir();
+        $projectPrefix      = ucfirst($project);
+        $increaseStep       = true;
+        $stepIdx            = 1;
+        $includedStepIdx    = 1;
 
         while ($increaseStep) {
-            $stepClassName         = $this->basename.$stepIdx;
-            $extendedStepClassName = $projectPrefix.$this->basename.$stepIdx;
+            $includeStep            = true;
+            $stepClassName          = $this->basename.$stepIdx;
+            $extendedStepClassName  = $projectPrefix.$this->basename.$stepIdx;
 
             if (!Director::fileExists($themePath.$extendedStepClassName.'.ss') &&
                 !Director::fileExists($themePath.$stepClassName.'.ss')) {
@@ -902,11 +904,25 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
                 $stepClass = new $stepClassName($this, null, null, true);
                 $stepClassNameUnified = $stepClassName;
             }
-            $this->stepMapping[$stepIdx] = array(
-                'name'        => $stepClass->getStepTitle(),
-                'class'       => $stepClassNameUnified,
-                'visibility'  => $stepClass->getStepIsVisible()
-            );
+
+            // Check if we have a conditional step and the condition is met
+            if ($stepClass->getIsConditionalStep()) {
+                if ($stepClass->hasMethod('isConditionForDisplayFulfilled')) {
+                    if ($stepClass->isConditionForDisplayFulfilled() === false) {
+                        $includeStep = false;
+                    }
+                }
+            }
+
+            if ($includeStep) {
+                $this->stepMapping[$includedStepIdx] = array(
+                    'name'        => $stepClass->getStepTitle(),
+                    'class'       => $stepClassNameUnified,
+                    'visibility'  => $stepClass->getStepIsVisible()
+                );
+                $includedStepIdx++;
+            }
+            
             $stepIdx++;
         }
     }
@@ -924,8 +940,9 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @since 04.04.2011
      */
     private function getStepsFromAdditionalDirectories() {
-        $mappingIdx = count($this->stepMapping);
-        $stepIdx    = $mappingIdx + 1;
+        $mappingIdx         = count($this->stepMapping);
+        $stepIdx            = $mappingIdx + 1;
+        $includedStepIdx    = $stepIdx;
         
         if (!isset($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['stepDirectories'])) {
             return false;
@@ -949,6 +966,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
             $moduleStepIdx  = 1;
 
             while ($increaseStep) {
+                $includeStep   = true;
                 $stepClassName = $prefix.$moduleStepIdx;
 
                 if (!Director::fileExists($directory.$stepClassName.'.ss')) {
@@ -962,11 +980,14 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
 
                 $stepClass = new $stepClassName($this, null, null, true);
 
-                $this->stepMapping[$stepIdx] = array(
-                    'name'        => $stepClass->getStepTitle(),
-                    'class'       => $stepClassName,
-                    'visibility'  => $stepClass->getStepIsVisible()
-                );
+                if ($includeStep) {
+                    $this->stepMapping[$includedStepIdx] = array(
+                        'name'        => $stepClass->getStepTitle(),
+                        'class'       => $stepClassName,
+                        'visibility'  => $stepClass->getStepIsVisible()
+                    );
+                    $includedStepIdx++;
+                }
                 $moduleStepIdx++;
                 $stepIdx++;
             }

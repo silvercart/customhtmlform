@@ -115,7 +115,8 @@ class CustomHtmlForm extends Form {
         'stepTitle'                         => '',
         'stepIsVisible'                     => true,
         'ShowCustomHtmlFormStepNavigation'  => true,
-        'fillInRequestValues'               => true
+        'fillInRequestValues'               => true,
+        'isConditionalStep'                 => false
     );
 
     /**
@@ -1515,6 +1516,25 @@ class CustomHtmlForm extends Form {
         }
 
         return $isVisible;
+    }
+
+    /**
+     * Is the defined step conditional?
+     *
+     * @return bool
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pixeltricks GmbH
+     * @since 08.04.2011
+     */
+    public function getIsConditionalStep() {
+        if (isset($this->preferences['isConditionalStep'])) {
+            $isConditionalStep = $this->preferences['isConditionalStep'];
+        } else {
+            $isConditionalStep = $this->basePreferences['isConditionalStep'];
+        }
+
+        return $isConditionalStep;
     }
 
     /**
