@@ -213,6 +213,8 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
         Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.checkFormData.js');
         Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.events.js');
         Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.validator.js');
+
+        $this->owner->isFrontendPage = true;
     }
 
     /**
@@ -221,7 +223,7 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
      * If you want a onload snippet to be loaded at the very end of the
      * definition you have to define it as array and provide the string
      * 'loadInTheEnd' as second parameter:
-     * 
+     *
      * $controller->addJavascriptOnloadSnippet(
      *     'var yourJavascriptSnippet;',
      *     'loadInTheEnd'
