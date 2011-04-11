@@ -37,6 +37,7 @@ $lang['de_DE']['Form']['DATE_ONLY'] = 'In dieses Feld muss ein Datum im Format "
 $lang['de_DE']['Form']['CAPTCHAFIELDNOMATCH'] = 'Diese Eingabe war leider falsch. Versuch es erneut!';
 $lang['de_DE']['Form']['HASNOSPECIALSIGNS'] = 'Dieses Feld muss Sonderzeichen enthalten (andere Zeichen als Buchstaben, Zahlen und die Zeichen "@" und ".").';
 $lang['de_DE']['Form']['HASSPECIALSIGNS'] = 'Dieses Feld darf nur Buchstaben, Zahlen und die Zeichen "@" und "." enthalten.';
+$lang['de_DE']['Form']['MANDATORYFIELD'] = 'Dieses Feld muss ausgefüllt werden.';
 $lang['de_DE']['Form']['MUSTNOTBEEMAILADDRESS'] = 'Bitte gib hier keine Email Adresse an.';
 $lang['de_DE']['Form']['MUSTBEEMAILADDRESS'] = 'Bitte gib hier eine gültige Email Adresse an.';
 $lang['de_DE']['CustomHtmlFormStepPage']['BASE_NAME'] = 'Basisname für Formular Objekt- und Templatedateien: ';

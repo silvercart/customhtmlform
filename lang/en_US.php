@@ -37,6 +37,7 @@ $lang['en_US']['Form']['DATE_ONLY'] = 'Please enter a valid german date (e.g. "d
 $lang['en_US']['Form']['CAPTCHAFIELDNOMATCH'] = 'Your entry was not correct. Please try again!';
 $lang['en_US']['Form']['HASNOSPECIALSIGNS'] = 'This field must contain special signs (other signs than letters, numbers and the signs "@" and ".").';
 $lang['en_US']['Form']['HASSPECIALSIGNS'] = 'This field must not contain special signs (letters, numbers and the signs "@" and ".").';
+$lang['en_US']['Form']['MANDATORYFIELD'] = 'This field must be filled in.';
 $lang['en_US']['Form']['MUSTNOTBEEMAILADDRESS'] = 'Please don\'t enter an email address.';
 $lang['en_US']['Form']['MUSTBEEMAILADDRESS'] = 'Please enter a valid email address.';
 $lang['en_US']['CustomHtmlFormStepPage']['BASE_NAME'] = 'base name for form object and template files: ';
