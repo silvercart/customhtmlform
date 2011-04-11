@@ -922,7 +922,7 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * creates the form's input fieldsand action fields and fills missing data
+     * creates the form's input fields and action fields and fills missing data
      * with standard values
      *
      * @return array retunrs form fields and form actions
@@ -1199,6 +1199,16 @@ class CustomHtmlForm extends Form {
             ));
         }
 
+        // set identifier for mandatory fields
+        if (isset($fieldDefinition['checkRequirements']) &&
+            isset($fieldDefinition['checkRequirements']['isFilledIn']) &&
+            $fieldDefinition['checkRequirements']['isFilledIn']) {
+            
+            $field->isRequiredField = true;
+        } else {
+            $field->isRequiredField = false;
+        }
+
         return $field;
     }
 
@@ -1450,15 +1460,25 @@ class CustomHtmlForm extends Form {
             $templatePathAbs    = Director::baseFolder().$templatePathRel;
             $viewableObj        = new ViewableData();
 
+            if (isset($fieldReference['checkRequirements']) &&
+                isset($fieldReference['checkRequirements']['isFilledIn']) &&
+                $fieldReference['checkRequirements']['isFilledIn']) {
+
+                $isRequiredField = true;
+            } else {
+                $isRequiredField = false;
+            }
+            
             $output = $viewableObj->customise(
                 array(
-                    'FormName'      => $this->name,
-                    'FieldName'     => $fieldName,
-                    'Label'         => isset($fieldReference['title']) ? $fieldReference['title'] : '',
-                    'errorMessage'  => isset($this->errorMessages[$fieldName]) ?  $this->errorMessages[$fieldName] : '',
-                    'FieldTag'      => $this->SSformFields['fields']->fieldByName($fieldName)->Field(),
-                    'FieldHolder'   => $this->SSformFields['fields']->fieldByName($fieldName)->FieldHolder(),
-                    'Parent'        => $this,
+                    'FormName'          => $this->name,
+                    'FieldName'         => $fieldName,
+                    'Label'             => isset($fieldReference['title']) ? $fieldReference['title'] : '',
+                    'errorMessage'      => isset($this->errorMessages[$fieldName]) ?  $this->errorMessages[$fieldName] : '',
+                    'FieldTag'          => $this->SSformFields['fields']->fieldByName($fieldName)->Field(),
+                    'FieldHolder'       => $this->SSformFields['fields']->fieldByName($fieldName)->FieldHolder(),
+                    'Parent'            => $this,
+                    'isRequiredField'   => $isRequiredField
                 )
             )->renderWith($templatePathAbs);
         } else {

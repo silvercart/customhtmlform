@@ -1,4 +1,4 @@
-<div id="{$FormName}_{$FieldName}_Box" class="type-text<% if errorMessage %> error<% end_if %>">
+<div id="{$FormName}_{$FieldName}_Box" class="type-text<% if errorMessage %> error<% end_if %><% if isRequiredField %> requiredField<% end_if %>">
     <% if errorMessage %>
         <div class="errorList">
             <% control errorMessage %>
@@ -9,6 +9,6 @@
         </div>
     <% end_if %>
 
-    <label for="{$FormName}_{$FieldName}">{$Label} </label>
+    <label for="{$FormName}_{$FieldName}">{$Label}</label>
     $FieldTag
 </div>
