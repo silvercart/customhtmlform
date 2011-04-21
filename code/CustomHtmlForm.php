@@ -626,6 +626,7 @@ class CustomHtmlForm extends Form {
                 $fieldDefinition['type'] == 'StateProvinceDropdownField_Readonly' ||
                 $fieldDefinition['type'] == 'Widget_TreeDropdownField_Readonly' ||
                 $fieldDefinition['type'] == 'StateDropdownField' ||
+                $fieldDefinition['type'] == 'SilvercartCheckoutOptionsetField' ||
                 $fieldDefinition['type'] == 'OptionsetField') {
 
                 $valueLabel = 'selectedValue';
@@ -1082,7 +1083,8 @@ class CustomHtmlForm extends Form {
                 $fieldDefinition['selectedValue'],
                 $fieldDefinition['form']
             );
-        } else if ($fieldDefinition['type'] == 'OptionsetField') {
+        } else if ($fieldDefinition['type'] == 'OptionsetField' ||
+                   $fieldDefinition['type'] == 'SilvercartCheckoutOptionsetField') {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
