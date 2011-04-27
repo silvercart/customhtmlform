@@ -646,7 +646,8 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     public function getStepList() {
         
         if (empty($this->stepList)) {
-            $stepList = array();
+            $stepList           = array();
+            $nrOfVisibleSteps   = 0;
 
             for ($stepIdx = 1; $stepIdx <= $this->getNumberOfSteps(); $stepIdx++) {
 
@@ -667,12 +668,27 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
                         'stepNr'          => $stepIdx,
                         'step'            => new $stepClassName($this, null, null ,false)
                     );
+                    
+                    if ($this->stepMapping[$stepIdx]['visibility']) {
+                        $nrOfVisibleSteps++;
+                    }
+                }
+            }
+            
+            // Set the number of visible steps and a tag for the last visible step
+            foreach ($stepList as $stepNr => $stepListEntry) {
+                if ($stepListEntry['stepIsVisible'] &&
+                    ($stepListEntry['stepNr'] - 1) == $nrOfVisibleSteps) {
+                    
+                    $stepList[$stepNr]['isLastVisibleStep'] = true;
+                } else {
+                    $stepList[$stepNr]['isLastVisibleStep'] = false;
                 }
             }
             
             $this->stepList = new DataObjectSet($stepList);
         }
-
+        
         return $this->stepList;
     }
 

@@ -1811,18 +1811,11 @@ class CustomHtmlForm extends Form {
      * @since 06.04.2011
      */
     public function isLastStep() {
-        $stepIdx            = $this->getStepNr();
-        $stepList           = $this->controller->getStepList();
-        $nrOfVisibleSteps   = 0;
-
-        foreach ($stepList as $stepListEntry) {
-
-            if ($stepListEntry->stepIsVisible) {
-                $nrOfVisibleSteps++;
-            }
-        }
-
-        if ($stepIdx === $nrOfVisibleSteps) {
+        $step = $this->controller->getStepList()->find('stepNr', $this->getStepNr());
+        
+        if ($step &&
+            $step->isLastVisibleStep) {
+            
             return true;
         }
         return false;
