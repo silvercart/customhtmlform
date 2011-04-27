@@ -116,7 +116,9 @@ class CustomHtmlForm extends Form {
         'stepIsVisible'                     => true,
         'ShowCustomHtmlFormStepNavigation'  => true,
         'fillInRequestValues'               => true,
-        'isConditionalStep'                 => false
+        'isConditionalStep'                 => false,
+        'loadShoppingcartModules'           => true,
+        'createShoppingcartForms'           => true
     );
 
     /**
@@ -266,6 +268,14 @@ class CustomHtmlForm extends Form {
         if (!$barebone) {
             $javascriptSnippets = $this->getJavascriptValidatorInitialisation();
 
+            if (!$this->getLoadShoppingCartModules()) {
+                SilvercartShoppingCart::setLoadShoppingCartModules(false);
+            }
+            
+            if ($this->getCreateShoppingCartForms()) {
+                SilvercartShoppingCart::setCreateShoppingCartForms(false);
+            }
+            
             $this->controller->addJavascriptSnippet($javascriptSnippets['javascriptSnippets']);
             $this->controller->addJavascriptOnloadSnippet($javascriptSnippets['javascriptOnloadSnippets']);
         }
@@ -338,6 +348,48 @@ class CustomHtmlForm extends Form {
             'javascriptSnippets'        => $javascriptSnippets,
             'javascriptOnloadSnippets'  => $javascriptOnloadSnippets
         );
+    }
+    
+    /**
+     * Indicates wether the shoppingcart modules should be loaded.
+     *
+     * @return array
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pixeltricks GmbH
+     * @since 27.04.2011
+     */
+    public function getLoadShoppingCartModules() {
+        $loadModules = false;
+        
+        if (isset($this->preferences['loadShoppingcartModules'])) {
+            $loadModules = $this->preferences['loadShoppingcartModules'];
+        } else {
+            $loadModules = $this->basePreferences['loadShoppingcartModules'];
+        }
+        
+        return $loadModules;
+    }
+    
+    /**
+     * Indicates wether the shoppingcart forms should be drawn.
+     *
+     * @return array
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2011 pixeltricks GmbH
+     * @since 27.04.2011
+     */
+    public function getCreateShoppingCartForms() {
+        $createForms = false;
+        
+        if (isset($this->preferences['createShoppingcartForms'])) {
+            $createForms = $this->preferences['createShoppingcartForms'];
+        } else {
+            $createForms = $this->basePreferences['createShoppingcartForms'];
+        }
+        
+        return $createForms;
     }
 
     /**
@@ -1416,6 +1468,7 @@ class CustomHtmlForm extends Form {
 
         $fieldReference = '';
         $templatePath   = '';
+        $output         = '';
 
         foreach ($this->fieldGroups as $groupName => $groupFields) {
             if (isset($groupFields[$fieldName])) {
@@ -1470,7 +1523,7 @@ class CustomHtmlForm extends Form {
             } else {
                 $isRequiredField = false;
             }
-            
+
             $output = $viewableObj->customise(
                 array(
                     'FormName'          => $this->name,

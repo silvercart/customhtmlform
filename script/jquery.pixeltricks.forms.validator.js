@@ -123,9 +123,11 @@ pixeltricks.forms.validator = function()
                                     }
                                     // Fuer Radiobuttons wird der Wert des selektierten Buttons
                                     // ausgelesen.
-                                    if (values == 'OptionsetField') {
+                                    if (values == 'OptionsetField' ||
+                                        values == 'SilvercartCheckoutOptionsetField') {
+                                        
                                         checkFormData.setFieldValue(
-                                            $('#' + that.formName + that.nameSeparator + fieldName + '  :checked').val()
+                                            $('#' + that.formName + ' input[name=\'' + fieldname + '\']  :checked').val()
                                         );
                                     }
                                 }
