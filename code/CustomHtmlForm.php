@@ -272,7 +272,9 @@ class CustomHtmlForm extends Form {
                 SilvercartShoppingCart::setLoadShoppingCartModules(false);
             }
             
-            if ($this->getCreateShoppingCartForms()) {
+            if ($this->getCreateShoppingCartForms() &&
+                class_exists('SilvercartShoppingCart')) {
+                
                 SilvercartShoppingCart::setCreateShoppingCartForms(false);
             }
             
