@@ -784,7 +784,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         if ($checkClass->hasMethod($methodName)) {
             $output = $formInstance->$methodName();
         }
-
+        
         return $output;
     }
 
