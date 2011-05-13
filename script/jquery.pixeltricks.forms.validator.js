@@ -127,7 +127,7 @@ pixeltricks.forms.validator = function()
                                         values == 'SilvercartCheckoutOptionsetField') {
                                         
                                         checkFormData.setFieldValue(
-                                            $('#' + that.formName + ' input[name=\'' + fieldname + '\']  :checked').val()
+                                            $('#' + that.formName + ' input[name=\'' + fieldName + '\']  :checked').val()
                                         );
                                     }
                                 }
