@@ -213,6 +213,7 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
         Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.checkFormData.js');
         Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.events.js');
         Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.validator.js');
+        Requirements::add_i18n_javascript('customhtmlform/javascript/lang');
 
         $this->owner->isFrontendPage = true;
     }
