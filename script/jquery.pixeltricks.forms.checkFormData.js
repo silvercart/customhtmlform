@@ -143,7 +143,8 @@ pixeltricks.forms.checkFormData = function()
         {
             isFilledIn = this.fieldValue;
         }
-        else if (this.fieldType == 'OptionsetField')
+        else if (this.fieldType == 'OptionsetField' ||
+                 this.fieldType == 'SilvercartCheckoutOptionsetField')
         {
             isFilledIn = this.fieldValue.length > 0 ? true : false;
         }
