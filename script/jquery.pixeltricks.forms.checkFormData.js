@@ -67,8 +67,10 @@ pixeltricks.forms.checkFormData = function()
     };
 
     /**
-     * Prueft, ob die Eingabe formal einer Email Adresse entspricht und
-     * dieses Resultat dem erwarteten Resultat entspricht.
+     * Checks, whether the given string matches basicly an email address.
+     * The rule is: one or more chars, then '@', then two ore more chars, then
+     * '.', then two or more chars. This matching was simplified because the 
+     * stricter version did not match some special cases.
      *
      * @param boolean expectedResult
      * @return array
@@ -78,7 +80,7 @@ pixeltricks.forms.checkFormData = function()
         var success         = false;
         var valueMatch      = false;
 
-        var matches = this.fieldValue.match(/[a-zA-Z0-9\-_\.,]{1,}@[a-zA-Z0-9\-_,]{1,}\.[a-zA-Z,]{1,}/);
+        var matches = this.fieldValue.match(/.{1,}@.{2,}\..{2,}/);
 
         if (matches && (matches[0] == this.fieldValue)) {
             valueMatch = true;
@@ -91,15 +93,15 @@ pixeltricks.forms.checkFormData = function()
 
             if (valueMatch) {
                 if(typeof(ss) == 'undefined' || typeof(ss.i18n) == 'undefined') {
-                    errorMessage = 'Bitte geben Sie keine Email Adresse an.';
+                    errorMessage = "Please don't enter an email address.";
                 } else {
-                    errorMessage = ss.i18n._t('Form.MUSTNOTBEEMAILADDRESS', 'Bitte geben Sie keine Email Adresse an.');
+                    errorMessage = ss.i18n._t('Form.MUSTNOTBEEMAILADDRESS', "Please don't enter an email address.");
                 }
             } else {
                 if(typeof(ss) == 'undefined' || typeof(ss.i18n) == 'undefined') {
-                    errorMessage = 'Bitte geben Sie eine gültige Email Adresse an.';
+                    errorMessage = 'Please enter a valid email address.';
                 } else {
-                    errorMessage = ss.i18n._t('Form.MUSTBEEMAILADDRESS', 'Bitte geben Sie eine gültige Email Adresse an.');
+                    errorMessage = ss.i18n._t('Form.MUSTBEEMAILADDRESS', 'Please enter a valid email address.');
                 }
             }
         }

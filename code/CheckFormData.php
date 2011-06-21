@@ -94,17 +94,18 @@ class CheckFormData {
     }
 
     /**
-     * Is the input formally an email address?
-     * Prueft, ob die Eingabe formal einer Email Adresse entspricht und
-     * dieses Resultat dem erwarteten Resultat entspricht.
+     * Checks, whether the given string matches basicly an email address.
+     * The rule is: one or more chars, then '@', then two ore more chars, then
+     * '.', then two or more chars. This matching was simplified because the 
+     * stricter version did not match some special cases.
      *
      * @param boolean $expectedResult Das erwartete Resultat.
      *
      * @return array
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @author Sascha Koehler <skoehler@pixeltricks.de>, Sebastian Diel <sdiel@pixeltricks.de>
      * @copyright 2010 pxieltricks GmbH
-     * @since 25.10.2010
+     * @since 21.06.2011
      */
     public function isEmailAddress($expectedResult) {
 
@@ -113,7 +114,7 @@ class CheckFormData {
         $match          = false;
 
         preg_match(
-            '/[a-zA-Z0-9\-_\.,]{1,}@[a-zA-Z0-9\-_,]{1,}\.[a-zA-Z,]{1,}/',
+            '/.{1,}@.{2,}\..{2,}/',
             $this->value,
             $matches
         );
