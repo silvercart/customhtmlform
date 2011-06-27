@@ -194,8 +194,7 @@ class CustomHtmlForm extends Form {
     public function __construct($controller, $params = null, $preferences = null, $barebone = false) {
         global $project;
 
-        $this->controller   = $controller;
-        $name               = $this->getSubmitAction();
+        $this->controller = $controller;
 
         if (is_array($params)) {
             $this->customParameters = $params;
@@ -211,6 +210,7 @@ class CustomHtmlForm extends Form {
                 }
             }
         }
+        $name = $this->getSubmitAction();
 
         if (!$barebone) {
             $this->fillInFieldValues();
