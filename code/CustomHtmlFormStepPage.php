@@ -399,7 +399,10 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
             if (isset($formSessionData[$fieldName])) {
                 if ($fieldData['type'] == 'OptionsetField' ||
                     $fieldData['type'] == 'DropdownField' ||
-                    $fieldData['type'] == 'ListboxField') {
+                    $fieldData['type'] == 'ListboxField' ||
+                    in_array('OptionsetField', class_parents($fieldData['type'])) ||
+                    in_array('DropdownField', class_parents($fieldData['type'])) ||
+                    in_array('ListboxField', class_parents($fieldData['type']))) {
                     $valueParam = 'selectedValue';
                 } else {
                     $valueParam = 'value';
@@ -946,8 +949,6 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     /**
      * Fill class variable $stepMapping with steps from the additional
      * directories.
-     *
-     * @param mixed string|array The directory definition
      *
      * @return void
      *

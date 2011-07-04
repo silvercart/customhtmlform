@@ -681,7 +681,10 @@ class CustomHtmlForm extends Form {
                 $fieldDefinition['type'] == 'Widget_TreeDropdownField_Readonly' ||
                 $fieldDefinition['type'] == 'StateDropdownField' ||
                 $fieldDefinition['type'] == 'SilvercartCheckoutOptionsetField' ||
-                $fieldDefinition['type'] == 'OptionsetField') {
+                $fieldDefinition['type'] == 'OptionsetField' ||
+                in_array('OptionsetField', class_parents($fieldDefinition['type'])) ||
+                in_array('DropdownField', class_parents($fieldDefinition['type'])) ||
+                in_array('ListboxField', class_parents($fieldDefinition['type']))) {
 
                 $valueLabel = 'selectedValue';
             }
@@ -1109,7 +1112,8 @@ class CustomHtmlForm extends Form {
         }
 
         // create field
-        if ($fieldDefinition['type'] == 'ListboxField') {
+        if ($fieldDefinition['type'] == 'ListboxField' ||
+            in_array('ListboxField', class_parents($fieldDefinition['type']))) {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
@@ -1129,7 +1133,8 @@ class CustomHtmlForm extends Form {
                    $fieldDefinition['type'] == 'TreeDropdownField_Readonly' ||
                    $fieldDefinition['type'] == 'StateProvinceDropdownField_Readonly' ||
                    $fieldDefinition['type'] == 'Widget_TreeDropdownField_Readonly' ||
-                   $fieldDefinition['type'] == 'StateDropdownField') {
+                   $fieldDefinition['type'] == 'StateDropdownField' ||
+                   in_array('DropdownField', class_parents($fieldDefinition['type']))) {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
@@ -1138,7 +1143,8 @@ class CustomHtmlForm extends Form {
                 $fieldDefinition['form']
             );
         } else if ($fieldDefinition['type'] == 'OptionsetField' ||
-                   $fieldDefinition['type'] == 'SilvercartCheckoutOptionsetField') {
+                   $fieldDefinition['type'] == 'SilvercartCheckoutOptionsetField' ||
+                   in_array('OptionsetField', class_parents($fieldDefinition['type']))) {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
