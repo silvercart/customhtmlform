@@ -245,8 +245,8 @@ class CustomHtmlForm extends Form {
             $this->fieldGroups['formFields'] = array();
         }
 
-        $this->name               = $this->class.'_'.$name.'_'.(self::$classInstanceCounter[$this->class]);
-        $this->jsName             = str_replace('/', '', $this->name);
+        $this->name               = str_replace('/', '', $this->class.'_'.$name.'_'.(self::$classInstanceCounter[$this->class]));
+        $this->jsName             = $this->name;
         $this->SSformFields       = $this->getForm();
         $this->SSformFields['fields']->setForm($this);
         $this->SSformFields['actions']->setForm($this);
