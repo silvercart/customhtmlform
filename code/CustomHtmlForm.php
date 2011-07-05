@@ -1382,7 +1382,10 @@ class CustomHtmlForm extends Form {
         $metadata .= $this->dataFieldByName('CustomHtmlFormName')->Field();
 
         // SecurityID
-        $metadata .= $this->dataFieldByName('SecurityID')->Field();
+        if ($this->dataFieldByName('SecurityID')) {
+            $metadata .= $this->dataFieldByName('SecurityID')->Field();
+        }
+        
 
         // custom data fields
         // Eigene Datenfelder
