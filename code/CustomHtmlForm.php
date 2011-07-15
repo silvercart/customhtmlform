@@ -1628,14 +1628,20 @@ class CustomHtmlForm extends Form {
      * @copyright 2011 pxieltricks GmbH
      * @since 08.04.2011
      */
-    public function InsertCustomHtmlForm($formIdentifier, $renderWithObject = null) {
-        if (!isset($this->registeredCustomHtmlForms[$formIdentifier])) {
-            throw new Exception(
-                printf(
-                    'The requested CustomHtmlForm "%s" is not registered.',
-                    $formIdentifier
-                )
-            );
+    public function InsertCustomHtmlForm($formIdentifier = null, $renderWithObject = null) {
+        if (is_null($formIdentifier)) {
+            $formToRender = $this;
+        } else {
+            if (!isset($this->registeredCustomHtmlForms[$formIdentifier])) {
+                throw new Exception(
+                    printf(
+                        'The requested CustomHtmlForm "%s" is not registered.',
+                        $formIdentifier
+                    )
+                );
+            } else {
+                $formToRender = $this->registeredCustomHtmlForms[$formIdentifier];
+            }
         }
 
         // Inject controller
@@ -1665,9 +1671,9 @@ class CustomHtmlForm extends Form {
             }
         }
 
-        $outputForm = $this->registeredCustomHtmlForms[$formIdentifier]->customise($customFields)->renderWith(
+        $outputForm = $formToRender->customise($customFields)->renderWith(
             array(
-                $this->registeredCustomHtmlForms[$formIdentifier]->class,
+                $formToRender->class,
             )
         );
 

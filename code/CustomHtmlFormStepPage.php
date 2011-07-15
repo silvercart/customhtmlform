@@ -276,6 +276,39 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
             $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['completedSteps'][] = $stepNr;
         }
     }
+    
+    /**
+     * removes a completed step
+     *
+     * @param int  $stepNr             id of the step; if not defined the current
+     *                                 step will be chosen
+     * @param bool $includeHigherSteps set to true to remove all steps above the 
+     *                                 given one, too
+     * 
+     * @return void
+     *
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 11.07.2011
+     */
+    public function removeCompletedStep($stepNr = null, $includeHigherSteps = false) {
+
+        if ($stepNr === null) {
+            $stepNr = $this->getCurrentStep();
+        }
+        
+        if ($this->isStepCompleted($stepNr)) {
+            foreach ($this->getCompletedSteps() as $key => $value) {
+                if ($value == $stepNr ||
+                    ($includeHigherSteps
+                     && $value > $stepNr)) {
+                    unset ($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['completedSteps'][$key]);
+                    if (!$includeHigherSteps) {
+                        break;
+                    }
+                }
+            }
+        }
+    }
 
     /**
      * call to the parent method; the corresponding parameters will be set
@@ -377,6 +410,41 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         }
 
         return $combinedData;
+    }
+    
+    /**
+     * Checks, whether the step data has changed.
+     *
+     * @param array  $formData  Sent form data
+     * @param string $fieldName Field name to check
+     * @param int    $stepNr    Number of step to check
+     * 
+     * @return boolean 
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 11.07.2011
+     */
+    public function stepDataChanged($formData, $fieldName = '', $stepNr = null) {
+        $changed = false;
+        if ($stepNr === null) {
+            $stepNr = $this->getCurrentStep();
+        }
+        if (!empty ($fieldName)) {
+            if (array_key_exists($stepNr,    $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['steps']) &&
+                array_key_exists($fieldName, $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['steps'][$stepNr])) {
+                if ($formData[$fieldName] != $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['steps'][$stepNr][$fieldName]) {
+                    $changed = true;
+                }
+            }
+        } else {
+            foreach ($formData as $formFieldName => $formFieldValue) {
+                if ($formFieldValue != $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['steps'][$stepNr][$formFieldName]) {
+                    $changed = true;
+                    break;
+                }
+            }
+        }
+        return $changed;
     }
 
     /**
