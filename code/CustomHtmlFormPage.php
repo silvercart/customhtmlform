@@ -302,7 +302,7 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
                 }
             }
         }
-
+        
         if ($registeredCustomHtmlFormObj instanceof CustomHtmlForm) {
             return $registeredCustomHtmlFormObj->submit($form, null);
         }

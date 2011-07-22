@@ -176,6 +176,17 @@ class CustomHtmlForm extends Form {
      * @since 08.04.2011
      */
     protected $registeredCustomHtmlForms = array();
+    
+    /**
+     * Don't enable Security token for this type of form because we'll run
+     * into caching problems when using it.
+     * 
+     * @var boolean
+     * 
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 22.07.2011
+     */
+    protected $securityTokenEnabled = true;
 
     /**
      * creates a form object with a free configurable markup
@@ -222,6 +233,12 @@ class CustomHtmlForm extends Form {
             new FieldSet(),
             new FieldSet()
         );
+        
+        if ($this->securityTokenEnabled) {
+            $this->getSecurityToken()->enable();
+        } else {
+            $this->getSecurityToken()->disable();
+        }
 
         // Counter for the form class, init or increment
         // Zaehler fuer die Formularklasse ggfs. initialisieren und erhoehen.
@@ -868,7 +885,7 @@ class CustomHtmlForm extends Form {
         $errorMessages  = array();
         $error          = false;
 
-        if ($this->securityTokenEnabled()) {
+        if ($this->securityTokenEnabled) {
             $securityID = Session::get('SecurityID');
 
             if (empty($securityID) ||
@@ -1386,7 +1403,6 @@ class CustomHtmlForm extends Form {
             $metadata .= $this->dataFieldByName('SecurityID')->Field();
         }
         
-
         // custom data fields
         // Eigene Datenfelder
         if (!empty($this->customParameters)) {
@@ -1850,6 +1866,18 @@ class CustomHtmlForm extends Form {
      */
     public function CustomHtmlFormInitOutput() {
         return $this->controller->getInitOutput();
+    }
+    
+    /**
+     * Disable the security token.
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 22.07.2011
+     */
+    public function setSecurityTokenDisabled() {
+        $this->securityTokenEnabled = false;
     }
 
     /**
