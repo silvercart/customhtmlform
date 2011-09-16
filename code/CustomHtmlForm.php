@@ -1889,7 +1889,7 @@ class CustomHtmlForm extends Form {
      * @copyright 2010 pixeltricks GmbH
      * @since 23.12.2010
      */
-    protected function getStepNr() {
+    public function getStepNr() {
         $stepList = $this->controller->getStepList();
         $stepNr   = 1;
 
