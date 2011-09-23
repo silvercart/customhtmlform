@@ -1185,9 +1185,12 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
                 strpos($_SERVER['HTTP_USER_AGENT'], 'Flash') !== false) {
                 $callFromOutside = false;
             } else {
+                $callFromOutside = false;
+                /*
                 if (Director::isDev()) {
                     $callFromOutside = false;
                 }
+                */
             }
         }
 
