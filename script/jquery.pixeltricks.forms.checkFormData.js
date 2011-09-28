@@ -144,6 +144,14 @@ pixeltricks.forms.checkFormData = function()
         if (this.fieldType == 'CheckboxField')
         {
             isFilledIn = this.fieldValue;
+            
+            if (isFilledIn == 'checked' ||
+                isFilledIn) {
+                
+                isFilledIn = true;
+            } else {
+                isFilledIn = false;
+            }
         }
         else if (this.fieldType == 'OptionsetField' ||
                  this.fieldType == 'SilvercartCheckoutOptionsetField' ||
