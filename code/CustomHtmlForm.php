@@ -798,11 +798,19 @@ class CustomHtmlForm extends Form {
 
         // pass rendered form to the controller
         // Gerendertes Formular an Controller uebergeben
-        return $this->controller->customise(
-            array(
-                $form => $outputForm
-            )
-        );
+        if ($this->controller instanceof CustomHtmlFormStepPage_Controller) {
+            print $this->controller->customise(
+                array(
+                    $form => $outputForm
+                )
+            )->renderWith(array($this->controller->ClassName, 'Page'));
+        } else {
+            return $this->controller->customise(
+                array(
+                    $form => $outputForm
+                )
+            );
+        }
     }
 
     /**
