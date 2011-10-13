@@ -144,6 +144,14 @@ pixeltricks.forms.checkFormData = function()
         if (this.fieldType == 'CheckboxField')
         {
             isFilledIn = this.fieldValue;
+            
+            if (isFilledIn == 'checked' ||
+                isFilledIn) {
+                
+                isFilledIn = true;
+            } else {
+                isFilledIn = false;
+            }
         }
         else if (this.fieldType == 'OptionsetField' ||
                  this.fieldType == 'SilvercartCheckoutOptionsetField' ||
@@ -182,6 +190,7 @@ pixeltricks.forms.checkFormData = function()
                     errorMessage = 'Dieses Feld darf nicht leer sein.';
                 } else {
                     errorMessage = ss.i18n._t('Form.FIELD_MAY_NOT_BE_EMPTY', 'Dieses Feld darf nicht leer sein.');
+                    console.log(ss.i18n._t('Form.FIELD_MAY_NOT_BE_EMPTY'));
                 }
             }
         }

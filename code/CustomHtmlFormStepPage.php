@@ -1178,18 +1178,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
                 }
             }
         } else {
-            // Hack for Uploadify-Script!
-            // The Uploadify-Script calls the flasplayer which does not send a referer
-            // Dieses ruft durch den Flashplayer auf, der keinen Referer mitschickt.
-            if (strpos($_SERVER['HTTP_USER_AGENT'], 'Adobe') !== false ||
-                strpos($_SERVER['HTTP_USER_AGENT'], 'Shockwave') !== false ||
-                strpos($_SERVER['HTTP_USER_AGENT'], 'Flash') !== false) {
-                $callFromOutside = false;
-            } else {
-                if (Director::isDev()) {
-                    $callFromOutside = false;
-                }
-            }
+            $callFromOutside = false;
         }
 
         return $callFromOutside;

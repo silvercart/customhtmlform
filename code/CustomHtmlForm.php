@@ -798,11 +798,19 @@ class CustomHtmlForm extends Form {
 
         // pass rendered form to the controller
         // Gerendertes Formular an Controller uebergeben
-        return $this->controller->customise(
-            array(
-                $form => $outputForm
-            )
-        );
+        if ($this->controller instanceof CustomHtmlFormStepPage_Controller) {
+            print $this->controller->customise(
+                array(
+                    $form => $outputForm
+                )
+            )->renderWith(array($this->controller->ClassName, 'Page'));
+        } else {
+            return $this->controller->customise(
+                array(
+                    $form => $outputForm
+                )
+            );
+        }
     }
 
     /**
@@ -1559,6 +1567,7 @@ class CustomHtmlForm extends Form {
                     'errorMessage'      => isset($this->errorMessages[$fieldName]) ?  $this->errorMessages[$fieldName] : '',
                     'FieldTag'          => $this->SSformFields['fields']->fieldByName($fieldName)->Field(),
                     'FieldHolder'       => $this->SSformFields['fields']->fieldByName($fieldName)->FieldHolder(),
+                    'FieldObject'       => $this->SSformFields['fields']->fieldByName($fieldName),
                     'Parent'            => $this,
                     'isRequiredField'   => $isRequiredField
                 )
@@ -1889,7 +1898,7 @@ class CustomHtmlForm extends Form {
      * @copyright 2010 pixeltricks GmbH
      * @since 23.12.2010
      */
-    protected function getStepNr() {
+    public function getStepNr() {
         $stepList = $this->controller->getStepList();
         $stepNr   = 1;
 
