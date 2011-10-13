@@ -288,7 +288,7 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
     public function customHtmlFormSubmit($form) {
         $formName                    = $this->owner->request->postVar('CustomHtmlFormName');
         $registeredCustomHtmlFormObj = false;
-
+        
         foreach ($this->registeredCustomHtmlForms as $registeredCustomHtmlForm) {
             if ($formName === $registeredCustomHtmlForm->name) {
                 $registeredCustomHtmlFormObj = $registeredCustomHtmlForm;
@@ -305,6 +305,8 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
         
         if ($registeredCustomHtmlFormObj instanceof CustomHtmlForm) {
             return $registeredCustomHtmlFormObj->submit($form, null);
+        } else {
+            Director::redirectBack();
         }
     }
 

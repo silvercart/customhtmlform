@@ -924,6 +924,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @since 04.04.2011
      */
     public function generateStepMapping() {
+        
         // --------------------------------------------------------------------
         // Get steps from theme- or moduledirectories
         // --------------------------------------------------------------------
