@@ -847,7 +847,7 @@ class CustomHtmlForm extends Form {
     protected function getFormData($request) {
         $formData = array();
 
-        if ($this->securityTokenEnabled()) {
+        if ($this->securityTokenEnabled) {
             $formData['SecurityID'] = Convert::raw2sql($request['SecurityID']);
         }
 
@@ -895,7 +895,7 @@ class CustomHtmlForm extends Form {
 
         if ($this->securityTokenEnabled) {
             $securityID = Session::get('SecurityID');
-
+            
             if (empty($securityID) ||
                 empty($data['SecurityID']) ||
                 $data['SecurityID'] != $securityID) {
