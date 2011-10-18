@@ -133,6 +133,32 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
 
         return $formObj;
     }
+    
+    /**
+     * Returns all registered CustomHtmlForms.
+     *
+     * @return array
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 15.10.2011
+     */
+    public function getRegisteredCustomHtmlForms() {
+        return $this->registeredCustomHtmlForms;
+    }
+    
+    /**
+     * Sets the registered CustomHtmlForms.
+     *
+     * @param array $forms An array containing CustomHtmlForms
+     * 
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 15.10.2011
+     */
+    public function setRegisteredCustomHtmlForms($forms) {
+        $this->registeredCustomHtmlForms = $forms;
+    }
 
     /**
      * returns HTML markup for the requested form

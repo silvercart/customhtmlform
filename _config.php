@@ -22,7 +22,7 @@
  * @ignore
  */
 
-Requirements::set_write_js_to_body(false); // Javascriptcode in den Headbereich schreiben
+Requirements::set_write_js_to_body(false); // write javascriptcode into the html head section
 
 DataObject::add_extension('ContentController', 'CustomHtmlFormPage_Controller');
-
+DataObject::add_extension('Security',          'CustomHtmlFormPage_Controller');
