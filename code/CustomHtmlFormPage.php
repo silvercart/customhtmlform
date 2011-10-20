@@ -231,18 +231,20 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
     public function onBeforeInit() {
         Validator::set_javascript_validation_handler('none');
 
-        // -------------------------------------------------------------------
-        // load scripts
-        // -------------------------------------------------------------------
-        Requirements::insertHeadTags('<meta http-equiv="Content-language" content="' . i18n::get_locale() . '" />'); 
-        Requirements::javascript('customhtmlform/script/jquery.js');
-        Requirements::javascript('customhtmlform/script/jquery.scrollTo.min.js');
-        Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.checkFormData.js');
-        Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.events.js');
-        Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.validator.js');
-        Requirements::javascript(SAPPHIRE_DIR . "/javascript/i18n.js");
-        Requirements::add_i18n_javascript('customhtmlform/javascript/lang');
-
+        if (!$this->owner instanceof Security ||
+             $this->owner->urlParams['Action'] != 'ping') {
+            // -------------------------------------------------------------------
+            // load scripts
+            // -------------------------------------------------------------------
+            Requirements::insertHeadTags('<meta http-equiv="Content-language" content="' . i18n::get_locale() . '" />'); 
+            Requirements::javascript('customhtmlform/script/jquery.js');
+            Requirements::javascript('customhtmlform/script/jquery.scrollTo.min.js');
+            Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.checkFormData.js');
+            Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.events.js');
+            Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.validator.js');
+            Requirements::javascript(SAPPHIRE_DIR . "/javascript/i18n.js");
+            Requirements::add_i18n_javascript('customhtmlform/javascript/lang');
+        }
         $this->owner->isFrontendPage = true;
     }
 
