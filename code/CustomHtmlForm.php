@@ -1409,6 +1409,14 @@ class CustomHtmlForm extends Form {
         // SecurityID
         if ($this->dataFieldByName('SecurityID')) {
             $metadata .= $this->dataFieldByName('SecurityID')->Field();
+        } else {
+            if ($this->securityTokenEnabled) {
+                $metadata .= sprintf(
+                    '<input type="hidden" id="%s" name="SecurityID" value="%s" />',
+                    $this->FormName().'_SecurityID',
+                    $this->getSecurityID()
+                );
+            }
         }
         
         // custom data fields
