@@ -187,6 +187,13 @@ class CustomHtmlForm extends Form {
      * @since 22.07.2011
      */
     protected $securityTokenEnabled = true;
+    
+    /**
+     * indicates whether there is an succeeded submission or not
+     *
+     * @var bool
+     */
+    protected $submitSuccess = false;
 
     /**
      * creates a form object with a free configurable markup
@@ -257,7 +264,7 @@ class CustomHtmlForm extends Form {
         // create group structure
         // Gruppenstruktur erzeugen
         if (isset($this->formFields)) {
-            $this->fieldGroups['formFields'] = $this->formFields;
+            $this->fieldGroups['formFields'] = $this->getFormFields();
         } else {
             $this->fieldGroups['formFields'] = array();
         }
@@ -662,7 +669,9 @@ class CustomHtmlForm extends Form {
     protected function fillInRequestValues() {
         $request = $this->controller->getRequest();
 
-        foreach ($this->formFields as $fieldName => $fieldDefinition) {
+        $formFields = $this->getFormFields();
+        
+        foreach ($formFields as $fieldName => $fieldDefinition) {
             if (isset($request[$fieldName])) {
                 $this->formFields[$fieldName][$this->getFormFieldValueLabel($fieldName)] = Convert::raw2xml($request[$fieldName]);
             }
@@ -685,8 +694,10 @@ class CustomHtmlForm extends Form {
     protected function getFormFieldValueLabel($fieldName) {
         $valueLabel = 'value';
 
-        if (isset($this->formFields[$fieldName])) {
-            $fieldDefinition = $this->formFields[$fieldName];
+        $formFields = $this->getFormFields();
+        
+        if (isset($formFields[$fieldName])) {
+            $fieldDefinition = $formFields[$fieldName];
             
             if ($fieldDefinition['type'] == 'ListboxField' ||
                 $fieldDefinition['type'] == 'DropdownField' ||
@@ -731,18 +742,37 @@ class CustomHtmlForm extends Form {
         $this->checkFormData($formData);
 
         if (empty($this->errorMessages)) {
+            $this->setSubmitSuccess(true);
+            $submitSuccessResult = '';
             // Es sind keine Fehler aufgetreten:
-            return $this->submitSuccess(
-                $data,
-                $form,
-                $formData
-            );
+            $overwriteResult = $this->extend('overwriteSubmitSuccess', $data, $form, $formData);
+            if (empty ($overwriteResult)) {
+                $this->extend('onBeforeSubmitSuccess', $data, $form, $formData);
+                $submitSuccessResult = $this->submitSuccess(
+                    $data,
+                    $form,
+                    $formData
+                );
+                $this->extend('onAfterSubmitSuccess', $data, $form, $formData);
+            } else {
+                $submitSuccessResult = $overwriteResult[0];
+            }
+            return $submitSuccessResult;
         } else {
+            $submitFailureResult = '';
             // Es sind Fehler aufgetreten:
-            return $this->submitFailure(
-                $data,
-                $form
-            );
+            $overwriteResult = $this->extend('overwriteSubmitFailure', $data, $form);
+            if (empty ($overwriteResult)) {
+                $this->extend('onBeforeSubmitFailure', $data, $form);
+                $submitFailureResult = $this->submitFailure(
+                    $data,
+                    $form
+                );
+                $this->extend('onAfterSubmitFailure', $data, $form);
+            } else {
+                $submitFailureResult = $overwriteResult[0];
+            }
+            return $submitFailureResult;
         }
     }
 
@@ -760,9 +790,9 @@ class CustomHtmlForm extends Form {
      * @since 25.10.2010
      */
     public function submitFailure($data, $form) {
-
+        $formFields = $this->getFormFields();
         // fill in the form
-        foreach ($this->formFields as $fieldName => $fieldDefinition) {
+        foreach ($formFields as $fieldName => $fieldDefinition) {
             if (isset($data[$fieldName])) {
                 $this->formFields[$fieldName][$this->getFormFieldValueLabel($fieldName)] = Convert::raw2xml($data[$fieldName]);
             }
@@ -1313,6 +1343,16 @@ class CustomHtmlForm extends Form {
      */
     public function getCustomHtmlFormName() {
         return $this->name;
+    }
+    
+    /**
+     * Returns the forms fields.
+     *
+     * @return array
+     */
+    public function getFormFields() {
+        $this->extend('updateFormFields', $this->formFields);
+        return $this->formFields;
     }
 
     /**
@@ -2225,4 +2265,25 @@ class CustomHtmlForm extends Form {
 
         return $output;
     }
+    
+    /**
+     * Returns whether there was an successful submission or not.
+     *
+     * @return bool 
+     */
+    public function getSubmitSuccess() {
+        return $this->submitSuccess;
+    }
+
+    /**
+     * Sets whether there was an successful submission or not.
+     *
+     * @param bool $submitSuccess Submission succeeded or not?
+     *
+     * @return void 
+     */
+    public function setSubmitSuccess($submitSuccess) {
+        $this->submitSuccess = $submitSuccess;
+    }
+
 }
