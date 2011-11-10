@@ -190,7 +190,6 @@ pixeltricks.forms.checkFormData = function()
                     errorMessage = 'Dieses Feld darf nicht leer sein.';
                 } else {
                     errorMessage = ss.i18n._t('Form.FIELD_MAY_NOT_BE_EMPTY', 'Dieses Feld darf nicht leer sein.');
-                    console.log(ss.i18n._t('Form.FIELD_MAY_NOT_BE_EMPTY'));
                 }
             }
         }

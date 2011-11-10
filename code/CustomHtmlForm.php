@@ -360,8 +360,11 @@ class CustomHtmlForm extends Form {
             '.$this->jsName.'.setFormName(\''.$this->jsName.'\');
             '.$this->jsName.'.setPreference(\'doJsValidationScrolling\', '.($this->getDoJsValidationScrolling() ? 'true' : 'false').');
             '.$this->jsName.'.setPreference(\'showJsValidationErrorMessages\', '.($this->getShowJsValidationErrorMessages() ? 'true' : 'false').');
-            '.$this->jsName.'.bindEvents();
-        ';
+            '.$this->jsName.'.bindEvents();';
+        
+        if ($this->getDoJsValidation()) {
+            $javascriptOnloadSnippets .= '$("#'.$this->jsName.'").bind("submit", function() { return '.$this->jsName.'.checkForm(); });';
+        }
 
         return array(
             'javascriptSnippets'        => $javascriptSnippets,
@@ -1310,25 +1313,6 @@ class CustomHtmlForm extends Form {
      */
     public function getCustomHtmlFormName() {
         return $this->name;
-    }
-
-    /**
-     * returns the attributes for the <form>-tag
-     *
-     * @return string
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
-     * @since 25.10.2010
-     */
-    public function FormAttributes() {
-        $attributes  = parent::FormAttributes();
-        
-        if ($this->getDoJsValidation()) {
-            $attributes .= ' onsubmit="return '.$this->jsName.'.checkForm();"';
-        }
-
-        return $attributes;
     }
 
     /**
