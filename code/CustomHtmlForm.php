@@ -49,7 +49,7 @@ class CustomHtmlForm extends Form {
      *
      * @var array
      */
-    protected $fieldGroups;
+    public $fieldGroups;
 
     /**
      * contains the form fields prepared for sapphire
@@ -1495,7 +1495,7 @@ class CustomHtmlForm extends Form {
         if (!isset($this->fieldGroups[$groupName])) {
             throw new Exception(
                 sprintf(
-                    'The CustomHtmlForm fieldgroup "%s" is called but not defiened.',
+                    'The CustomHtmlForm fieldgroup "%s" is called but not defined.',
                     $groupName
                 )
             );
@@ -2154,7 +2154,7 @@ class CustomHtmlForm extends Form {
         if (isset($this->fieldGroups[$groupName][$fieldName])) {
             throw new Exception(
                 sprintf(
-                    'In the CustomHtmlForm fieldgroup "%s" the field "%s" is already defiened.',
+                    'In the CustomHtmlForm fieldgroup "%s" the field "%s" is already defined.',
                     $groupName,
                     $fieldName
                 )
