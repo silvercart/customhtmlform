@@ -1096,6 +1096,28 @@ class CustomHtmlForm extends Form {
     }
 
     /**
+     * Returns the requested formField or customParameter if available.
+     *
+     * @param string $fieldName The name to search for
+     *
+     * @return mixed
+     * 
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 18.11.2011
+     */
+    public function getFormFieldDefinition($fieldName) {
+        if (isset($this->customParameters[$fieldName])) {
+            return $this->customParameters[$fieldName];
+        }
+        
+        if (isset($this->formFields[$fieldName])) {
+            return $this->formFields[$fieldName];
+        }
+        
+        return false;
+    }
+
+    /**
      * creates a form field from the definition; sets standard values if they
      * are not defined
      *
