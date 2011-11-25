@@ -713,6 +713,7 @@ class CustomHtmlForm extends Form {
                 $fieldDefinition['type'] == 'StateDropdownField' ||
                 $fieldDefinition['type'] == 'SilvercartCheckoutOptionsetField' ||
                 $fieldDefinition['type'] == 'OptionsetField' ||
+                $fieldDefinition['type'] == 'SelectionGroup' ||
                 in_array('OptionsetField', class_parents($fieldDefinition['type'])) ||
                 in_array('DropdownField', class_parents($fieldDefinition['type'])) ||
                 in_array('ListboxField', class_parents($fieldDefinition['type']))) {
@@ -1232,6 +1233,25 @@ class CustomHtmlForm extends Form {
                 $fieldDefinition['selectedValue'],
                 $fieldDefinition['form']
             );
+        } else if ($fieldDefinition['type'] == 'SelectionGroup' ||
+                   in_array('SelectionGroup', class_parents($fieldDefinition['type']))) {
+            
+            $groupFields = array();
+            
+            foreach ($fieldDefinition['items'] as $itemFieldName => $item) {
+                $itemObj                     = $this->getFormField($itemFieldName, $item);
+                $groupFields[$itemFieldName] = $itemObj;
+            }
+            
+            if (empty($groupFields)) {
+                return false;
+            }
+            
+            $field = new $fieldDefinition['type'](
+                $fieldName,
+                $groupFields
+            );
+            $field->value = $fieldDefinition['value'];
         } else if ($fieldDefinition['type'] == 'TextField' ||
                    $fieldDefinition['type'] == 'EmailField' ||
                    $fieldDefinition['type'] == 'PtCaptchaField') {
@@ -1515,12 +1535,7 @@ class CustomHtmlForm extends Form {
         $fieldGroup = new DataObjectSet();
 
         if (!isset($this->fieldGroups[$groupName])) {
-            throw new Exception(
-                sprintf(
-                    'The CustomHtmlForm fieldgroup "%s" is called but not defined.',
-                    $groupName
-                )
-            );
+            return $fieldGroup;
         }
 
         foreach ($this->fieldGroups[$groupName] as $fieldName => $fieldDefinitions) {
