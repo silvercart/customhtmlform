@@ -108,6 +108,7 @@ class CustomHtmlForm extends Form {
      */
     protected $basePreferences  = array(
         'submitButtonTitle'                 => 'Abschicken',
+        'submitButtonToolTip'               => 'Abschicken',
         'submitAction'                      => 'customHtmlFormSubmit',
         'doJsValidation'                    => true,
         'doJsValidationScrolling'           => true,
@@ -228,6 +229,7 @@ class CustomHtmlForm extends Form {
                 }
             }
         }
+        
         $name = $this->getSubmitAction();
 
         if (!$barebone) {
@@ -240,6 +242,19 @@ class CustomHtmlForm extends Form {
             new FieldSet(),
             new FieldSet()
         );
+        
+        // Hook for setting preferences via a method call; we need to do this
+        // a second time so that the standard Silverstripe mechanism can take
+        // influence, too (i.e. _config.php files, init methods, etc).
+        $this->preferences();
+
+        if (is_array($preferences)) {
+            foreach ($preferences as $title => $setting) {
+                if (!empty($title)) {
+                    $this->basePreferences[$title] = $setting;
+                }
+            }
+        }
         
         if ($this->securityTokenEnabled) {
             $this->getSecurityToken()->enable();
@@ -1082,12 +1097,15 @@ class CustomHtmlForm extends Form {
             }
         }
 
+        $formAction = new FormAction(
+            $this->getSubmitAction(),
+            $this->getSubmitButtonTitle(),
+            $this
+        );
+        $formAction->description = $this->getSubmitButtonToolTip();
+        
         $actions = new FieldSet(
-            new FormAction(
-                $this->getSubmitAction(),
-                $this->getSubmitButtonTitle(),
-                $this
-            )
+            $formAction
         );
         
         return array(
@@ -2040,6 +2058,31 @@ class CustomHtmlForm extends Form {
         }
 
         return $title;
+    }
+    
+    /**
+     * returns submit button title
+     *
+     * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 26.10.2010
+     */
+    protected function getSubmitButtonToolTip() {
+        $toolTip = '';
+
+        if (isset($this->preferences['submitButtonToolTip'])) {
+            $toolTip = $this->preferences['submitButtonToolTip'];
+        } else {
+            $toolTip = $this->basePreferences['submitButtonToolTip'];
+        }
+        
+        if (empty($toolTip)) {
+            $toolTip = $this->getSubmitButtontitle();
+        }
+
+        return $toolTip;
     }
 
     /**

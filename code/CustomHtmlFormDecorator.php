@@ -139,4 +139,16 @@ interface CustomHtmlFormDecorator {
      */
     public function updateFormFields(&$formFields);
     
+    /**
+     * This method is called before CustomHtmlForm set the preferences. You 
+     * can manipulate the default preferences here.
+     * 
+     * @param array &$preferences Preferences to manipulate
+     * 
+     * @return bool
+     * 
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 28.11.2011
+     */
+    public function updatePreferences(&$preferences);
 }
