@@ -1156,7 +1156,12 @@ class CustomHtmlForm extends Form {
                 'CustomHtmlForm: Field type must be specified.'
             );
         }
-
+        
+        // SelectionGroup fields use '//' as separator for key/label definition
+        if (strpos($fieldName, '//') !== false) {
+            list($fieldName, $fieldLabel) = explode('//', $fieldName, 2);
+        }
+            
         foreach ($this->fieldGroups as $groupName => $groupFields) {
             if (isset($groupFields[$fieldName])) {
                 $fieldReference = &$groupFields[$fieldName];
