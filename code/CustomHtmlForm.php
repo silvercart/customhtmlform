@@ -1715,6 +1715,24 @@ class CustomHtmlForm extends Form {
 
         return $output;
     }
+    
+    /**
+     * Indicates wether there are error messages.
+     *
+     * @return boolean
+     * 
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 01.12.2011
+     */
+    public function HasCustomHtmlFormErrorMessages() {
+        $hasMessages = false;
+        
+        if (count($this->errorMessages) + count($this->messages) > 0) {
+            $hasMessages = true;
+        }
+        
+        return $hasMessages;
+    }
 
     /**
      * returns the form's name
