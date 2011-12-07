@@ -195,6 +195,16 @@ class CustomHtmlForm extends Form {
      * @var bool
      */
     protected $submitSuccess = false;
+    
+    /**
+     * Contains all registered form field handlers.
+     *
+     * @var array
+     * 
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 06.12.2011
+     */
+    public static $registeredFormFieldHandlers = array();
 
     /**
      * creates a form object with a free configurable markup
@@ -979,6 +989,10 @@ class CustomHtmlForm extends Form {
                     }
 
                     foreach ($fieldDefinition['checkRequirements'] as $requirement => $requiredValue) {
+                        if (empty($requirement)) {
+                            continue;
+                        }
+                        
                         // --------------------------------------------------------
                         // Sonderfaelle:
                         // --------------------------------------------------------
@@ -1369,12 +1383,17 @@ class CustomHtmlForm extends Form {
                 $field->setValue($fieldDefinition['value']);
             }
         } else {
-            $field = new $fieldDefinition['type'](
-                $fieldName,
-                $fieldDefinition['title'],
-                $fieldDefinition['value'],
-                $fieldDefinition['form']
-            );
+            $formFieldHandler = self::getRegisteredFormFieldHandlerForType($fieldDefinition['type']);
+            if ($formFieldHandler) {
+                $field = $formFieldHandler->getFormField($fieldName, $fieldDefinition);
+            } else {
+                $field = new $fieldDefinition['type'](
+                    $fieldName,
+                    $fieldDefinition['title'],
+                    $fieldDefinition['value'],
+                    $fieldDefinition['form']
+                );
+            }
         }
 
         // add error message for a field if defined
@@ -1478,6 +1497,24 @@ class CustomHtmlForm extends Form {
 
         return $formObj;
     }
+    
+    /**
+     * Returns a registered handler for the given field type if available.
+     *
+     * @param string $fieldType The field type
+     *
+     * @return mixed
+     * 
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 06.12.2011
+     */
+    public static function getRegisteredFormFieldHandlerForType($fieldType) {
+        if (array_key_exists($fieldType, self::$registeredFormFieldHandlers)) {
+            return self::$registeredFormFieldHandlers[$fieldType];
+        }
+        
+        return false;
+    }
 
     /**
      * passes the meta data for form submission to the template;
@@ -1546,6 +1583,7 @@ class CustomHtmlForm extends Form {
      * @param string $groupName group's name
      * @param string $template  name of the template that should be used for all
      *                          fields of the group
+     * @param mixed  $argument1 An optional argument
      *
      * @return string
      *
@@ -1553,9 +1591,12 @@ class CustomHtmlForm extends Form {
      * @copyright 2010 pixeltricks GmbH
      * @since 27.10.2010
      */
-    public function CustomHtmlFormFieldsByGroup($groupName, $template = null) {
-
+    public function CustomHtmlFormFieldsByGroup($groupName, $template = null, $argument1 = null) {
         $fieldGroup = new DataObjectSet();
+        
+        if ($this->extend('overwriteCustomHtmlFormFieldsByGroup', $groupName, $template, $fieldGroup, $argument1)) {
+            return $fieldGroup;
+        }
 
         if (!isset($this->fieldGroups[$groupName])) {
             return $fieldGroup;
@@ -1829,6 +1870,23 @@ class CustomHtmlForm extends Form {
      */
     public function registerCustomHtmlForm($formIdentifier, CustomHtmlForm $formObj) {
         $this->registeredCustomHtmlForms[$formIdentifier] = $formObj;
+    }
+    
+    /**
+     * Registers a form field handler.
+     *
+     * @param string $fieldType The field type this handler is responsible for.
+     * @param mixed  $handler   The handler object itself.
+     *
+     * @return void
+     * 
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 06.12.2011
+     */
+    public static function registerFormFieldHandler($fieldType, $handler) {
+        if (!array_key_exists($fieldType, self::$registeredFormFieldHandlers)) {
+            self::$registeredFormFieldHandlers[$fieldType] = $handler;
+        }
     }
     
     /**
