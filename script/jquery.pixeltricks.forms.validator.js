@@ -225,6 +225,10 @@ pixeltricks.forms.validator = function()
             }
         );
         
+        if (window.updateCheckForm) {
+            updateCheckForm(that, errorMessages);
+        }
+
         this.isValidated = true;
 
         if (errors)
