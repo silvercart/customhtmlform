@@ -1700,6 +1700,7 @@ class CustomHtmlForm extends Form {
                     'errorMessage'      => isset($this->errorMessages[$fieldName]) ?  $this->errorMessages[$fieldName] : '',
                     'FieldTag'          => $this->SSformFields['fields']->fieldByName($fieldName)->Field(),
                     'FieldHolder'       => $this->SSformFields['fields']->fieldByName($fieldName)->FieldHolder(),
+                    'FieldID'           => $this->SSformFields['fields']->fieldByName($fieldName)->id(),
                     'FieldObject'       => $this->SSformFields['fields']->fieldByName($fieldName),
                     'Parent'            => $this,
                     'isRequiredField'   => $isRequiredField

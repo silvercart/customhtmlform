@@ -9,6 +9,6 @@
         </div>
     <% end_if %>
 
-    <label for="{$FormName}_{$FieldName}">{$Label} </label>
+    <label for="{$FieldID}">{$Label} </label>
     $FieldTag
 </div>
