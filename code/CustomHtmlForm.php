@@ -519,7 +519,7 @@ class CustomHtmlForm extends Form {
                 }
 
                 $fieldStr .= sprintf(
-                    "%s: {
+                    "'%s': {
                         type: \"%s\",
                         %s
                         checkRequirements: {
