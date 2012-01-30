@@ -60,7 +60,7 @@ class CustomHtmlFormStepPage extends Page {
         '/auktion-erstellen/uploadifyUpload',
         '/auktion-erstellen/uploadifyRefresh',
         '/auktion-erstellen/uploadifyRemoveFile',
-        '/checkout/customHtmlFormSubmit'
+        '/webshop/checkout/customHtmlFormSubmit'
     );
     
     /**
@@ -1151,6 +1151,9 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
 
             if (substr($refererUri, -1) != '/') {
                 $refererUri .= '/';
+            }
+            if (substr($requestUri, -1) != '/') {
+                $requestUri .= '/';
             }
 
             if ($refererUri === substr($requestUri, 0, strlen($refererUri))) {
