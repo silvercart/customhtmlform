@@ -1703,7 +1703,8 @@ class CustomHtmlForm extends Form {
                     'FieldID'           => $this->SSformFields['fields']->fieldByName($fieldName)->id(),
                     'FieldObject'       => $this->SSformFields['fields']->fieldByName($fieldName),
                     'Parent'            => $this,
-                    'isRequiredField'   => $isRequiredField
+                    'isRequiredField'   => $isRequiredField,
+                    'FieldDescription'  => isset($fieldReference['description']) ? $fieldReference['description'] : '',
                 )
             )->renderWith($templatePathAbs);
         } else {
