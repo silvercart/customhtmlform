@@ -395,7 +395,7 @@ class CustomHtmlForm extends Form {
             '.$this->jsName.'.bindEvents();';
         
         if ($this->getDoJsValidation()) {
-            $javascriptOnloadSnippets .= '$("#'.$this->jsName.'").bind("submit", function() { return '.$this->jsName.'.checkForm(); });';
+            $javascriptOnloadSnippets .= '$("#'.$this->jsName.'").bind("submit", function(e) { return '.$this->jsName.'.checkForm(e); });';
         }
 
         return array(

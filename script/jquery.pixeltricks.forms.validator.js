@@ -66,7 +66,7 @@ pixeltricks.forms.validator = function()
      * Einstiegsfunktion: prueft alle angegebenen Felder und liefert eine
      * entsprechende Meldung und Kennzeichnung zurueck.
      */
-    this.checkForm = function(restrictCheckToField)
+    this.checkForm = function(event,restrictCheckToField)
     {
         // Validierung nicht durchfuehren, wenn nicht gewuenscht
         if (this.doValidation === false)
@@ -233,6 +233,7 @@ pixeltricks.forms.validator = function()
 
         if (errors)
         {
+            event.preventDefault();
             this.validationResult = 'FAILURE';
             this.toggleErrorFields(errorMessages);
 
@@ -364,7 +365,9 @@ pixeltricks.forms.validator = function()
                     messages == -1)
                 {
                     // Box ist sichtbar, aber keine Fehler mehr
-                    $('#' + errorFieldID).fadeOut(300, function() {});
+                    $('#' + errorFieldID).fadeOut(300, function() {
+                        $('#' + errorFieldID).css('display', 'none');
+                    });
 
                     if ($('#' + fieldBoxID))
                     {
