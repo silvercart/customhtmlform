@@ -101,6 +101,30 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
     }
 
     /**
+     * Clears all javascript snippets.
+     * 
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 12.02.2012
+     */
+    public function clearJavascriptSnippets() {
+        $this->JavascriptSnippets = array();
+    }
+
+    /**
+     * Clears all javascript onload snippets.
+     * 
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 12.02.2012
+     */
+    public function clearJavascriptOnloadSnippets() {
+        $this->JavascriptOnloadSnippets = array();
+    }
+
+    /**
      * registers a form object
      *
      * @param string         $formIdentifier unique form name which can be called via template
@@ -114,6 +138,22 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
      */
     public function registerCustomHtmlForm($formIdentifier, CustomHtmlForm $formObj) {
         $this->registeredCustomHtmlForms[$formIdentifier] = $formObj;
+    }
+
+    /**
+     * unregisters a form object
+     *
+     * @param string $formIdentifier unique form name which can be called via template
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 12.02.2012
+     */
+    public function unRegisterCustomHtmlForm($formIdentifier) {
+        if (array_key_exists($formIdentifier, $this->registeredCustomHtmlForms)) {
+            unset($this->registeredCustomHtmlForms[$formIdentifier]);
+        }
     }
 
     /**
