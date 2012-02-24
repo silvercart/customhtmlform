@@ -1313,6 +1313,7 @@ class CustomHtmlForm extends Form {
                 $fieldDefinition['value'],
                 $fieldDefinition['form']
             );
+            $field->setMaxLength(16);
 
             if (isset($fieldDefinition['configuration']) &&
                 is_array($fieldDefinition['configuration'])) {
