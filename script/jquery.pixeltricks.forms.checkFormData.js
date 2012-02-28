@@ -5,7 +5,7 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
 /**
  * Methoden zur Feldpruefung.
  */
-pixeltricks.forms.checkFormData = function()
+(function($) { pixeltricks.forms.checkFormData = function()
 {
     /**
      * Workaround fuer Selbstreferenzierung in Closures.
@@ -514,4 +514,4 @@ pixeltricks.forms.checkFormData = function()
     {
         this.fieldType = fieldType;
     }
-}
+}})(jQuery);

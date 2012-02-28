@@ -10,7 +10,7 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
  * @since 11.11.2010
  * @license none
  */
-pixeltricks.forms.events = function()
+(function($) { pixeltricks.forms.events = function()
 {
     /**
      * Workaround fuer Selbstreferenzierung in Closures.
@@ -234,4 +234,4 @@ pixeltricks.forms.events = function()
     {
         that.fieldName = fieldName;
     }
-}
+}})(jQuery);

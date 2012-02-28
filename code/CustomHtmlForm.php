@@ -329,6 +329,7 @@ class CustomHtmlForm extends Form {
             
             $this->controller->addJavascriptSnippet($javascriptSnippets['javascriptSnippets']);
             $this->controller->addJavascriptOnloadSnippet($javascriptSnippets['javascriptOnloadSnippets']);
+            $this->controller->addJavascriptOnloadSnippet($this->getJavascriptFieldInitialisations());
         }
 
         // Register the default module directory from mysite/_config.php
@@ -365,6 +366,30 @@ class CustomHtmlForm extends Form {
      */
     public static function registerModule($moduleName, $priority = 51) {
         self::$registeredModules[$moduleName] = $priority;
+    }
+
+    /**
+     * Returns javascript code for fields that need special initialisation,
+     * e.g. the datepicker field
+     *
+     * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 28.02.2012
+     */
+    public function getJavascriptFieldInitialisations() {
+        $snippet    = '';
+        $formFields = $this->getFormFields();
+
+        foreach ($this->fieldGroups as $groupName => $groupFields) {
+            foreach ($groupFields as $fieldName => $fieldDefinition) {
+                if ($fieldDefinition['type'] == 'DateField') {
+                    $snippet .= "$('input[name=\"".$fieldName."\"]').datepicker();"."\n";
+                }
+            }
+        }
+
+        return $snippet;
     }
 
     /**

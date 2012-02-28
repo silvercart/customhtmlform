@@ -5,8 +5,7 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
 /**
  * Formular Validator.
  */
-pixeltricks.forms.validator = function()
-{
+(function($) {pixeltricks.forms.validator = function() {
     /**
      * Enthaelt die Definitionen der zu pruefenden Formularfelder.
      */
@@ -548,3 +547,4 @@ pixeltricks.forms.validator = function()
         }
     }
 }
+})(jQuery);

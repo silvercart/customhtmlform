@@ -337,10 +337,10 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
 
                 '.$snippetStr.'
 
-                $(document).ready(function() {
+                (function($) {jQuery(document).ready(function() {
                     '.$onLoadSnippetStr.'
                     '.$onLoadInTheEndSnippetStr.'
-                });
+                })})(jQuery);
             ');
         }
     }
