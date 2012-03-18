@@ -384,7 +384,27 @@ class CustomHtmlForm extends Form {
         foreach ($this->fieldGroups as $groupName => $groupFields) {
             foreach ($groupFields as $fieldName => $fieldDefinition) {
                 if ($fieldDefinition['type'] == 'DateField') {
-                    $snippet .= "$('input[name=\"".$fieldName."\"]').datepicker();"."\n";
+                    $config = '';
+
+                    if (array_key_exists('configuration', $fieldDefinition)) {
+                        foreach ($fieldDefinition['configuration'] as $option => $value) {
+                            $config .= sprintf(
+                                "'%s': '%s',",
+                                $option,
+                                $value
+                            );
+                        }
+
+                        if (!empty($config)) {
+                            $config = substr($config, 0, -1);
+                        }
+                    }
+
+                    $snippet .= sprintf(
+                        "$('input[name=\"%s\"]').datepicker({%s});",
+                        $fieldName,
+                        $config
+                    );
                 }
             }
         }
@@ -509,6 +529,7 @@ class CustomHtmlForm extends Form {
             foreach ($groupFields as $fieldName => $fieldProperties) {
                 $checkRequirementStr    = '';
                 $eventStr               = '';
+                $configurationStr       = '';
 
                 // ------------------------------------------------------------
                 // create JS requirements
@@ -535,6 +556,18 @@ class CustomHtmlForm extends Form {
                 }
 
                 // ------------------------------------------------------------
+                // create configuration section
+                // ------------------------------------------------------------
+                if (isset($fieldProperties['configuration'])) {
+                    foreach ($fieldProperties['configuration'] as $configuration => $definition) {
+                        $configurationStr .= $this->generateJsValidatorRequirementString($configuration, $definition);
+                    }
+                }
+                if (!empty($configurationStr)) {
+                    $configurationStr = substr($configurationStr, 0, strlen($configurationStr) - 1);
+                }
+
+                // ------------------------------------------------------------
                 // add additional attributes
                 // ------------------------------------------------------------
                 if (isset($fieldProperties['title'])) {
@@ -552,13 +585,17 @@ class CustomHtmlForm extends Form {
                         },
                         events: {
                             %s
+                        },
+                        configuration: {
+                            %s
                         }
                     },",
                     $fieldName,
                     $fieldProperties['type'],
                     $titleField,
                     $checkRequirementStr,
-                    $eventStr
+                    $eventStr,
+                    $configurationStr
                 );
             }
         }
