@@ -346,6 +346,25 @@ class CustomHtmlForm extends Form {
      * @return void
      */
     public function preferences() {
+        $this->extend('updatePreferences', $this->preferences);
+    }
+    
+    /**
+     * Used to overwrite a CustomHtmlForms process by a decorator
+     * 
+     * @return void
+     *
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 22.03.2012
+     */
+    public function extendedProcess() {
+        $processResult = $this->extend('extendedProcess');
+        if (empty ($processResult)) {
+            $result = false;
+        } else {
+            $result = true;
+        }
+        return $result;
     }
 
     /**
