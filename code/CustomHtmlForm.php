@@ -107,19 +107,20 @@ class CustomHtmlForm extends Form {
      * @var array
      */
     protected $basePreferences  = array(
-        'submitButtonTitle'                 => 'Abschicken',
-        'submitButtonToolTip'               => 'Abschicken',
-        'submitAction'                      => 'customHtmlFormSubmit',
+        'createShoppingcartForms'           => true,
         'doJsValidation'                    => true,
         'doJsValidationScrolling'           => true,
-        'showJsValidationErrorMessages'     => true,
-        'stepTitle'                         => '',
-        'stepIsVisible'                     => true,
-        'ShowCustomHtmlFormStepNavigation'  => true,
         'fillInRequestValues'               => true,
         'isConditionalStep'                 => false,
         'loadShoppingcartModules'           => true,
-        'createShoppingcartForms'           => true
+        'markRequiredFields'                => false,
+        'showJsValidationErrorMessages'     => true,
+        'ShowCustomHtmlFormStepNavigation'  => true,
+        'stepIsVisible'                     => true,
+        'stepTitle'                         => '',
+        'submitAction'                      => 'customHtmlFormSubmit',
+        'submitButtonTitle'                 => 'Abschicken',
+        'submitButtonToolTip'               => 'Abschicken'
     );
 
     /**
@@ -385,6 +386,28 @@ class CustomHtmlForm extends Form {
      */
     public static function registerModule($moduleName, $priority = 51) {
         self::$registeredModules[$moduleName] = $priority;
+    }
+
+    /**
+     * Returns an HTML tag for marking fields as required.
+     *
+     * @param boolean $isRequiredField Indicate wether this is a required field
+     *
+     * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 29.03.2012
+     */
+    public function RequiredFieldMarker($isRequiredField) {
+        $marker = '';
+
+        if ($isRequiredField &&
+            $this->preferences['markRequiredFields']) {
+
+            $marker = _t('CustomHtmlForm.REQUIRED_FIELD_MARKER');
+        }
+
+        return $marker;
     }
 
     /**
@@ -1776,17 +1799,18 @@ class CustomHtmlForm extends Form {
 
             $output = $viewableObj->customise(
                 array(
-                    'FormName'          => $this->name,
-                    'FieldName'         => $fieldName,
-                    'Label'             => isset($fieldReference['title']) ? $fieldReference['title'] : '',
-                    'errorMessage'      => isset($this->errorMessages[$fieldName]) ?  $this->errorMessages[$fieldName] : '',
-                    'FieldTag'          => $this->SSformFields['fields']->fieldByName($fieldName)->Field(),
-                    'FieldHolder'       => $this->SSformFields['fields']->fieldByName($fieldName)->FieldHolder(),
-                    'FieldID'           => $this->SSformFields['fields']->fieldByName($fieldName)->id(),
-                    'FieldObject'       => $this->SSformFields['fields']->fieldByName($fieldName),
-                    'Parent'            => $this,
-                    'isRequiredField'   => $isRequiredField,
-                    'FieldDescription'  => isset($fieldReference['description']) ? $fieldReference['description'] : '',
+                    'FormName'            => $this->name,
+                    'FieldName'           => $fieldName,
+                    'Label'               => isset($fieldReference['title']) ? $fieldReference['title'] : '',
+                    'errorMessage'        => isset($this->errorMessages[$fieldName]) ?  $this->errorMessages[$fieldName] : '',
+                    'FieldTag'            => $this->SSformFields['fields']->fieldByName($fieldName)->Field(),
+                    'FieldHolder'         => $this->SSformFields['fields']->fieldByName($fieldName)->FieldHolder(),
+                    'FieldID'             => $this->SSformFields['fields']->fieldByName($fieldName)->id(),
+                    'FieldObject'         => $this->SSformFields['fields']->fieldByName($fieldName),
+                    'Parent'              => $this,
+                    'isRequiredField'     => $isRequiredField,
+                    'RequiredFieldMarker' => $this->RequiredFieldMarker($isRequiredField),
+                    'FieldDescription'    => isset($fieldReference['description']) ? $fieldReference['description'] : '',
                 )
             )->renderWith($templatePathAbs);
         } else {
