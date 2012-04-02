@@ -401,8 +401,14 @@ class CustomHtmlForm extends Form {
     public function RequiredFieldMarker($isRequiredField) {
         $marker = '';
 
+        if (isset($this->preferences['markRequiredFields'])) {
+            $markRequiredFields = $this->preferences['markRequiredFields'];
+        } else {
+            $markRequiredFields = $this->basePreferences['markRequiredFields'];
+        }
+
         if ($isRequiredField &&
-            $this->preferences['markRequiredFields']) {
+            $markRequiredFields) {
 
             $marker = _t('CustomHtmlForm.REQUIRED_FIELD_MARKER');
         }
