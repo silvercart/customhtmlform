@@ -123,7 +123,8 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
                                     // Fuer Radiobuttons wird der Wert des selektierten Buttons
                                     // ausgelesen.
                                     if (values == 'OptionsetField' ||
-                                        values == 'SilvercartCheckoutOptionsetField') {
+                                        values == 'SilvercartCheckoutOptionsetField' ||
+                                        values == 'SilvercartShippingOptionsetField') {
                                         
                                         checkFormData.setFieldValue(
                                             $('#' + that.formName + ' input[name=\'' + fieldName + '\']:checked').val()

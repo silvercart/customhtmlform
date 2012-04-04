@@ -847,6 +847,7 @@ class CustomHtmlForm extends Form {
                 $fieldDefinition['type'] == 'Widget_TreeDropdownField_Readonly' ||
                 $fieldDefinition['type'] == 'StateDropdownField' ||
                 $fieldDefinition['type'] == 'SilvercartCheckoutOptionsetField' ||
+                $fieldDefinition['type'] == 'SilvercartShippingOptionsetField' ||
                 $fieldDefinition['type'] == 'OptionsetField' ||
                 $fieldDefinition['type'] == 'SelectionGroup' ||
                 in_array('OptionsetField', class_parents($fieldDefinition['type'])) ||
@@ -1372,6 +1373,7 @@ class CustomHtmlForm extends Form {
             );
         } else if ($fieldDefinition['type'] == 'OptionsetField' ||
                    $fieldDefinition['type'] == 'SilvercartCheckoutOptionsetField' ||
+                   $fieldDefinition['type'] == 'SilvercartShippingOptionsetField' ||
                    in_array('OptionsetField', class_parents($fieldDefinition['type']))) {
             $field = new $fieldDefinition['type'](
                 $fieldName,
