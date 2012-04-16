@@ -56,6 +56,7 @@ class CustomHtmlFormStepPage extends Page {
      */
     public $allowedOutsideReferers = array(
         '/de/cgi-bin/webscr',
+        '/de/cgi-bin/merchantpaymentweb',
         '/auktion-erstellen/customHtmlFormSubmit',
         '/auktion-erstellen/uploadifyUpload',
         '/auktion-erstellen/uploadifyRefresh',
