@@ -107,19 +107,20 @@ class CustomHtmlForm extends Form {
      * @var array
      */
     protected $basePreferences  = array(
-        'submitButtonTitle'                 => 'Abschicken',
-        'submitButtonToolTip'               => 'Abschicken',
-        'submitAction'                      => 'customHtmlFormSubmit',
+        'createShoppingcartForms'           => true,
         'doJsValidation'                    => true,
         'doJsValidationScrolling'           => true,
-        'showJsValidationErrorMessages'     => true,
-        'stepTitle'                         => '',
-        'stepIsVisible'                     => true,
-        'ShowCustomHtmlFormStepNavigation'  => true,
         'fillInRequestValues'               => true,
         'isConditionalStep'                 => false,
         'loadShoppingcartModules'           => true,
-        'createShoppingcartForms'           => true
+        'markRequiredFields'                => false,
+        'showJsValidationErrorMessages'     => true,
+        'ShowCustomHtmlFormStepNavigation'  => true,
+        'stepIsVisible'                     => true,
+        'stepTitle'                         => '',
+        'submitAction'                      => 'customHtmlFormSubmit',
+        'submitButtonTitle'                 => 'Abschicken',
+        'submitButtonToolTip'               => 'Abschicken'
     );
 
     /**
@@ -346,6 +347,25 @@ class CustomHtmlForm extends Form {
      * @return void
      */
     public function preferences() {
+        $this->extend('updatePreferences', $this->preferences);
+    }
+    
+    /**
+     * Used to overwrite a CustomHtmlForms process by a decorator
+     * 
+     * @return void
+     *
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 22.03.2012
+     */
+    public function extendedProcess() {
+        $processResult = $this->extend('extendedProcess');
+        if (empty ($processResult)) {
+            $result = false;
+        } else {
+            $result = true;
+        }
+        return $result;
     }
 
     /**
@@ -369,6 +389,34 @@ class CustomHtmlForm extends Form {
     }
 
     /**
+     * Returns an HTML tag for marking fields as required.
+     *
+     * @param boolean $isRequiredField Indicate wether this is a required field
+     *
+     * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 29.03.2012
+     */
+    public function RequiredFieldMarker($isRequiredField) {
+        $marker = '';
+
+        if (isset($this->preferences['markRequiredFields'])) {
+            $markRequiredFields = $this->preferences['markRequiredFields'];
+        } else {
+            $markRequiredFields = $this->basePreferences['markRequiredFields'];
+        }
+
+        if ($isRequiredField &&
+            $markRequiredFields) {
+
+            $marker = _t('CustomHtmlForm.REQUIRED_FIELD_MARKER');
+        }
+
+        return $marker;
+    }
+
+    /**
      * Returns javascript code for fields that need special initialisation,
      * e.g. the datepicker field
      *
@@ -384,7 +432,27 @@ class CustomHtmlForm extends Form {
         foreach ($this->fieldGroups as $groupName => $groupFields) {
             foreach ($groupFields as $fieldName => $fieldDefinition) {
                 if ($fieldDefinition['type'] == 'DateField') {
-                    $snippet .= "$('input[name=\"".$fieldName."\"]').datepicker();"."\n";
+                    $config = '';
+
+                    if (array_key_exists('configuration', $fieldDefinition)) {
+                        foreach ($fieldDefinition['configuration'] as $option => $value) {
+                            $config .= sprintf(
+                                "'%s': '%s',",
+                                $option,
+                                $value
+                            );
+                        }
+
+                        if (!empty($config)) {
+                            $config = substr($config, 0, -1);
+                        }
+                    }
+
+                    $snippet .= sprintf(
+                        "$('input[name=\"%s\"]').datepicker({%s});",
+                        $fieldName,
+                        $config
+                    );
                 }
             }
         }
@@ -509,6 +577,7 @@ class CustomHtmlForm extends Form {
             foreach ($groupFields as $fieldName => $fieldProperties) {
                 $checkRequirementStr    = '';
                 $eventStr               = '';
+                $configurationStr       = '';
 
                 // ------------------------------------------------------------
                 // create JS requirements
@@ -535,6 +604,18 @@ class CustomHtmlForm extends Form {
                 }
 
                 // ------------------------------------------------------------
+                // create configuration section
+                // ------------------------------------------------------------
+                if (isset($fieldProperties['configuration'])) {
+                    foreach ($fieldProperties['configuration'] as $configuration => $definition) {
+                        $configurationStr .= $this->generateJsValidatorRequirementString($configuration, $definition);
+                    }
+                }
+                if (!empty($configurationStr)) {
+                    $configurationStr = substr($configurationStr, 0, strlen($configurationStr) - 1);
+                }
+
+                // ------------------------------------------------------------
                 // add additional attributes
                 // ------------------------------------------------------------
                 if (isset($fieldProperties['title'])) {
@@ -552,13 +633,17 @@ class CustomHtmlForm extends Form {
                         },
                         events: {
                             %s
+                        },
+                        configuration: {
+                            %s
                         }
                     },",
                     $fieldName,
                     $fieldProperties['type'],
                     $titleField,
                     $checkRequirementStr,
-                    $eventStr
+                    $eventStr,
+                    $configurationStr
                 );
             }
         }
@@ -762,6 +847,7 @@ class CustomHtmlForm extends Form {
                 $fieldDefinition['type'] == 'Widget_TreeDropdownField_Readonly' ||
                 $fieldDefinition['type'] == 'StateDropdownField' ||
                 $fieldDefinition['type'] == 'SilvercartCheckoutOptionsetField' ||
+                $fieldDefinition['type'] == 'SilvercartShippingOptionsetField' ||
                 $fieldDefinition['type'] == 'OptionsetField' ||
                 $fieldDefinition['type'] == 'SelectionGroup' ||
                 in_array('OptionsetField', class_parents($fieldDefinition['type'])) ||
@@ -1287,6 +1373,7 @@ class CustomHtmlForm extends Form {
             );
         } else if ($fieldDefinition['type'] == 'OptionsetField' ||
                    $fieldDefinition['type'] == 'SilvercartCheckoutOptionsetField' ||
+                   $fieldDefinition['type'] == 'SilvercartShippingOptionsetField' ||
                    in_array('OptionsetField', class_parents($fieldDefinition['type']))) {
             $field = new $fieldDefinition['type'](
                 $fieldName,
@@ -1720,17 +1807,18 @@ class CustomHtmlForm extends Form {
 
             $output = $viewableObj->customise(
                 array(
-                    'FormName'          => $this->name,
-                    'FieldName'         => $fieldName,
-                    'Label'             => isset($fieldReference['title']) ? $fieldReference['title'] : '',
-                    'errorMessage'      => isset($this->errorMessages[$fieldName]) ?  $this->errorMessages[$fieldName] : '',
-                    'FieldTag'          => $this->SSformFields['fields']->fieldByName($fieldName)->Field(),
-                    'FieldHolder'       => $this->SSformFields['fields']->fieldByName($fieldName)->FieldHolder(),
-                    'FieldID'           => $this->SSformFields['fields']->fieldByName($fieldName)->id(),
-                    'FieldObject'       => $this->SSformFields['fields']->fieldByName($fieldName),
-                    'Parent'            => $this,
-                    'isRequiredField'   => $isRequiredField,
-                    'FieldDescription'  => isset($fieldReference['description']) ? $fieldReference['description'] : '',
+                    'FormName'            => $this->name,
+                    'FieldName'           => $fieldName,
+                    'Label'               => isset($fieldReference['title']) ? $fieldReference['title'] : '',
+                    'errorMessage'        => isset($this->errorMessages[$fieldName]) ?  $this->errorMessages[$fieldName] : '',
+                    'FieldTag'            => $this->SSformFields['fields']->fieldByName($fieldName)->Field(),
+                    'FieldHolder'         => $this->SSformFields['fields']->fieldByName($fieldName)->FieldHolder(),
+                    'FieldID'             => $this->SSformFields['fields']->fieldByName($fieldName)->id(),
+                    'FieldObject'         => $this->SSformFields['fields']->fieldByName($fieldName),
+                    'Parent'              => $this,
+                    'isRequiredField'     => $isRequiredField,
+                    'RequiredFieldMarker' => $this->RequiredFieldMarker($isRequiredField),
+                    'FieldDescription'    => isset($fieldReference['description']) ? $fieldReference['description'] : '',
                 )
             )->renderWith($templatePathAbs);
         } else {
