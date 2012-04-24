@@ -1402,6 +1402,7 @@ class CustomHtmlForm extends Form {
             );
             $field->value = $fieldDefinition['value'];
         } else if ($fieldDefinition['type'] == 'TextField' ||
+                   $fieldDefinition['type'] == 'SilvercartTextField' ||
                    $fieldDefinition['type'] == 'EmailField' ||
                    $fieldDefinition['type'] == 'PtCaptchaField') {
             $field = new $fieldDefinition['type'](
@@ -1411,6 +1412,10 @@ class CustomHtmlForm extends Form {
                 $fieldDefinition['maxLength'],
                 $fieldDefinition['form']
             );
+            if (isset($fieldDefinition['placeholder']) &&
+                method_exists($field, 'setPlaceholder')) {
+                $field->setPlaceholder($fieldDefinition['placeholder']);
+            }
         } else if ($fieldDefinition['type'] == 'PasswordField') {
             $field = new $fieldDefinition['type'](
                 $fieldName,
