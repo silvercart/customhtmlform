@@ -124,8 +124,8 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
                                     // ausgelesen.
                                     if (values == 'OptionsetField' ||
                                         values == 'SilvercartCheckoutOptionsetField' ||
-                                        values == 'SilvercartShippingOptionsetField') {
-                                        
+                                        values == 'SilvercartShippingOptionsetField' ||
+                                        values == 'SilvercartAddressOptionsetField') {
                                         checkFormData.setFieldValue(
                                             $('#' + that.formName + ' input[name=\'' + fieldName + '\']:checked').val()
                                         );

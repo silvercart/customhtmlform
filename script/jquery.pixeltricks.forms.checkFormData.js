@@ -5,7 +5,7 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
 /**
  * Methoden zur Feldpruefung.
  */
-(function($) { pixeltricks.forms.checkFormData = function()
+(function($) {pixeltricks.forms.checkFormData = function()
 {
     /**
      * Workaround fuer Selbstreferenzierung in Closures.
@@ -158,7 +158,12 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
                  this.fieldType == 'SilvercartShippingOptionsetField' ||
                  this.fieldType == 'SilvercartAddressOptionsetField')
         {
-            isFilledIn = this.fieldValue.length > 0 ? true : false;
+            if (this.fieldValue == undefined ||
+                this.fieldValue.length == 0) {
+                isFilledIn = false;
+            } else {
+                isFilledIn = true;
+            }
         }
         else
         {
