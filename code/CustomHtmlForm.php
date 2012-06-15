@@ -1764,7 +1764,7 @@ class CustomHtmlForm extends Form {
         }
         if ($fieldReference === '') {
             throw new Exception(
-                printf('The field "%s" is called via template but not defiened on the form object.', $fieldName)
+                sprintf('The field "%s" is called via template but not defiened on the form object.', $fieldName)
             );
         }
 
@@ -1931,7 +1931,7 @@ class CustomHtmlForm extends Form {
         } else {
             if (!isset($this->registeredCustomHtmlForms[$formIdentifier])) {
                 throw new Exception(
-                    printf(
+                    sprintf(
                         'The requested CustomHtmlForm "%s" is not registered.',
                         $formIdentifier
                     )

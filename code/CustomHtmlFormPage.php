@@ -216,7 +216,7 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
 
         if (!isset($this->registeredCustomHtmlForms[$formIdentifier])) {
             throw new Exception(
-                printf(
+                sprintf(
                     'The requested CustomHtmlForm "%s" is not registered.',
                     $formIdentifier
                 )
