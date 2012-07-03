@@ -1,5 +1,5 @@
 <% if errorMessages %>
-    <div class="error">
+    <div class="message bad">
         <p>
             <strong><% _t('CustomHtmlFormErrorMessages.CHECK_FIELDS','Please check your input on the following fields:') %></strong>
         </p>
@@ -12,7 +12,7 @@
 <% end_if %>
 
 <% if messages %>
-    <div class="note">
+    <div class="message note">
         <ul>
             <% control messages %>
                 <li>$message</li>

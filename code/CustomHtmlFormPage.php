@@ -29,7 +29,7 @@
  * @since 25.10.2010
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
-class CustomHtmlFormPage_Controller extends DataObjectDecorator {
+class CustomHtmlFormPage_Controller extends DataExtension {
 
     /**
      * defines allowed methods
@@ -42,10 +42,7 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
      * @var array
      */
     public static $allowed_actions = array(
-        'customHtmlFormSubmit',
-        'uploadifyUpload',
-        'uploadifyRefresh',
-        'uploadifyRemoveFile'
+        'customHtmlFormSubmit'
     );
 
     /**
@@ -269,15 +266,13 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
      * @since 25.10.2010
      */
     public function onBeforeInit() {
-        Validator::set_javascript_validation_handler('none');
-
         if (!$this->owner instanceof Security ||
              $this->owner->urlParams['Action'] != 'ping') {
             // -------------------------------------------------------------------
             // load scripts
             // -------------------------------------------------------------------
             Requirements::block('sapphire/thirdparty/jquery/jquery.js');
-            Requirements::insertHeadTags('<meta http-equiv="Content-language" content="' . i18n::get_locale() . '" />'); 
+            Requirements::insertHeadTags('<meta http-equiv="Content-language" content="' . i18n::get_locale() . '" />');
             Requirements::javascript('customhtmlform/script/jquery.js');
             Requirements::javascript('customhtmlform/script/jquery.scrollTo.min.js');
             Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.checkFormData.js');
@@ -378,67 +373,6 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
             return $registeredCustomHtmlFormObj->submit($form, null);
         } else {
             Director::redirectBack();
-        }
-    }
-
-    /**
-     * wrapper for action to uploadify field
-     *
-     * @return void
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 03.11.2010
-     */
-    public function uploadifyUpload() {
-
-        $fieldReference = $this->getFieldObject();
-
-        if ($fieldReference != '') {
-            $result = $fieldReference->upload();
-            return $result;
-        } else {
-            return -1;
-        }
-    }
-
-    /**
-     * wrapper for action to uploadify field
-     *
-     * @param SS_HTTPRequest $request the request parameter
-     *
-     * @return void
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 03.11.2010
-     */
-    public function uploadifyRefresh(SS_HTTPRequest $request) {
-        $fieldReference = $this->getFieldObject();
-
-        if ($fieldReference != '') {
-            return $fieldReference->refresh($request);
-        } else {
-            return -1;
-        }
-    }
-
-    /**
-     * wrapper for action to uploadify field
-     *
-     * @return void
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 03.11.2010
-     */
-    public function uploadifyRemoveFile() {
-        $fieldReference = $this->getFieldObject();
-
-        if ($fieldReference != '') {
-            return $fieldReference->removefile();
-        } else {
-            return -1;
         }
     }
 

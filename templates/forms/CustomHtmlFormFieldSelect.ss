@@ -1,14 +1,16 @@
-<div id="{$FormName}_{$FieldName}_Box" class="type-select<% if errorMessage %> error<% end_if %><% if isRequiredField %> requiredField<% end_if %>">
+<div id="{$FormName}_{$FieldName}_Box" class="field select<% if errorMessage %> error<% end_if %><% if isRequiredField %> requiredField<% end_if %>">
     <% if errorMessage %>
-        <div class="errorList">
+        <div class="message bad">
             <% control errorMessage %>
-            <strong class="message">
+            <strong>
                 {$message}
             </strong>
             <% end_control %>
         </div>
     <% end_if %>
 
-    <label for="{$FieldID}">{$Label} $RequiredFieldMarker</label>
-    $FieldTag
+    <label class="left" for="{$FieldID}">{$Label} $RequiredFieldMarker</label>
+    <div class="middleColumn">
+        $FieldTag
+    </div>
 </div>

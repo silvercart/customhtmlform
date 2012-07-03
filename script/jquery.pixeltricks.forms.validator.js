@@ -320,9 +320,7 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
                 var messageStr          = '';
 
                 for (messageIdx = 0; messageIdx < messages.length; messageIdx++) {
-                    messageStr += '<strong class="message">';
                     messageStr += messages[messageIdx];
-                    messageStr += '</strong>';
                 }
 
                 if (errorField.length == 0 &&
@@ -332,7 +330,7 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
                     // Fehlerbox und Meldungstext neu erzeugen
                     // --------------------------------------------------------
                     
-                    messageStr = '<div class="errorList" id="' + errorFieldID + '" style="display: none;">' + messageStr + '</div>';
+                    messageStr = '<div class="message bad" id="' + errorFieldID + '" style="display: none;">' + messageStr + '</div>';
 
                     if ($('#' + fieldBoxID))
                     {
