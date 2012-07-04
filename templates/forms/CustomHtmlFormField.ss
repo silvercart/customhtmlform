@@ -1,16 +1,14 @@
-<div id="{$FormName}_{$FieldName}_Box" class="field text<% if errorMessage %> error<% end_if %><% if isRequiredField %> requiredField<% end_if %>">
+<div id="{$FormName}_{$FieldName}_Box" class="type-text<% if errorMessage %> error<% end_if %><% if isRequiredField %> requiredField<% end_if %>">
     <% if errorMessage %>
-        <div class="message bad">
+        <div class="errorList">
             <% control errorMessage %>
-            <strong>
+            <strong class="message">
                 {$message}
             </strong>
             <% end_control %>
         </div>
     <% end_if %>
 
-    <label class="left" for="{$FieldID}">{$Label} $RequiredFieldMarker</label>
-    <div class="middleColumn">
-        $FieldTag
-    </div>
+    <label for="{$FieldID}">{$Label} $RequiredFieldMarker</label>
+    $FieldTag
 </div>

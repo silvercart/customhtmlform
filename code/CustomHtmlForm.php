@@ -250,8 +250,8 @@ class CustomHtmlForm extends Form {
         parent::__construct(
             $this->getFormController($controller, $preferences),
             $name,
-            new FieldList(),
-            new FieldList()
+            new FieldSet(),
+            new FieldSet()
         );
         
         // Hook for setting preferences via a method call; we need to do this
@@ -1193,7 +1193,7 @@ class CustomHtmlForm extends Form {
      * @since 25.10.2010
      */
     protected function getForm() {
-        $fields = new FieldList();
+        $fields = new FieldSet();
 
         // --------------------------------------------------------------------
         // define meta data
@@ -1227,9 +1227,9 @@ class CustomHtmlForm extends Form {
             $this->getSubmitButtonTitle(),
             $this
         );
-        $formAction->setDescription($this->getSubmitButtonToolTip());
+        $formAction->description = $this->getSubmitButtonToolTip();
         
-        $actions = new FieldList(
+        $actions = new FieldSet(
             $formAction
         );
         
@@ -1453,13 +1453,14 @@ class CustomHtmlForm extends Form {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
-                $fieldDefinition['value']
+                $fieldDefinition['rows'],
+                $fieldDefinition['cols'],
+                $fieldDefinition['value'],
+                $fieldDefinition['form']
             );
-            $field->setRows($fieldDefinition['rows']);
-            $field->setColumns($fieldDefinition['cols']);
         } else if ($fieldDefinition['type'] == 'RecaptchaField') {
             $field = new RecaptchaField('Recaptcha');
-            $field->jsOptions = array('theme' => 'clean');
+            $recaptchaField->jsOptions = array('theme' => 'clean');
         } else if ($fieldDefinition['type'] == 'MultipleImageUploadField' ||
                    $fieldDefinition['type'] == 'MultipleFileUploadField') {
 
@@ -1647,11 +1648,11 @@ class CustomHtmlForm extends Form {
         $metadata = '';
 
         // form name
-        $metadata .= $this->Fields()->dataFieldByName('CustomHtmlFormName')->Field();
+        $metadata .= $this->dataFieldByName('CustomHtmlFormName')->Field();
 
         // SecurityID
-        if ($this->Fields()->dataFieldByName('SecurityID')) {
-            $metadata .= $this->Fields()->dataFieldByName('SecurityID')->Field();
+        if ($this->dataFieldByName('SecurityID')) {
+            $metadata .= $this->dataFieldByName('SecurityID')->Field();
         } else {
             if ($this->securityTokenEnabled) {
                 $metadata .= sprintf(
@@ -1666,7 +1667,7 @@ class CustomHtmlForm extends Form {
         // Eigene Datenfelder
         if (!empty($this->customParameters)) {
             foreach ($this->customParameters as $customParameterKey => $customParameterValue) {
-                $metadata .= $this->Fields()->dataFieldByName($customParameterKey)->Field();
+                $metadata .= $this->dataFieldByName($customParameterKey)->Field();
             }
         }
 
