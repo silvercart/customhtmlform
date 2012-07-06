@@ -877,7 +877,7 @@ class CustomHtmlForm extends Form {
     public function submit($data, $form) {
         $formData = $this->getFormData($data);
         $this->checkFormData($formData);
-
+        $result = null;
         if (empty($this->errorMessages)) {
             $this->setSubmitSuccess(true);
             $submitSuccessResult = '';
@@ -894,7 +894,7 @@ class CustomHtmlForm extends Form {
             } else {
                 $submitSuccessResult = $overwriteResult[0];
             }
-            return $submitSuccessResult;
+            $result = $submitSuccessResult;
         } else {
             $submitFailureResult = '';
             // Es sind Fehler aufgetreten:
@@ -909,8 +909,13 @@ class CustomHtmlForm extends Form {
             } else {
                 $submitFailureResult = $overwriteResult[0];
             }
-            return $submitFailureResult;
+            $result = $submitFailureResult;
         }
+        if (!Director::redirected_to() &&
+            empty($result)) {
+            Director::redirectBack();
+        }
+        return $result;
     }
 
     /**
