@@ -877,6 +877,7 @@ class CustomHtmlForm extends Form {
         $formData = $this->getFormData($data);
         $this->checkFormData($formData);
         $result = null;
+        ob_start();
         if (empty($this->errorMessages)) {
             $this->setSubmitSuccess(true);
             $submitSuccessResult = '';
@@ -910,8 +911,11 @@ class CustomHtmlForm extends Form {
             }
             $result = $submitFailureResult;
         }
+        $output = ob_get_contents();
+        ob_end_clean();
         if (!Director::redirected_to() &&
-            empty($result)) {
+            empty($result) &&
+            !empty($output)) {
             Director::redirectBack();
         }
         return $result;
@@ -973,18 +977,19 @@ class CustomHtmlForm extends Form {
         // pass rendered form to the controller
         // Gerendertes Formular an Controller uebergeben
         if ($this->controller instanceof CustomHtmlFormStepPage_Controller) {
-            print $this->controller->customise(
+            $output = $this->controller->customise(
                 array(
                     $form => $outputForm
                 )
             )->renderWith(array($this->controller->ClassName, 'Page'));
         } else {
-            return $this->controller->customise(
+            $output = $this->controller->customise(
                 array(
                     $form => $outputForm
                 )
             );
         }
+        return $output;
     }
 
     /**
