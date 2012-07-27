@@ -1645,6 +1645,16 @@ class CustomHtmlForm extends Form {
     }
 
     /**
+     * Return a CSRF-preventing ID to insert into a form.
+     *
+     * @return string
+     */
+    public function getSecurityID() {
+        SecurityToken::enable();
+        return parent::getSecurityID();
+    }
+
+    /**
      * passes the meta data for form submission to the template;
      * called by the template
      *

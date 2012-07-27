@@ -377,7 +377,22 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
         if ($registeredCustomHtmlFormObj instanceof CustomHtmlForm) {
             return $registeredCustomHtmlFormObj->submit($form, null);
         } else {
-            Director::redirectBack();
+            if ($this->owner->request->requestVar('_REDIRECT_BACK_URL')) {
+                $url = $this->owner->request->requestVar('_REDIRECT_BACK_URL');
+            } elseif ($this->owner->request->getHeader('Referer')) {
+                $url = $this->owner->request->getHeader('Referer');
+            } else {
+                $url = Director::baseURL();
+            }
+            
+            if (substr($url, -20) == 'customHtmlFormSubmit') {
+                $url = substr($url, 0, -20);
+            }
+            
+            // absolute redirection URLs not located on this site may cause phishing
+            if (Director::is_site_url($url)) {
+                Director::redirect($url);
+            }
         }
     }
 
