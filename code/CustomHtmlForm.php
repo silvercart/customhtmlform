@@ -1413,7 +1413,8 @@ class CustomHtmlForm extends Form {
         } else if ($fieldDefinition['type'] == 'TextField' ||
                    $fieldDefinition['type'] == 'SilvercartTextField' ||
                    $fieldDefinition['type'] == 'EmailField' ||
-                   $fieldDefinition['type'] == 'PtCaptchaField') {
+                   $fieldDefinition['type'] == 'PtCaptchaField' ||
+                   $fieldDefinition['type'] == 'PtCaptchaInputField') {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
@@ -1823,6 +1824,7 @@ class CustomHtmlForm extends Form {
                 array(
                     'FormName'            => $this->name,
                     'FieldName'           => $fieldName,
+                    'FieldValue'          => $this->SSformFields['fields']->fieldByName($fieldName)->Value(),
                     'Label'               => isset($fieldReference['title']) ? $fieldReference['title'] : '',
                     'errorMessage'        => isset($this->errorMessages[$fieldName]) ?  $this->errorMessages[$fieldName] : '',
                     'FieldTag'            => $this->SSformFields['fields']->fieldByName($fieldName)->Field(),
