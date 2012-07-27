@@ -80,28 +80,32 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
         var success         = false;
         var valueMatch      = false;
 
-        var matches = this.fieldValue.match(/.{1,}@.{2,}\..{2,}/);
-
-        if (matches && (matches[0] == this.fieldValue)) {
-            valueMatch = true;
-        }
-
-        if (valueMatch == expectedResult) {
+        if (this.fieldValue == '') {
             success = true;
         } else {
-            success = false;
+            var matches = this.fieldValue.match(/.{1,}@.{2,}\..{2,}/);
 
-            if (valueMatch) {
-                if(typeof(ss) == 'undefined' || typeof(ss.i18n) == 'undefined') {
-                    errorMessage = "Please don't enter an email address.";
-                } else {
-                    errorMessage = ss.i18n._t('Form.MUSTNOTBEEMAILADDRESS', "Please don't enter an email address.");
-                }
+            if (matches && (matches[0] == this.fieldValue)) {
+                valueMatch = true;
+            }
+
+            if (valueMatch == expectedResult) {
+                success = true;
             } else {
-                if(typeof(ss) == 'undefined' || typeof(ss.i18n) == 'undefined') {
-                    errorMessage = 'Please enter a valid email address.';
+                success = false;
+
+                if (valueMatch) {
+                    if(typeof(ss) == 'undefined' || typeof(ss.i18n) == 'undefined') {
+                        errorMessage = "Please don't enter an email address.";
+                    } else {
+                        errorMessage = ss.i18n._t('Form.MUSTNOTBEEMAILADDRESS', "Please don't enter an email address.");
+                    }
                 } else {
-                    errorMessage = ss.i18n._t('Form.MUSTBEEMAILADDRESS', 'Please enter a valid email address.');
+                    if(typeof(ss) == 'undefined' || typeof(ss.i18n) == 'undefined') {
+                        errorMessage = 'Please enter a valid email address.';
+                    } else {
+                        errorMessage = ss.i18n._t('Form.MUSTBEEMAILADDRESS', 'Please enter a valid email address.');
+                    }
                 }
             }
         }
