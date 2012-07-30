@@ -1583,7 +1583,7 @@ class CustomHtmlForm extends Form {
      * @copyright 2011 pxieltricks GmbH
      * @since 08.04.2011
      */
-    public function addErrorMessage($fieldName, $message) {
+    public function addErrorMessage($fieldName, $message, $messageType = '') {
         $this->errorMessages[$fieldName] = array(
             'message'   => $message,
             'fieldname' => $fieldName,
@@ -1592,7 +1592,7 @@ class CustomHtmlForm extends Form {
             )
         );
     }
-
+    
     /**
      * Returns the CustomHtmlForm object with the given identifier; if it's not
      * found a boolean false is returned.
