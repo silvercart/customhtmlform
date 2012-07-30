@@ -1594,7 +1594,7 @@ class CustomHtmlForm extends Form {
      * @copyright 2011 pxieltricks GmbH
      * @since 08.04.2011
      */
-    public function addErrorMessage($fieldName, $message) {
+    public function addErrorMessage($fieldName, $message, $messageType = '') {
         $this->errorMessages[$fieldName] = array(
             'message'   => $message,
             'fieldname' => $fieldName,
