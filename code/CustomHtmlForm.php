@@ -1574,8 +1574,9 @@ class CustomHtmlForm extends Form {
     /**
      * Defines a new message for a form field
      *
-     * @param string $fieldName The name of the field
-     * @param string $message   The message's text
+     * @param string $fieldName   The name of the field
+     * @param string $message     The message's text
+     * @param string $messageType The message type; this is not used
      *
      * @return void
      *
@@ -1583,7 +1584,7 @@ class CustomHtmlForm extends Form {
      * @copyright 2011 pxieltricks GmbH
      * @since 08.04.2011
      */
-    public function addErrorMessage($fieldName, $message) {
+    public function addErrorMessage($fieldName, $message, $messageType = '') {
         $this->errorMessages[$fieldName] = array(
             'message'   => $message,
             'fieldname' => $fieldName,
