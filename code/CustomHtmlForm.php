@@ -1593,7 +1593,7 @@ class CustomHtmlForm extends Form {
             )
         );
     }
-
+    
     /**
      * Returns the CustomHtmlForm object with the given identifier; if it's not
      * found a boolean false is returned.
