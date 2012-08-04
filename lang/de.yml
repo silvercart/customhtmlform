@@ -1,0 +1,26 @@
+de:
+  CustomHtmlForm:
+    REQUIRED_FIELD_MARKER: "<span class=\"required-field\">[ Pflichtfeld ]</span>"
+  CustomHtmlFormErrorMessages:
+    CHECK_FIELDS: "Bitte pr&uuml;fen Sie Ihre Eingaben in folgenden Feldern:"
+  CustomHtmlFormStepPage:
+    BASE_NAME: "Basisname für Formular Objekt- und Templatedateien: "
+    CANCEL_TARGET: "Auf welche Seite soll der Abbrechen-Link fuehren: "
+    SHOW_CANCEL: "Abbrechen Link zeigen"
+  Form:
+    CAPTCHAFIELDNOMATCH: "Diese Eingabe war leider falsch. Versuch es erneut!"
+    CURRENCY_ONLY: "In dieses Feld muss eine Währungsangabe (z.B. \"1499,95\") eingetragen werden."
+    DATE_ONLY: "In dieses Feld muss ein Datum im Format \"tt.mm.jjjj\" eingetragen werden."
+    FIED_REQUIRES_NR_OF_CHARS: "Dieses Feld erfordert %s Zeichen."
+    FIELD_MAY_NOT_BE_EMPTY: "Dieses Feld darf nicht leer sein."
+    FIELD_MUST_BE_EMPTY: "Dieses Feld muss leer sein."
+    FIELD_MUST_BE_FILLED_IN: "Dieses Feld muss ausgefuellt sein."
+    HASNOSPECIALSIGNS: "Dieses Feld muss Sonderzeichen enthalten (andere Zeichen als Buchstaben, Zahlen und die Zeichen \"@\" und \".\")."
+    HASSPECIALSIGNS: "Dieses Feld darf nur Buchstaben, Zahlen und die Zeichen \"@\" und \".\" enthalten."
+    MANDATORYFIELD: "Dieses Feld muss ausgefüllt werden."
+    MIN_CHARS: "Bitte gib mindestens %s Zeichen ein."
+    MUSTBEEMAILADDRESS: "Bitte gib hier eine gültige Email Adresse an."
+    MUSTNOTBEEMAILADDRESS: "Bitte gib hier keine Email Adresse an."
+    NUMBERS_ONLY: "Dieses Feld darf nur Zahlen enthalten."
+    REQUIRES_OTHER_VALUE_AS_IN_FIELD: "Dieses Feld darf nicht den gleichen Wert wie das Feld \"%s\" haben."
+    REQUIRES_SAME_VALUE_AS_IN_FIELD: "Bitte gib den gleichen Wert ein wie im Feld \"%s\"."

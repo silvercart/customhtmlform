@@ -1,0 +1,26 @@
+en_GB:
+  CustomHtmlForm:
+    REQUIRED_FIELD_MARKER: "<span class=\"required-field\">[ Required ]</span>"
+  CustomHtmlFormErrorMessages:
+    CHECK_FIELDS: "Please check your input on the following fields:"
+  CustomHtmlFormStepPage:
+    BASE_NAME: "base name for form object and template files: "
+    CANCEL_TARGET: "To which page should the cancel link direct: "
+    SHOW_CANCEL: "show cancel link"
+  Form:
+    CAPTCHAFIELDNOMATCH: "Your entry was not correct. Please try again!"
+    CURRENCY_ONLY: "Please enter a valid currency amount (e.g. 1499,00)."
+    DATE_ONLY: "Please enter a valid german date (e.g. \"dd.mm.yyyy\")."
+    FIED_REQUIRES_NR_OF_CHARS: "This field requires exactly %s characters."
+    FIELD_MAY_NOT_BE_EMPTY: "This field may not be empty."
+    FIELD_MUST_BE_EMPTY: "This field must be empty."
+    FIELD_MUST_BE_FILLED_IN: "Please fill in this field."
+    HASNOSPECIALSIGNS: "This field must contain special signs (other signs than letters, numbers and the signs \"@\" and \".\")."
+    HASSPECIALSIGNS: "This field must not contain special signs (letters, numbers and the signs \"@\" and \".\")."
+    MANDATORYFIELD: "This field must be filled in."
+    MIN_CHARS: "Enter at least %s characters."
+    MUSTBEEMAILADDRESS: "Please enter a valid email address."
+    MUSTNOTBEEMAILADDRESS: "Please don't enter an email address."
+    NUMBERS_ONLY: "This field may consist of numbers only."
+    REQUIRES_OTHER_VALUE_AS_IN_FIELD: "This field may not have the same value as field \"%s\"."
+    REQUIRES_SAME_VALUE_AS_IN_FIELD: "Please enter the same value as in field \"%s\"."
