@@ -5,7 +5,7 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
 /**
  * Methoden zur Feldpruefung.
  */
-(function($) { pixeltricks.forms.checkFormData = function()
+(function($) {pixeltricks.forms.checkFormData = function()
 {
     /**
      * Workaround fuer Selbstreferenzierung in Closures.
@@ -80,28 +80,32 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
         var success         = false;
         var valueMatch      = false;
 
-        var matches = this.fieldValue.match(/.{1,}@.{2,}\..{2,}/);
-
-        if (matches && (matches[0] == this.fieldValue)) {
-            valueMatch = true;
-        }
-
-        if (valueMatch == expectedResult) {
+        if (this.fieldValue == '') {
             success = true;
         } else {
-            success = false;
+            var matches = this.fieldValue.match(/.{1,}@.{2,}\..{2,}/);
 
-            if (valueMatch) {
-                if(typeof(ss) == 'undefined' || typeof(ss.i18n) == 'undefined') {
-                    errorMessage = "Please don't enter an email address.";
-                } else {
-                    errorMessage = ss.i18n._t('Form.MUSTNOTBEEMAILADDRESS', "Please don't enter an email address.");
-                }
+            if (matches && (matches[0] == this.fieldValue)) {
+                valueMatch = true;
+            }
+
+            if (valueMatch == expectedResult) {
+                success = true;
             } else {
-                if(typeof(ss) == 'undefined' || typeof(ss.i18n) == 'undefined') {
-                    errorMessage = 'Please enter a valid email address.';
+                success = false;
+
+                if (valueMatch) {
+                    if(typeof(ss) == 'undefined' || typeof(ss.i18n) == 'undefined') {
+                        errorMessage = "Please don't enter an email address.";
+                    } else {
+                        errorMessage = ss.i18n._t('Form.MUSTNOTBEEMAILADDRESS', "Please don't enter an email address.");
+                    }
                 } else {
-                    errorMessage = ss.i18n._t('Form.MUSTBEEMAILADDRESS', 'Please enter a valid email address.');
+                    if(typeof(ss) == 'undefined' || typeof(ss.i18n) == 'undefined') {
+                        errorMessage = 'Please enter a valid email address.';
+                    } else {
+                        errorMessage = ss.i18n._t('Form.MUSTBEEMAILADDRESS', 'Please enter a valid email address.');
+                    }
                 }
             }
         }
@@ -155,9 +159,15 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
         }
         else if (this.fieldType == 'OptionsetField' ||
                  this.fieldType == 'SilvercartCheckoutOptionsetField' ||
+                 this.fieldType == 'SilvercartShippingOptionsetField' ||
                  this.fieldType == 'SilvercartAddressOptionsetField')
         {
-            isFilledIn = this.fieldValue.length > 0 ? true : false;
+            if (this.fieldValue == undefined ||
+                this.fieldValue.length == 0) {
+                isFilledIn = false;
+            } else {
+                isFilledIn = true;
+            }
         }
         else
         {

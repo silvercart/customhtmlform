@@ -108,30 +108,33 @@ class CheckFormData {
      * @since 21.06.2011
      */
     public function isEmailAddress($expectedResult) {
-
         $success        = false;
         $errorMessage   = '';
         $match          = false;
 
-        preg_match(
-            '/.{1,}@.{2,}\..{2,}/',
-            $this->value,
-            $matches
-        );
-
-        if ($matches && ($matches[0] == $this->value)) {
-            $match = true;
-        }
-
-        if ($match == $expectedResult) {
+        if (empty($this->value)) {
             $success = true;
         } else {
-            $success = false;
+            preg_match(
+                '/.{1,}@.{2,}\..{2,}/',
+                $this->value,
+                $matches
+            );
 
-            if ($match) {
-                $errorMessage = _t('Form.MUSTNOTBEEMAILADDRESS', 'Please don\'t enter an email address.');
+            if ($matches && ($matches[0] == $this->value)) {
+                $match = true;
+            }
+
+            if ($match == $expectedResult) {
+                $success = true;
             } else {
-                $errorMessage = _t('Form.MUSTBEEMAILADDRESS', 'Please enter a valid email address.');
+                $success = false;
+
+                if ($match) {
+                    $errorMessage = _t('Form.MUSTNOTBEEMAILADDRESS', 'Please don\'t enter an email address.');
+                } else {
+                    $errorMessage = _t('Form.MUSTBEEMAILADDRESS', 'Please enter a valid email address.');
+                }
             }
         }
 

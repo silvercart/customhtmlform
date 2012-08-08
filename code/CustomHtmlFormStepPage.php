@@ -56,6 +56,7 @@ class CustomHtmlFormStepPage extends Page {
      */
     public $allowedOutsideReferers = array(
         '/de/cgi-bin/webscr',
+        '/de/cgi-bin/merchantpaymentweb',
         '/auktion-erstellen/customHtmlFormSubmit',
         '/auktion-erstellen/uploadifyUpload',
         '/auktion-erstellen/uploadifyRefresh',
@@ -196,7 +197,10 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         $this->nrOfSteps            = $this->getNumberOfSteps();
         $this->currentFormInstance  = $this->registerCurrentFormStep();
         $this->initOutput           = $this->callMethodOnCurrentFormStep($this->currentFormInstance, 'init');
-        $this->callMethodOnCurrentFormStep($this->currentFormInstance, 'process');
+        $extended = $this->callMethodOnCurrentFormStep($this->currentFormInstance, 'extendedProcess');
+        if (!$extended) {
+            $this->callMethodOnCurrentFormStep($this->currentFormInstance, 'process');
+        }
         
         parent::init();
     }
@@ -600,7 +604,10 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         if ($this->getNextStep() <= $this->getNumberOfSteps()) {
             $this->setCurrentStep($this->getNextStep());
         }
-        Director::redirect($this->Link(), 302);
+        $redirected_to = Director::redirected_to();
+        if (empty($redirected_to)) {
+            Director::redirect($this->Link(), 302);
+        }
     }
 
     /**
