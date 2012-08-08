@@ -1315,6 +1315,7 @@ class CustomHtmlForm extends Form {
             );
             $field->value = $fieldDefinition['value'];
         } else if ($fieldDefinition['type'] == 'TextField' ||
+                   $fieldDefinition['type'] == 'SilvercartTextField' ||
                    $fieldDefinition['type'] == 'EmailField' ||
                    $fieldDefinition['type'] == 'PtCaptchaField') {
             $field = new $fieldDefinition['type'](
