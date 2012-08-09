@@ -1420,9 +1420,9 @@ class CustomHtmlForm extends Form {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
-                $fieldDefinition['value'],
-                $fieldDefinition['maxLength']
+                $fieldDefinition['value']
             );
+            $field->setMaxLength($fieldDefinition['maxLength']);
         } else if ($fieldDefinition['type'] == 'DateField') {
             $field = new $fieldDefinition['type'](
                 $fieldName,
