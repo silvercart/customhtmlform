@@ -109,9 +109,9 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     protected $nrOfSteps = -1;
 
     /**
-     * Contains the list of steps as DataObjectSet.
+     * Contains the list of steps as DataList.
      *
-     * @var DataObjectSet
+     * @var DataList
      * 
      * @author Sascha Koehler <skoehler@pixeltricks.de>
      * @since 06.04.2011
@@ -713,9 +713,9 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
-     * returns all steps as DataObjectSet
+     * returns all steps as DataList
      *
-     * @return DataObjectSet
+     * @return DataList
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
      * @copyright 2010 pixeltricks GmbH
@@ -764,7 +764,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
                 }
             }
             
-            $this->stepList = new DataObjectSet($stepList);
+            $this->stepList = new DataList($stepList);
         }
         
         return $this->stepList;

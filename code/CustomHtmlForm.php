@@ -944,8 +944,8 @@ class CustomHtmlForm extends Form {
         // prepare validation errors for template
         // aufgetretene Validierungsfehler in Template auswertbar machen
         $data = array(
-            'errorMessages' => new DataObjectSet($this->errorMessages),
-            'messages'      => new DataObjectSet($this->messages),
+            'errorMessages' => new DataList($this->errorMessages),
+            'messages'      => new DataList($this->messages),
             $this->SSformFields['fields'],
             $this->SSformFields['actions']
         );
@@ -1710,7 +1710,7 @@ class CustomHtmlForm extends Form {
      * @since 27.10.2010
      */
     public function CustomHtmlFormFieldsByGroup($groupName, $template = null, $argument1 = null) {
-        $fieldGroup = new DataObjectSet();
+        $fieldGroup = new ArrayList();
         
         if ($this->extend('overwriteCustomHtmlFormFieldsByGroup', $groupName, $template, $fieldGroup, $argument1)) {
             return $fieldGroup;
@@ -1849,8 +1849,8 @@ class CustomHtmlForm extends Form {
         // make validation errors in the template evaluable
         // aufgetretene Validierungsfehler in Template auswertbar machen
         $data = array(
-            'errorMessages' => new DataObjectSet($this->errorMessages),
-            'messages'      => new DataObjectSet($this->messages)
+            'errorMessages' => new DataList($this->errorMessages),
+            'messages'      => new DataList($this->messages)
         );
 
         $defaultTemplatePath = '/customhtmlform/templates/forms/CustomHtmlFormErrorMessages.ss';
