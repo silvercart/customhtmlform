@@ -372,7 +372,7 @@ class CustomHtmlFormPage_Controller extends DataExtension {
         if ($registeredCustomHtmlFormObj instanceof CustomHtmlForm) {
             return $registeredCustomHtmlFormObj->submit($form, null);
         } else {
-            Director::redirectBack();
+            $this->owner->redirectBack();
         }
     }
 
