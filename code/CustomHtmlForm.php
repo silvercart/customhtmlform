@@ -798,9 +798,8 @@ class CustomHtmlForm extends Form {
      *
      * @return void
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 20.12.2010
+     * @author Sascha Koehler <skoehler@pixeltricks.de>, Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 26.09.2012
      */
     protected function fillInRequestValues() {
         $request = $this->controller->getRequest();
@@ -809,7 +808,10 @@ class CustomHtmlForm extends Form {
         
         foreach ($formFields as $fieldName => $fieldDefinition) {
             if (isset($request[$fieldName])) {
-                $this->formFields[$fieldName][$this->getFormFieldValueLabel($fieldName)] = Convert::raw2xml($request[$fieldName]);
+                if (strtolower($fieldDefinition['type']) == 'passwordfield') {
+                    continue;
+                }
+                $this->formFields[$fieldName][$this->getFormFieldValueLabel($fieldName)] = $request[$fieldName];
             }
         }
     }
