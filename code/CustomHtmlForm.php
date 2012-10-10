@@ -244,6 +244,7 @@ class CustomHtmlForm extends Form {
         $name = $this->getSubmitAction();
 
         if (!$barebone) {
+            $this->getFormFields();
             $this->fillInFieldValues();
         }
 
@@ -1559,11 +1560,15 @@ class CustomHtmlForm extends Form {
     
     /**
      * Returns the forms fields.
+     * 
+     * @param bool $withUpdate Call the method with decorator updates or not?
      *
      * @return array
      */
-    public function getFormFields() {
-        $this->extend('updateFormFields', $this->formFields);
+    public function getFormFields($withUpdate = true) {
+        if ($withUpdate) {
+            $this->extend('updateFormFields', $this->formFields);
+        }
         return $this->formFields;
     }
 
