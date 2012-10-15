@@ -1568,7 +1568,7 @@ class CustomHtmlForm extends Form {
      * @return array
      */
     public function getFormFields($withUpdate = true) {
-        if ($withUpdate) {
+        if ($withUpdate && !empty($this->class)) {
             $this->extend('updateFormFields', $this->formFields);
         }
         return $this->formFields;
