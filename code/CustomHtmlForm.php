@@ -2231,6 +2231,29 @@ class CustomHtmlForm extends Form {
     }
 
     /**
+     * returns the visible step number of this form
+     *
+     * @return int
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 23.12.2010
+     */
+    public function getVisibleStepNr() {
+        $stepList = $this->controller->getStepList();
+        $stepNr   = 1;
+
+        foreach ($stepList as $step) {
+            if ($step->step->class == $this->class) {
+                $stepNr = $step->visibleStepNr;
+                break;
+            }
+        }
+
+        return $stepNr;
+    }
+
+    /**
      * Deactivate Validation for the given field.
      *
      * @param string $fieldName The name of the field

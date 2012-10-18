@@ -744,6 +744,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
                         'stepIsCompleted' => $this->isStepCompleted($stepIdx),
                         'isCurrentStep'   => $isCurrentStep,
                         'stepNr'          => $stepIdx,
+                        'visibleStepNr'   => $nrOfVisibleSteps + 1,
                         'step'            => new $stepClassName($this, null, null ,false)
                     );
                     
