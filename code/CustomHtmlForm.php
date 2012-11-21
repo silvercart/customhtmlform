@@ -541,6 +541,136 @@ class CustomHtmlForm extends Form {
     }
 
     /**
+     * Returns whether the given type is a dropdown field.
+     *
+     * @param string $type The type to check
+     *
+     * @return boolean
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 21.11.2012
+     */
+    public function isDropdownField($type) {
+        $isField = false;
+
+        if ($type == 'DropdownField' ||
+            $type == 'GroupedDropdownField' ||
+            $type == 'HTMLDropdownField' ||
+            $type == 'CountryDropdownField' ||
+            $type == 'LanguageDropdownField' ||
+            $type == 'SimpleTreeDropdownField' ||
+            $type == 'TreeDropdownField' ||
+            $type == 'TreeDropdownField_Readonly' ||
+            $type == 'StateProvinceDropdownField_Readonly' ||
+            $type == 'Widget_TreeDropdownField_Readonly' ||
+            $type == 'StateDropdownField' ||
+            $type == 'SilvercartCheckoutOptionsetField' ||
+            $type == 'SilvercartShippingOptionsetField' ||
+            $type == 'OptionsetField' ||
+            $type == 'SelectionGroup' ||
+            in_array('OptionsetField', class_parents($type)) ||
+            in_array('DropdownField', class_parents($type))) {
+
+            $isField = true;
+        }
+
+        return $isField;
+    }
+
+    /**
+     * Returns whether the given type is a listbox field.
+     *
+     * @param string $type The type to check
+     *
+     * @return boolean
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 21.11.2012
+     */
+    public function isListboxField($type) {
+        $isField = false;
+
+        if ($type == 'ListboxField' ||
+            in_array('ListboxField', class_parents($type))) {
+
+            $isField = true;
+        }
+
+        return $isField;
+    }
+
+    /**
+     * Returns whether the given type is an optionset field.
+     *
+     * @param string $type The type to check
+     *
+     * @return boolean
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 21.11.2012
+     */
+    public function isOptionsetField($type) {
+        $isField = false;
+
+        if ($type == 'OptionsetField' ||
+            $type == 'SilvercartCheckoutOptionsetField' ||
+            $type == 'SilvercartShippingOptionsetField' ||
+            in_array('OptionsetField', class_parents($type))) {
+
+            $isField = true;
+       }
+
+        return $isField;
+    }
+
+    /**
+     * Returns whether the given type is a selection group field.
+     *
+     * @param string $type The type to check
+     *
+     * @return boolean
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 21.11.2012
+     */
+    public function isSelectiongroupField($type) {
+        $isField = false;
+
+        if ($type == 'SelectionGroup' ||
+            in_array('SelectionGroup', class_parents($type))) {
+
+            $isField = true;
+        }
+
+        return $isField;
+    }
+
+    /**
+     * Returns whether the given type is a text field.
+     *
+     * @param string $type The type to check
+     *
+     * @return boolean
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 21.11.2012
+     */
+    public function isTextField($type) {
+        $isField = false;
+
+        if ($type == 'TextField' ||
+            $type == 'SilvercartTextField' ||
+            $type == 'EmailField' ||
+            $type == 'PtCaptchaField' ||
+            $type == 'PtCaptchaInputField') {
+
+            $isField = true;
+        }
+
+        return $isField;
+    }
+
+    /**
      * Set a custom parameter on the given form field.
      *
      * @param string $identifier The identifier of the field
@@ -837,26 +967,8 @@ class CustomHtmlForm extends Form {
         if (isset($formFields[$fieldName])) {
             $fieldDefinition = $formFields[$fieldName];
             
-            if ($fieldDefinition['type'] == 'ListboxField' ||
-                $fieldDefinition['type'] == 'DropdownField' ||
-                $fieldDefinition['type'] == 'GroupedDropdownField' ||
-                $fieldDefinition['type'] == 'HTMLDropdownField' ||
-                $fieldDefinition['type'] == 'CountryDropdownField' ||
-                $fieldDefinition['type'] == 'LanguageDropdownField' ||
-                $fieldDefinition['type'] == 'SimpleTreeDropdownField' ||
-                $fieldDefinition['type'] == 'TreeDropdownField' ||
-                $fieldDefinition['type'] == 'TreeDropdownField_Readonly' ||
-                $fieldDefinition['type'] == 'StateProvinceDropdownField_Readonly' ||
-                $fieldDefinition['type'] == 'Widget_TreeDropdownField_Readonly' ||
-                $fieldDefinition['type'] == 'StateDropdownField' ||
-                $fieldDefinition['type'] == 'SilvercartCheckoutOptionsetField' ||
-                $fieldDefinition['type'] == 'SilvercartShippingOptionsetField' ||
-                $fieldDefinition['type'] == 'OptionsetField' ||
-                $fieldDefinition['type'] == 'SelectionGroup' ||
-                in_array('OptionsetField', class_parents($fieldDefinition['type'])) ||
-                in_array('DropdownField', class_parents($fieldDefinition['type'])) ||
-                in_array('ListboxField', class_parents($fieldDefinition['type']))) {
-
+            if ($this->isDropdownField($fieldDefinition['type']) ||
+                $this->isListboxField($fieldDefinition['type'])) {
                 $valueLabel = 'selectedValue';
             }
         }
@@ -1333,7 +1445,12 @@ class CustomHtmlForm extends Form {
         }
 
         if (!isset($fieldDefinition['maxLength'])) {
-            $fieldDefinition['maxLength'] = null;
+
+            if ($this->isTextField($fieldDefinition['type'])) {
+                $fieldDefinition['maxLength'] = 255;
+            } else {
+                $fieldDefinition['maxLength'] = null;
+            }
             $fieldReference['maxLength'] = $fieldDefinition['maxLength'];
         }
 
@@ -1353,8 +1470,7 @@ class CustomHtmlForm extends Form {
         }
 
         // create field
-        if ($fieldDefinition['type'] == 'ListboxField' ||
-            in_array('ListboxField', class_parents($fieldDefinition['type']))) {
+        if ($this->isListboxField($fieldDefinition['type'])) {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
@@ -1364,18 +1480,7 @@ class CustomHtmlForm extends Form {
                 $fieldDefinition['multiple'],
                 $fieldDefinition['form']
             );
-        } else if ($fieldDefinition['type'] == 'DropdownField' ||
-                   $fieldDefinition['type'] == 'GroupedDropdownField' ||
-                   $fieldDefinition['type'] == 'HTMLDropdownField' ||
-                   $fieldDefinition['type'] == 'CountryDropdownField' ||
-                   $fieldDefinition['type'] == 'LanguageDropdownField' ||
-                   $fieldDefinition['type'] == 'SimpleTreeDropdownField' ||
-                   $fieldDefinition['type'] == 'TreeDropdownField' ||
-                   $fieldDefinition['type'] == 'TreeDropdownField_Readonly' ||
-                   $fieldDefinition['type'] == 'StateProvinceDropdownField_Readonly' ||
-                   $fieldDefinition['type'] == 'Widget_TreeDropdownField_Readonly' ||
-                   $fieldDefinition['type'] == 'StateDropdownField' ||
-                   in_array('DropdownField', class_parents($fieldDefinition['type']))) {
+        } else if ($this->isDropdownField($fieldDefinition['type'])) {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
@@ -1383,10 +1488,7 @@ class CustomHtmlForm extends Form {
                 $fieldDefinition['selectedValue'],
                 $fieldDefinition['form']
             );
-        } else if ($fieldDefinition['type'] == 'OptionsetField' ||
-                   $fieldDefinition['type'] == 'SilvercartCheckoutOptionsetField' ||
-                   $fieldDefinition['type'] == 'SilvercartShippingOptionsetField' ||
-                   in_array('OptionsetField', class_parents($fieldDefinition['type']))) {
+        } else if ($this->isOptionsetField($fieldDefinition['type'])) {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
@@ -1394,9 +1496,7 @@ class CustomHtmlForm extends Form {
                 $fieldDefinition['selectedValue'],
                 $fieldDefinition['form']
             );
-        } else if ($fieldDefinition['type'] == 'SelectionGroup' ||
-                   in_array('SelectionGroup', class_parents($fieldDefinition['type']))) {
-            
+        } else if ($this->isSelectiongroupField($fieldDefinition['type'])) {
             $groupFields = array();
             
             foreach ($fieldDefinition['items'] as $itemFieldName => $item) {
@@ -1413,11 +1513,7 @@ class CustomHtmlForm extends Form {
                 $groupFields
             );
             $field->value = $fieldDefinition['value'];
-        } else if ($fieldDefinition['type'] == 'TextField' ||
-                   $fieldDefinition['type'] == 'SilvercartTextField' ||
-                   $fieldDefinition['type'] == 'EmailField' ||
-                   $fieldDefinition['type'] == 'PtCaptchaField' ||
-                   $fieldDefinition['type'] == 'PtCaptchaInputField') {
+        } else if ($this->isTextField($fieldDefinition['type'])) {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
