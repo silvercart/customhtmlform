@@ -1011,7 +1011,6 @@ class CustomHtmlForm extends Form {
             }
             $result = $submitSuccessResult;
         } else {
-            $submitFailureResult = '';
             // Es sind Fehler aufgetreten:
             $overwriteResult = $this->extend('overwriteSubmitFailure', $data, $form);
             if (empty ($overwriteResult)) {
@@ -1028,11 +1027,15 @@ class CustomHtmlForm extends Form {
         }
         $output = ob_get_contents();
         ob_end_clean();
+
         if (!Director::redirected_to() &&
             empty($result) &&
             !empty($output)) {
-            Director::redirectBack();
+            print "REDIRECT";
+            exit();
+            Controller::curr()->redirectBack();
         }
+
         return $result;
     }
 
@@ -1070,9 +1073,9 @@ class CustomHtmlForm extends Form {
             'errorMessages' => new DataObjectSet($this->errorMessages),
             'messages'      => new DataObjectSet($this->messages),
             $this->SSformFields['fields'],
-            $this->SSformFields['actions']
+            $this->SSformFields['actions'],
+            'CustomHtmlFormErrorMessages' => $this->CustomHtmlFormErrorMessages()
         );
-        
 
         parent::__construct(
             $this->controller,
@@ -1104,6 +1107,7 @@ class CustomHtmlForm extends Form {
                 )
             );
         }
+
         return $output;
     }
 
@@ -1114,7 +1118,7 @@ class CustomHtmlForm extends Form {
      * @param Form           $form     form object
      * @param array          $formData secured form data
      *
-     * @return void
+     * @return mixed
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
      * @copyright 2010 pxieltricks GmbH
@@ -1970,7 +1974,6 @@ class CustomHtmlForm extends Form {
      * @since 25.10.2010
      */
     public function CustomHtmlFormErrorMessages($template = null) {
-
         // make validation errors in the template evaluable
         // aufgetretene Validierungsfehler in Template auswertbar machen
         $data = array(
@@ -2000,7 +2003,7 @@ class CustomHtmlForm extends Form {
             $data
         )->renderWith($templatePathAbs);
 
-        return $output;
+        return $this->output;
     }
     
     /**

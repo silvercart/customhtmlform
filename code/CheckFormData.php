@@ -445,6 +445,58 @@ class CheckFormData {
     }
 
     /**
+     * Does a field contain only characters for quantity specification?
+     *
+     * @param int $numberOfDecimalPlaces The number of decimal places that are allowed
+     *
+     * @return array(
+     *      'success'       => bool,
+     *      'errorMessage'  => string
+     * )
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 22.11.2012
+     */
+    public function isDecimalNumber($numberOfDecimalPlaces) {
+        $isQuantityField = true;
+        $success         = true;
+        $errorMessage    = '';
+
+        $checkValue = preg_replace(
+            '/[0-9,\.]*/',
+            '',
+            $this->value
+        );
+        $cleanValue = str_replace(',', '.', $this->value);
+
+        if (strlen($checkValue) > 0) {
+            $isQuantityField = false;
+        }
+
+        if ($isQuantityField === false) {
+            $errorMessage = _t('Form.QUANTITY_ONLY', 'This field may consist of numbers and "." or "," only.');
+            $success      = false;
+        } else {
+            // Check for number of decimal places
+            $separatorPos         = strpos($cleanValue, '.');
+            $decimalPlacesInValue = strlen($this->value) - $separatorPos;
+
+            if ($decimalPlacesInValue > $numberOfDecimalPlaces) {
+                $errorMessage = sprintf(
+                    _t('Form.MAX_DECIMAL_PLACES_ALLOWED', 'Dieses Feld darf maximal %s Dezimalstellen enthalten.'),
+                    $numberOfDecimalPlaces
+                );
+                $success = false;
+            }
+        }
+
+        return array(
+            'success'       => $success,
+            'errorMessage'  => $errorMessage
+        );
+    }
+
+    /**
      * Checks if the field input is a currency
      *
      * @param mixed $expectedResult the expected result
