@@ -477,62 +477,6 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
     }
 
     /**
-     * Does a field contain only characters for quantity specification?
-     *
-     * @param {int} numberOfDecimalPlaces The number of decimal places that are allowed
-     *
-     * @return {object}
-     */
-    this.isDecimalNumber = function(numberOfDecimalPlaces)
-    {
-        return {
-            success:        true,
-            errorMessage:   ''
-        };
-        var errorMessage      = '';
-        var isQuantityField   = true;
-        var success           = true;
-        var checkValue        = that.fieldValue.replace(/[0-9,\.]*/g, '');
-        var cleanValue        = that.fieldValue.replace(/,/g, '.');
-
-        if (checkValue.length > 0) {
-            isQuantityField = false;
-        }
-
-        if (isQuantityField === false) {
-            if(typeof(ss) == 'undefined' || typeof(ss.i18n) == 'undefined') {
-                errorMessage = 'Dieses Feld darf nur Zahlen sowie "." und "," enthalten.';
-            } else {
-                errorMessage = ss.i18n._t('Form.QUANTITY_ONLY', 'Dieses Feld darf nur Zahlen sowie "." und "," enthalten.');
-            }
-
-            success = false;
-        } else {
-            // Check for number of decimal places
-            var separatorPos         = cleanValue.indexOf('.');
-            var decimalPlacesInValue = that.fieldValue.length - (separatorPos + 1);
-
-            if (decimalPlacesInValue > numberOfDecimalPlaces) {
-                if(typeof(ss) == 'undefined' || typeof(ss.i18n) == 'undefined') {
-                    errorMessage = 'Dieses Feld darf maximal ' + numberOfDecimalPlaces + ' Dezimalstellen enthalten.';
-                } else {
-                    errorMessage = ss.i18n.sprintf(
-                        ss.i18n._t('Form.MAX_DECIMAL_PLACES_ALLOWED', 'Dieses Feld darf maximal %s Dezimalstellen enthalten.'),
-                        numberOfDecimalPlaces
-                    );
-                }
-
-                success = false;
-            }
-        }
-
-        return {
-            success:        success,
-            errorMessage:   errorMessage
-        };
-    }
-
-    /**
      * Prueft, ob der Wert eines Feldes einer Waehrungsangabe entspricht.
      *
      * @param mixed expectedResult

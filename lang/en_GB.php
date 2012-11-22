@@ -41,7 +41,6 @@ $lang['en_GB']['Form']['FIED_REQUIRES_NR_OF_CHARS'] = 'This field requires exact
 $lang['en_GB']['Form']['REQUIRES_SAME_VALUE_AS_IN_FIELD'] = 'Please enter the same value as in field "%s".';
 $lang['en_GB']['Form']['REQUIRES_OTHER_VALUE_AS_IN_FIELD'] = 'This field may not have the same value as field "%s".';
 $lang['en_GB']['Form']['NUMBERS_ONLY'] = 'This field may consist of numbers only.';
-$lang['en_GB']['Form']['QUANTITY_ONLY'] = 'This field may consist of numbers, "." and "," only.';
 $lang['en_GB']['Form']['CURRENCY_ONLY'] = 'Please enter a valid currency amount (e.g. 1499,00).';
 $lang['en_GB']['Form']['DATE_ONLY'] = 'Please enter a valid german date (e.g. "dd.mm.yyyy").';
 $lang['en_GB']['Form']['CAPTCHAFIELDNOMATCH'] = 'Your entry was not correct. Please try again!';
