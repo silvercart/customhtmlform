@@ -33,7 +33,6 @@ if (array_key_exists('en_GB', $lang) && is_array($lang['en_GB'])) {
     $lang['en_GB'] = $lang['en_US'];
 }
 
-$lang['en_GB']['CustomHtmlForm']['REQUIRED_FIELD_MARKER'] = '<span class="required-field">[ Required ]</span>';
 $lang['en_GB']['Form']['FIELD_MUST_BE_EMPTY'] = 'This field must be empty.';
 $lang['en_GB']['Form']['FIELD_MAY_NOT_BE_EMPTY'] = 'This field may not be empty.';
 $lang['en_GB']['Form']['FIELD_MUST_BE_FILLED_IN'] = 'Please fill in this field.';

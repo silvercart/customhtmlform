@@ -220,7 +220,6 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
         }
         else if (this.fieldType == 'OptionsetField' ||
                  this.fieldType == 'SilvercartCheckoutOptionsetField' ||
-                 this.fieldType == 'SilvercartShippingOptionsetField' ||
                  this.fieldType == 'SilvercartAddressOptionsetField')
         {
             if (this.fieldValue == undefined ||

@@ -197,10 +197,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         $this->nrOfSteps            = $this->getNumberOfSteps();
         $this->currentFormInstance  = $this->registerCurrentFormStep();
         $this->initOutput           = $this->callMethodOnCurrentFormStep($this->currentFormInstance, 'init');
-        $extended = $this->callMethodOnCurrentFormStep($this->currentFormInstance, 'extendedProcess');
-        if (!$extended) {
-            $this->callMethodOnCurrentFormStep($this->currentFormInstance, 'process');
-        }
+        $this->callMethodOnCurrentFormStep($this->currentFormInstance, 'process');
         
         parent::init();
     }
@@ -604,10 +601,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         if ($this->getNextStep() <= $this->getNumberOfSteps()) {
             $this->setCurrentStep($this->getNextStep());
         }
-        $redirected_to = Director::redirected_to();
-        if (empty($redirected_to)) {
-            Director::redirect($this->Link(), 302);
-        }
+        Director::redirect($this->Link(), 302);
     }
 
     /**

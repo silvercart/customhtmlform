@@ -32,16 +32,6 @@
 interface CustomHtmlFormDecorator {
     
     /**
-     * This method will be called instead of a CustomHtmlForms process method
-     * 
-     * @return bool
-     * 
-     * @author Sebastian Diel <sdiel@pixeltricks.de>
-     * @since 22.03.2012
-     */
-    public function extendedProcess();
-    
-    /**
      * This method will be called after CustomHtmlForm's default submitFailure.
      * You can manipulate the relevant data here.
      * 

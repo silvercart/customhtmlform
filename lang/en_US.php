@@ -24,7 +24,6 @@
  */
 global $lang;
 
-$lang['en_US']['CustomHtmlForm']['REQUIRED_FIELD_MARKER'] = '<span class="required-field">[ Required ]</span>';
 $lang['en_US']['Form']['FIELD_MUST_BE_EMPTY'] = 'This field must be empty.';
 $lang['en_US']['Form']['FIELD_MAY_NOT_BE_EMPTY'] = 'This field may not be empty.';
 $lang['en_US']['Form']['FIELD_MUST_BE_FILLED_IN'] = 'Please fill in this field.';
