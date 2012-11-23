@@ -10,6 +10,8 @@ if(typeof(ss) == 'undefined' || typeof(ss.i18n) == 'undefined') {
         'Form.FIELD_REQUIRES_NR_OF_CHARS':          'Dieses Feld erfordert %s Zeichen.',
         'Form.REQUIRES_SAME_VALUE_AS_IN_FIELD':     'Bitte geben Sie den gleichen Wert ein wie im Feld "%s".',
         'Form.REQUIRES_OTHER_VALUE_AS_IN_FIELD':    'Dieses Feld darf nicht den gleichen Wert wie das Feld "%s" haben.',
+        'Form.MAX_DECIMAL_PLACES_ALLOWED':          'Dieses Feld darf maximal %s Dezimalstellen enthalten.',
+        'Form.QUANTITY_ONLY':                       'Dieses Feld darf nur Zahlen sowie "." und "," enthalten.',
         'Form.NUMBERS_ONLY':                        'Dieses Feld darf nur Zahlen enthalten.',
         'Form.CURRENCY_ONLY':                       'In dieses Feld muss eine Währungsangabe (z.B. "1499,95") eingetragen werden.',
         'Form.DATE_ONLY':                           'In dieses Feld muss ein Datum im Format "tt.mm.jjjj" eingetragen werden.',
