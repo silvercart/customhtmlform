@@ -208,12 +208,11 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
      *
      * @return CustomHtmlForm
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
-     * @since 25.10.2010
+     * @author Sascha Koehler <skoehler@pixeltricks.de>, Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 22.11.2012
+     * 
      */
     public function InsertCustomHtmlForm($formIdentifier, $renderWithObject = null) {
-
         if (!isset($this->registeredCustomHtmlForms[$formIdentifier])) {
             throw new Exception(
                 sprintf(
@@ -222,39 +221,42 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
                 )
             );
         }
+        $outputForm = $this->registeredCustomHtmlForms[$formIdentifier]->getCachedFormOutput();
+        if (empty($outputForm)) {
+            // Inject controller
+            $customFields = array(
+                'Controller' => $this->owner
+            );
 
-        // Inject controller
-        $customFields = array(
-            'Controller' => $this->owner
-        );
-
-        if ($renderWithObject !== null) {
-            if (is_array($renderWithObject)) {
-                foreach ($renderWithObject as $renderWithSingleObject) {
-                    if ($renderWithSingleObject instanceof DataObject) {
-                        if (isset($customFields)) {
-                            $customFields = array_merge($customFields, $renderWithSingleObject->getAllFields());
-                        } else {
-                            $customFields = $renderWithSingleObject->getAllFields();
+            if ($renderWithObject !== null) {
+                if (is_array($renderWithObject)) {
+                    foreach ($renderWithObject as $renderWithSingleObject) {
+                        if ($renderWithSingleObject instanceof DataObject) {
+                            if (isset($customFields)) {
+                                $customFields = array_merge($customFields, $renderWithSingleObject->getAllFields());
+                            } else {
+                                $customFields = $renderWithSingleObject->getAllFields();
+                            }
+                            unset($customFields['ClassName']);
+                            unset($customFields['RecordClassName']);
                         }
+                    }
+                } else {
+                    if ($renderWithObject instanceof DataObject) {
+                        $customFields = $renderWithObject->getAllFields();
                         unset($customFields['ClassName']);
                         unset($customFields['RecordClassName']);
                     }
                 }
-            } else {
-                if ($renderWithObject instanceof DataObject) {
-                    $customFields = $renderWithObject->getAllFields();
-                    unset($customFields['ClassName']);
-                    unset($customFields['RecordClassName']);
-                }
             }
-        }
 
-        $outputForm = $this->registeredCustomHtmlForms[$formIdentifier]->customise($customFields)->renderWith(
-            array(
-                $this->registeredCustomHtmlForms[$formIdentifier]->class,
-            )
-        );
+            $outputForm = $this->registeredCustomHtmlForms[$formIdentifier]->customise($customFields)->renderWith(
+                array(
+                    $this->registeredCustomHtmlForms[$formIdentifier]->class,
+                )
+            );
+            $this->registeredCustomHtmlForms[$formIdentifier]->setCachedFormOutput($outputForm);
+        }
 
         return $outputForm;
     }

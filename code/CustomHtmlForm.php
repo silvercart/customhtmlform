@@ -99,7 +99,7 @@ class CustomHtmlForm extends Form {
      *
      * @var array
      */
-    protected $customParameters;
+    protected $customParameters = array();
 
     /**
      * the forms preferences; can be overwritten in the instance
@@ -127,10 +127,6 @@ class CustomHtmlForm extends Form {
      * Contains custom preferences that can be set in the form object.
      *
      * @var array
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pxieltricks GmbH
-     * @since 23.02.2011
      */
     protected $preferences = array();
 
@@ -138,10 +134,6 @@ class CustomHtmlForm extends Form {
      * Contains fields that shall not be validated.
      *
      * @var array
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pxieltricks GmbH
-     * @since 13.03.2011
      */
     protected $noValidationFields = array();
 
@@ -160,10 +152,6 @@ class CustomHtmlForm extends Form {
      * fetch templates.
      * 
      * @var array
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pxieltricks GmbH
-     * @since 28.01.2011
      */
     public static $registeredModules = array(
         'customhtmlform' => 1
@@ -173,9 +161,6 @@ class CustomHtmlForm extends Form {
      * Contains a list of registerd custom html forms
      *
      * @var array
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 08.04.2011
      */
     protected $registeredCustomHtmlForms = array();
     
@@ -184,9 +169,6 @@ class CustomHtmlForm extends Form {
      * into caching problems when using it.
      * 
      * @var boolean
-     * 
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 22.07.2011
      */
     protected $securityTokenEnabled = true;
     
@@ -201,11 +183,36 @@ class CustomHtmlForm extends Form {
      * Contains all registered form field handlers.
      *
      * @var array
-     * 
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 06.12.2011
      */
     public static $registeredFormFieldHandlers = array();
+    
+    /**
+     * CuzstomHtmlForm Cache object
+     *
+     * @var Zend_Cache_Core
+     */
+    protected static $cache = null;
+    
+    /**
+     * Cache key for this form
+     *
+     * @var string
+     */
+    protected $cacheKey = null;
+    
+    /**
+     * Cache key extension for this form
+     *
+     * @var string
+     */
+    protected $cacheKeyExtension = '';
+    
+    /**
+     * Form fields and actions
+     *
+     * @var array
+     */
+    protected $form = null;
 
     /**
      * creates a form object with a free configurable markup
@@ -1314,55 +1321,57 @@ class CustomHtmlForm extends Form {
      *          'actions'   => FieldSet
      *      )
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
-     * @since 25.10.2010
+     * @author Sascha Koehler <skoehler@pixeltricks.de>, Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 22.11.2012
      */
     protected function getForm() {
-        $fields = new FieldSet();
+        if (is_null($this->form)) {
+            $fields = new FieldSet();
 
-        // --------------------------------------------------------------------
-        // define meta data
-        // --------------------------------------------------------------------
-        if (!empty($this->customParameters)) {
-            foreach ($this->customParameters as $customParameterKey => $customParameterValue) {
-                $field = new HiddenField($customParameterKey, '', $customParameterValue, null, null);
-                $fields->push($field);
+            // --------------------------------------------------------------------
+            // define meta data
+            // --------------------------------------------------------------------
+            if (!empty($this->customParameters)) {
+                foreach ($this->customParameters as $customParameterKey => $customParameterValue) {
+                    $field = new HiddenField($customParameterKey, '', $customParameterValue, null, null);
+                    $fields->push($field);
+                }
             }
-        }
 
-        $field = new HiddenField('CustomHtmlFormName', '', $this->getCustomHtmlFormName(), null, null);
-        $fields->push($field);
+            $field = new HiddenField('CustomHtmlFormName', '', $this->getCustomHtmlFormName(), null, null);
+            $fields->push($field);
 
-        // --------------------------------------------------------------------
-        // create field set from definition
-        // --------------------------------------------------------------------
-        foreach ($this->fieldGroups as $groupName => $groupFields) {
-            foreach ($groupFields as $fieldName => $fieldDefinition) {
-                $field = $this->getFormField(
-                    $fieldName,
-                    $fieldDefinition
-                );
+            // --------------------------------------------------------------------
+            // create field set from definition
+            // --------------------------------------------------------------------
+            foreach ($this->fieldGroups as $groupFields) {
+                foreach ($groupFields as $fieldName => $fieldDefinition) {
+                    $field = $this->getFormField(
+                        $fieldName,
+                        $fieldDefinition
+                    );
 
-                $fields->push($field);
+                    $fields->push($field);
+                }
             }
-        }
 
-        $formAction = new FormAction(
-            $this->getSubmitAction(),
-            $this->getSubmitButtonTitle(),
-            $this
-        );
-        $formAction->description = $this->getSubmitButtonToolTip();
-        
-        $actions = new FieldSet(
-            $formAction
-        );
-        
-        return array(
-            'fields'    => $fields,
-            'actions'   => $actions
-        );
+            $formAction = new FormAction(
+                $this->getSubmitAction(),
+                $this->getSubmitButtonTitle(),
+                $this
+            );
+            $formAction->description = $this->getSubmitButtonToolTip();
+
+            $actions = new FieldSet(
+                $formAction
+            );
+
+            $this->form = array(
+                'fields'    => $fields,
+                'actions'   => $actions
+            );
+        }
+        return $this->form;
     }
 
     /**
@@ -1396,9 +1405,8 @@ class CustomHtmlForm extends Form {
      *
      * @return Field
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
-     * @since 25.10.2010
+     * @author Sascha Koehler <skoehler@pixeltricks.de>, Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 22.11.2012
      */
     protected function getFormField($fieldName, $fieldDefinition) {
         
@@ -1413,7 +1421,7 @@ class CustomHtmlForm extends Form {
             list($fieldName, $fieldLabel) = explode('//', $fieldName, 2);
         }
             
-        foreach ($this->fieldGroups as $groupName => $groupFields) {
+        foreach ($this->fieldGroups as $groupFields) {
             if (isset($groupFields[$fieldName])) {
                 $fieldReference = &$groupFields[$fieldName];
                 break;
@@ -1421,54 +1429,22 @@ class CustomHtmlForm extends Form {
         }
 
         // fill required field with standard values if they where not specified
-        if (!isset($fieldDefinition['isRequired'])) {
-            $fieldDefinition['isRequired'] = false;
-            $fieldReference['isRequired'] = $fieldDefinition['isRequired'];
-        }
-
-        if (!isset($fieldDefinition['checkRequirements'])) {
-            $fieldDefinition['checkRequirements'] = array();
-            $fieldReference['checkRequirements'] = $fieldDefinition['checkRequirements'];
-        }
-
-        if (!isset($fieldDefinition['title'])) {
-            $fieldDefinition['title'] = '';
-            $fieldReference['title'] = $fieldDefinition['title'];
-        }
-
-        if (!isset($fieldDefinition['value'])) {
-            $fieldDefinition['value'] = '';
-            $fieldReference['value'] = $fieldDefinition['value'];
-        }
-
-        if (!isset($fieldDefinition['selectedValue'])) {
-            $fieldDefinition['selectedValue'] = '';
-            $fieldReference['selectedValue'] = $fieldDefinition['selectedValue'];
-        }
-
-        if (!isset($fieldDefinition['maxLength'])) {
-
-            if ($this->isTextField($fieldDefinition['type'])) {
-                $fieldDefinition['maxLength'] = 255;
-            } else {
-                $fieldDefinition['maxLength'] = null;
+        $requiredFieldParams = array(
+            'isRequired'            => false,
+            'checkRequirements'     => array(),
+            'title'                 => '',
+            'value'                 => '',
+            'selectedValue'         => '',
+            'size'                  => null,
+            'multiple'              => null,
+            'form'                  => $this,
+            'maxLength'             => $this->isTextField($fieldDefinition['type']) ? 255 : null,
+        );
+        foreach ($requiredFieldParams as $param => $default) {
+            if (!array_key_exists($param, $fieldDefinition)) {
+                $fieldDefinition[$param] = $default;
+                $fieldReference[$param] = $fieldDefinition[$param];
             }
-            $fieldReference['maxLength'] = $fieldDefinition['maxLength'];
-        }
-
-        if (!isset($fieldDefinition['size'])) {
-            $fieldDefinition['size'] = null;
-            $fieldReference['size'] = $fieldDefinition['size'];
-        }
-
-        if (!isset($fieldDefinition['multiple'])) {
-            $fieldDefinition['multiple'] = null;
-            $fieldReference['multiple'] = $fieldDefinition['multiple'];
-        }
-
-        if (!isset($fieldDefinition['form'])) {
-            $fieldDefinition['form'] = $this;
-            $fieldReference['form'] = $fieldDefinition['form'];
         }
 
         // create field
@@ -2715,6 +2691,152 @@ class CustomHtmlForm extends Form {
      */
     public function setSubmitSuccess($submitSuccess) {
         $this->submitSuccess = $submitSuccess;
+    }
+    
+    /**
+     * Sets the custom parameters.
+     * The custom parameters will be inserted as hidden fields.
+     * Expected is a key value pair of the hidden fields name and its value
+     * 
+     * @param array $customParameters Custom parameters
+     * 
+     * @return void
+     */
+    public function setCustomParameters($customParameters) {
+        $this->customParameters = $customParameters;
+    }
+    
+    /**
+     * Returns the custom parameters.
+     * The custom parameters will be inserted as hidden fields.
+     * Returned is a key value pair of the hidden fields name and its value
+     * 
+     * @return array
+     */
+    public function getCustomParameters() {
+        return $this->customParameters;
+    }
+    
+    /**
+     * Sets the custom parameter with the given name to the given value.
+     * The custom parameters will be inserted as hidden fields.
+     * 
+     * @param string $customParameterName  Name of the parameter to set value for
+     * @param string $customParameterValue Value to set
+     * 
+     * @return void
+     */
+    public function setCustomParameter($customParameterName, $customParameterValue) {
+        $this->customParameters[$customParameterName] = $customParameterValue;
+    }
+
+    /**
+     * Builds the cache key of this form
+     * 
+     * @return void
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 22.11.2012
+     */
+    public function buildCacheKey() {
+        $this->cacheKey         = $this->name;
+        $customParameters       = $this->getCustomParameters();
+        if (count($customParameters) > 0) {
+            $customParameterString  = '';
+            foreach ($customParameters as $parameterName => $parameterValue) {
+                $customParameterString .= $parameterName . ':' . $parameterValue . ';';
+            }
+            $this->cacheKey .= sha1($customParameterString);
+        }
+        if (SecurityToken::is_enabled()) {
+            $this->cacheKey .= $this->getSecurityID();
+        }
+        if ($this->hasCacheKeyExtension()) {
+            $this->cacheKey .= $this->getCacheKeyExtension();
+        }
+    }
+
+    /**
+     * Returns the cache key of this form.
+     * The cache key will be build if not exists.
+     * 
+     * @return string
+     */
+    public function getCacheKey() {
+        if (is_null($this->cacheKey)) {
+            $this->buildCacheKey();
+        }
+        return $this->cacheKey;
+    }
+
+    /**
+     * Returns the cache key extension of this form.
+     * 
+     * @return string
+     */
+    public function getCacheKeyExtension() {
+        return $this->cacheKeyExtension;
+    }
+
+    /**
+     * Sets the cache key extension of this form.
+     * 
+     * @param string $cacheKeyExtension Cache key extension
+     * 
+     * @return void
+     */
+    public function setCacheKeyExtension($cacheKeyExtension) {
+        $this->cacheKeyExtension = $cacheKeyExtension;
+    }
+
+    /**
+     * Returns the cache key extension of this form.
+     * 
+     * @return string
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 22.11.2012
+     */
+    public function hasCacheKeyExtension() {
+        $hasCacheKeyExtension = false;
+        if (!empty($this->cacheKeyExtension)) {
+            $hasCacheKeyExtension = true;
+        }
+        return $hasCacheKeyExtension;
+    }
+
+    /**
+     * Returns the Cache object for CustomHtmlForm
+     * 
+     * @return Zend_Cache_Core
+     */
+    public static function getCache() {
+        if (is_null(self::$cache)) {
+            self::$cache = SS_Cache::factory('CustomHtmlForm');
+        }
+        return self::$cache;
+    }
+
+    /**
+     * Adds a rendered form output to the cache
+     * 
+     * @param string $output Output to cache
+     * 
+     * @return void
+     */
+    public function setCachedFormOutput($output) {
+        $cache = self::getCache();
+        $cache->save($output, $this->getCacheKey());
+    }
+    
+    /**
+     * Returns a cached form output
+     * 
+     * @return string
+     */
+    public function getCachedFormOutput() {
+        $cache = self::getCache();
+        return $cache->load($this->getCacheKey());
     }
 
 }

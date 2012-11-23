@@ -26,3 +26,5 @@ Requirements::set_write_js_to_body(false); // write javascriptcode into the html
 
 DataObject::add_extension('ContentController', 'CustomHtmlFormPage_Controller');
 DataObject::add_extension('Security',          'CustomHtmlFormPage_Controller');
+
+SS_Cache::set_cache_lifetime('CustomHtmlForm', 86400);
