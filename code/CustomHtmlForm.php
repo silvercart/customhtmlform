@@ -1038,8 +1038,6 @@ class CustomHtmlForm extends Form {
         if (!Director::redirected_to() &&
             empty($result) &&
             !empty($output)) {
-            print "REDIRECT";
-            exit();
             Controller::curr()->redirectBack();
         }
 
