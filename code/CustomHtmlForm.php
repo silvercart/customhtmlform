@@ -2796,8 +2796,9 @@ class CustomHtmlForm extends Form {
      * @since 22.11.2012
      */
     public function hasCacheKeyExtension() {
-        $hasCacheKeyExtension = false;
-        if (!empty($this->cacheKeyExtension)) {
+        $hasCacheKeyExtension   = false;
+        $cacheKeyExtension      = $this->getCacheKeyExtension();
+        if (!empty($cacheKeyExtension)) {
             $hasCacheKeyExtension = true;
         }
         return $hasCacheKeyExtension;
