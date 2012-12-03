@@ -30,6 +30,14 @@
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
 class CustomHtmlForm extends Form {
+
+    /**
+     * Set to true to exclude this form from caching.
+     *
+     * @var bool
+     */
+    protected $excludeFromCache = false;
+
     /**
      * saves controller of calling class
      *
@@ -2843,8 +2851,11 @@ class CustomHtmlForm extends Form {
      * @return string
      */
     public function getCachedFormOutput() {
-        $cache = self::getCache();
-        return $cache->load($this->getCacheKey());
-    }
+        if ($this->excludeFromCache === false) {
+            $cache = self::getCache();
+            return $cache->load($this->getCacheKey());
+        }
 
+        return '';
+    }
 }
