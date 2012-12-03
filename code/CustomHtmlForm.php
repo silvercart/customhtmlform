@@ -2737,8 +2737,11 @@ class CustomHtmlForm extends Form {
      * @since 22.11.2012
      */
     public function buildCacheKey() {
-        $this->cacheKey         = $this->name;
         $customParameters       = $this->getCustomParameters();
+        $request                = $this->controller->getRequest();
+        $requestString          = '';
+        $formFields             = $this->getFormFields();
+        $this->cacheKey         = $this->name;
         if (count($customParameters) > 0) {
             $customParameterString  = '';
             foreach ($customParameters as $parameterName => $parameterValue) {
@@ -2746,6 +2749,12 @@ class CustomHtmlForm extends Form {
             }
             $this->cacheKey .= sha1($customParameterString);
         }
+        foreach ($formFields as $fieldName => $fieldDefinition) {
+            if (array_key_exists($fieldName, $request)) {
+                $requestString .= $fieldName . ':' . $request[$fieldName] . ';';
+            }
+        }
+        $this->cacheKey .= sha1($requestString);
         if (SecurityToken::is_enabled()) {
             $this->cacheKey .= $this->getSecurityID();
         }
