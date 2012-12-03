@@ -2762,6 +2762,9 @@ class CustomHtmlForm extends Form {
                 $requestString .= $fieldName . ':' . $request[$fieldName] . ';';
             }
         }
+
+        $requestString = $requestString.'_'.Translatable::get_current_locale();
+
         $this->cacheKey .= sha1($requestString);
         if (SecurityToken::is_enabled()) {
             $this->cacheKey .= $this->getSecurityID();
