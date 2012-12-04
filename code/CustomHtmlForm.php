@@ -686,6 +686,21 @@ class CustomHtmlForm extends Form {
     }
 
     /**
+     * Set a form field.
+     *
+     * @param string $identifier      The identifier of the field
+     * @param string $fieldDefinition The field definition
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 04.12.2012
+     */
+    public function setFormField($identifier, $fieldDefinition) {
+        $this->formFields[$identifier] = $fieldDefinition;
+    }
+
+    /**
      * Set a custom parameter on the given form field.
      *
      * @param string $identifier The identifier of the field
@@ -698,8 +713,9 @@ class CustomHtmlForm extends Form {
      * @since 25.01.2011
      */
     public function setFormFieldValue($identifier, $value) {
-        if (isset($this->fieldGroups['formFields'][$identifier])) {
-            $this->fieldGroups['formFields'][$identifier]['value'] = $value;
+        $field = $this->SSformFields['fields']->fieldByName($identifier);
+        if ($field) {
+            $field->setValue($value);
         }
 
         $this->SSformFields = $this->getForm();
