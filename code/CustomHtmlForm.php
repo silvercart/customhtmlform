@@ -2773,9 +2773,12 @@ class CustomHtmlForm extends Form {
             }
             $this->cacheKey .= sha1($customParameterString);
         }
-        foreach ($formFields as $fieldName => $fieldDefinition) {
-            if (array_key_exists($fieldName, $request)) {
-                $requestString .= $fieldName . ':' . $request[$fieldName] . ';';
+
+        if (!is_null($request)) {
+            foreach ($formFields as $fieldName => $fieldDefinition) {
+                if (array_key_exists($fieldName, $request)) {
+                    $requestString .= $fieldName . ':' . $request[$fieldName] . ';';
+                }
             }
         }
 
