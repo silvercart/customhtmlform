@@ -32,26 +32,4 @@
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
 class PtCaptchaInputField extends TextField {
-
-    /**
-     * check hash of password against hash of searched characters
-     *
-     * @param string $char_seq The code to check
-     *
-     * @return boolean
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 17.12.2012
-     */
-    protected function verify($char_seq) {
-        $fh     = fopen( $this->temp_dir.'/'.'cap_'.$this->session_key.'.txt', "r" );
-        $hash   = fgets( $fh );
-        $hash2  = md5(strtolower($char_seq));
-
-        if ($hash2 == $hash) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 }

@@ -31,7 +31,7 @@
  * @since 07.12.2012
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
-class PtCaptchaImageField extends SpamProtectorField {
+class PtCaptchaImageField extends TextField {
 
     protected $cachedField = null;
     protected $formIdentifier;
@@ -227,9 +227,9 @@ HTML;
     function getPic($num_chars=8) {
         // define characters of which the captcha can consist
         $alphabet = array(
-            'A','B','C','D','E','F','G','H','I','J','K','L','M',
-            'N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
-            '1','2','3','4','5','6','7','8','9','0' );
+            'A','B','C','D','E','F','G','H','J','K','M',
+            'N','P','Q','R','S','T','U','V','W','X','Y','Z',
+            '2','3','4','5','6','7','8','9' );
 
         $max = sizeof($alphabet);
 
