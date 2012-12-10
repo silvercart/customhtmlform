@@ -34,6 +34,7 @@ if (array_key_exists('en_GB', $lang) && is_array($lang['en_GB'])) {
 }
 
 $lang['en_GB']['CustomHtmlForm']['REQUIRED_FIELD_MARKER'] = '<span class="required-field">[ Required ]</span>';
+
 $lang['en_GB']['Form']['FIELD_MUST_BE_EMPTY'] = 'This field must be empty.';
 $lang['en_GB']['Form']['FIELD_MAY_NOT_BE_EMPTY'] = 'This field may not be empty.';
 $lang['en_GB']['Form']['FIELD_MUST_BE_FILLED_IN'] = 'Please fill in this field.';
@@ -41,8 +42,9 @@ $lang['en_GB']['Form']['MIN_CHARS'] = 'Enter at least %s characters.';
 $lang['en_GB']['Form']['FIED_REQUIRES_NR_OF_CHARS'] = 'This field requires exactly %s characters.';
 $lang['en_GB']['Form']['REQUIRES_SAME_VALUE_AS_IN_FIELD'] = 'Please enter the same value as in field "%s".';
 $lang['en_GB']['Form']['REQUIRES_OTHER_VALUE_AS_IN_FIELD'] = 'This field may not have the same value as field "%s".';
-$lang['en_GB']['Form']['NUMBERS_ONLY'] = 'This field may consist of numbers only.';
 $lang['en_GB']['Form']['QUANTITY_ONLY'] = 'This field may consist of numbers, "." and "," only.';
+$lang['en_GB']['Form']['NUMBERS_ONLY'] = 'This field may consist of numbers only.';
+$lang['en_GB']['Form']['MAX_DECIMAL_PLACES_ALLOWED_'] = 'This field can not have more than %s decimal places.';
 $lang['en_GB']['Form']['CURRENCY_ONLY'] = 'Please enter a valid currency amount (e.g. 1499,00).';
 $lang['en_GB']['Form']['DATE_ONLY'] = 'Please enter a valid german date (e.g. "dd.mm.yyyy").';
 $lang['en_GB']['Form']['CAPTCHAFIELDNOMATCH'] = 'Your entry was not correct. Please try again!';
@@ -51,7 +53,21 @@ $lang['en_GB']['Form']['HASSPECIALSIGNS'] = 'This field must not contain special
 $lang['en_GB']['Form']['MANDATORYFIELD'] = 'This field must be filled in.';
 $lang['en_GB']['Form']['MUSTNOTBEEMAILADDRESS'] = "Please don't enter an email address.";
 $lang['en_GB']['Form']['MUSTBEEMAILADDRESS'] = 'Please enter a valid email address.';
+
 $lang['en_GB']['CustomHtmlFormStepPage']['BASE_NAME'] = 'base name for form object and template files: ';
 $lang['en_GB']['CustomHtmlFormStepPage']['SHOW_CANCEL'] = 'show cancel link';
 $lang['en_GB']['CustomHtmlFormStepPage']['CANCEL_TARGET'] = 'To which page should the cancel link direct: ';
+
+$lang['en_GB']['CustomHtmlFormConfiguration']['SpamCheck_numberOfCharsInCaptcha']   = 'Number of characters in the captcha';
+$lang['en_GB']['CustomHtmlFormConfiguration']['SpamCheck_width']                    = 'Width in pixels';
+$lang['en_GB']['CustomHtmlFormConfiguration']['SpamCheck_height']                   = 'Height in pixels';
+$lang['en_GB']['CustomHtmlFormConfiguration']['SpamCheck_jpgQuality']               = 'JPG quality setting for the rendering of the captcha image (0 [worst] to 100 [best])';
+$lang['en_GB']['CustomHtmlFormConfiguration']['PLURALNAME']                         = 'Form configuration';
+$lang['en_GB']['CustomHtmlFormConfiguration']['SINGULARNAME']                       = 'Form configuration';
+
+$lang['en_GB']['CustomHtmlFormConfigurationAdmin']['TAB_SPAMCHECK'] = 'Captcha';
+
 $lang['en_GB']['CustomHtmlFormErrorMessages']['CHECK_FIELDS'] = 'Please check your input on the following fields:';
+
+$lang['en_GB']['SilvercartCustomHtmlFormAdmin']['PLURALNAME'] = 'Forms';
+$lang['en_GB']['SilvercartCustomHtmlFormAdmin']['SINGULARNAME'] = 'Forms';

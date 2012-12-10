@@ -24,7 +24,17 @@
  */
 global $lang;
 
+
+
+
+
+
+
+
+
+
 $lang['en_US']['CustomHtmlForm']['REQUIRED_FIELD_MARKER'] = '<span class="required-field">[ Required ]</span>';
+
 $lang['en_US']['Form']['FIELD_MUST_BE_EMPTY'] = 'This field must be empty.';
 $lang['en_US']['Form']['FIELD_MAY_NOT_BE_EMPTY'] = 'This field may not be empty.';
 $lang['en_US']['Form']['FIELD_MUST_BE_FILLED_IN'] = 'Please fill in this field.';
@@ -43,7 +53,21 @@ $lang['en_US']['Form']['HASSPECIALSIGNS'] = 'This field must not contain special
 $lang['en_US']['Form']['MANDATORYFIELD'] = 'This field must be filled in.';
 $lang['en_US']['Form']['MUSTNOTBEEMAILADDRESS'] = "Please don't enter an email address.";
 $lang['en_US']['Form']['MUSTBEEMAILADDRESS'] = 'Please enter a valid email address.';
+
 $lang['en_US']['CustomHtmlFormStepPage']['BASE_NAME'] = 'base name for form object and template files: ';
 $lang['en_US']['CustomHtmlFormStepPage']['SHOW_CANCEL'] = 'show cancel link';
 $lang['en_US']['CustomHtmlFormStepPage']['CANCEL_TARGET'] = 'To which page should the cancel link direct: ';
+
+$lang['en_US']['CustomHtmlFormConfiguration']['SpamCheck_numberOfCharsInCaptcha']   = 'Number of characters in the captcha';
+$lang['en_US']['CustomHtmlFormConfiguration']['SpamCheck_width']                    = 'Width in pixels';
+$lang['en_US']['CustomHtmlFormConfiguration']['SpamCheck_height']                   = 'Height in pixels';
+$lang['en_US']['CustomHtmlFormConfiguration']['SpamCheck_jpgQuality']               = 'JPG quality setting for the rendering of the captcha image (0 [worst] to 100 [best])';
+$lang['en_US']['CustomHtmlFormConfiguration']['PLURALNAME']                         = 'Form configuration';
+$lang['en_US']['CustomHtmlFormConfiguration']['SINGULARNAME']                       = 'Form configuration';
+
+$lang['en_US']['CustomHtmlFormConfigurationAdmin']['TAB_SPAMCHECK'] = 'Captcha';
+
 $lang['en_US']['CustomHtmlFormErrorMessages']['CHECK_FIELDS'] = 'Please check your input on the following fields:';
+
+$lang['en_US']['SilvercartCustomHtmlFormAdmin']['PLURALNAME'] = 'Forms';
+$lang['en_US']['SilvercartCustomHtmlFormAdmin']['SINGULARNAME'] = 'Forms';

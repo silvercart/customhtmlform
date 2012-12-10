@@ -34,6 +34,7 @@ if (array_key_exists('de_DE', $lang) && is_array($lang['de_DE'])) {
 }
 
 $lang['de_DE']['CustomHtmlForm']['REQUIRED_FIELD_MARKER'] = '<span class="required-field">[ Pflichtfeld ]</span>';
+
 $lang['de_DE']['Form']['FIELD_MUST_BE_EMPTY'] = 'Dieses Feld muss leer sein.';
 $lang['de_DE']['Form']['FIELD_MAY_NOT_BE_EMPTY'] = 'Dieses Feld darf nicht leer sein.';
 $lang['de_DE']['Form']['FIELD_MUST_BE_FILLED_IN'] = 'Dieses Feld muss ausgefuellt sein.';
@@ -43,7 +44,7 @@ $lang['de_DE']['Form']['REQUIRES_SAME_VALUE_AS_IN_FIELD'] = 'Bitte geben Sie den
 $lang['de_DE']['Form']['REQUIRES_OTHER_VALUE_AS_IN_FIELD'] = 'Dieses Feld darf nicht den gleichen Wert wie das Feld "%s" haben.';
 $lang['de_DE']['Form']['QUANTITY_ONLY'] = 'Dieses Feld darf nur Zahlen sowie "." und "," enthalten.';
 $lang['de_DE']['Form']['NUMBERS_ONLY'] = 'Dieses Feld darf nur Zahlen enthalten.';
-$lang['en_US']['Form']['MAX_DECIMAL_PLACES_ALLOWED_'] = 'Dieses Feld darf maximal %s Dezimalstellen enthalten.';
+$lang['de_DE']['Form']['MAX_DECIMAL_PLACES_ALLOWED_'] = 'Dieses Feld darf maximal %s Dezimalstellen enthalten.';
 $lang['de_DE']['Form']['CURRENCY_ONLY'] = 'In dieses Feld muss eine Währungsangabe (z.B. "1499,95") eingetragen werden.';
 $lang['de_DE']['Form']['DATE_ONLY'] = 'In dieses Feld muss ein Datum im Format "tt.mm.jjjj" eingetragen werden.';
 $lang['de_DE']['Form']['CAPTCHAFIELDNOMATCH'] = 'Diese Eingabe war leider falsch. Versuchen Sie es bitte erneut!';
@@ -52,7 +53,21 @@ $lang['de_DE']['Form']['HASSPECIALSIGNS'] = 'Dieses Feld darf nur Buchstaben, Za
 $lang['de_DE']['Form']['MANDATORYFIELD'] = 'Dieses Feld muss ausgefüllt werden.';
 $lang['de_DE']['Form']['MUSTNOTBEEMAILADDRESS'] = 'Bitte geben Sie hier keine Email Adresse an.';
 $lang['de_DE']['Form']['MUSTBEEMAILADDRESS'] = 'Bitte geben Sie hier eine gültige Email Adresse an.';
+
 $lang['de_DE']['CustomHtmlFormStepPage']['BASE_NAME'] = 'Basisname für Formular Objekt- und Templatedateien: ';
 $lang['de_DE']['CustomHtmlFormStepPage']['SHOW_CANCEL'] = 'Abbrechen Link zeigen';
 $lang['de_DE']['CustomHtmlFormStepPage']['CANCEL_TARGET'] = 'Auf welche Seite soll der Abbrechen-Link fuehren: ';
+
+$lang['de_DE']['CustomHtmlFormConfiguration']['SpamCheck_numberOfCharsInCaptcha']   = 'Anzahl der Zeichen im Captcha';
+$lang['de_DE']['CustomHtmlFormConfiguration']['SpamCheck_width']                    = 'Breite in Pixel';
+$lang['de_DE']['CustomHtmlFormConfiguration']['SpamCheck_height']                   = 'Höhe in Pixel';
+$lang['de_DE']['CustomHtmlFormConfiguration']['SpamCheck_jpgQuality']               = 'JPG Qualität des Captcha-Bilds (0 [schlechteste] bis 100 [beste])';
+$lang['de_DE']['CustomHtmlFormConfiguration']['PLURALNAME']                         = 'Formular Konfiguration';
+$lang['de_DE']['CustomHtmlFormConfiguration']['SINGULARNAME']                       = 'Formular Konfiguration';
+
+$lang['de_DE']['CustomHtmlFormConfigurationAdmin']['TAB_SPAMCHECK'] = 'Captcha';
+
 $lang['de_DE']['CustomHtmlFormErrorMessages']['CHECK_FIELDS'] = 'Bitte pr&uuml;fen Sie Ihre Eingaben in folgenden Feldern:';
+
+$lang['de_DE']['SilvercartCustomHtmlFormAdmin']['PLURALNAME'] = 'Formulare';
+$lang['de_DE']['SilvercartCustomHtmlFormAdmin']['SINGULARNAME'] = 'Formulare';

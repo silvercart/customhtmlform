@@ -32,6 +32,20 @@
 class CustomHtmlForm extends Form {
 
     /**
+     * Contains the cached form fields from $this->getFormFields().
+     *
+     * @var array
+     */
+    protected $cachedFormFields = null;
+
+    /**
+     * Set to true to provide a spam check field
+     *
+     * @var bool
+     */
+    protected $useSpamCheck = false;
+
+    /**
      * Set to true to exclude this form from caching.
      *
      * @var bool
@@ -222,6 +236,8 @@ class CustomHtmlForm extends Form {
      */
     protected $form = null;
 
+    protected $barebone = null;
+
     /**
      * creates a form object with a free configurable markup
      *
@@ -239,6 +255,7 @@ class CustomHtmlForm extends Form {
     public function __construct($controller, $params = null, $preferences = null, $barebone = false) {
         global $project;
 
+        $this->barebone   = $barebone;
         $this->controller = $controller;
 
         if (is_array($params)) {
@@ -676,7 +693,6 @@ class CustomHtmlForm extends Form {
         if ($type == 'TextField' ||
             $type == 'SilvercartTextField' ||
             $type == 'EmailField' ||
-            $type == 'PtCaptchaField' ||
             $type == 'PtCaptchaInputField') {
 
             $isField = true;
@@ -966,13 +982,15 @@ class CustomHtmlForm extends Form {
         $request = $this->controller->getRequest();
 
         $formFields = $this->getFormFields();
-        
-        foreach ($formFields as $fieldName => $fieldDefinition) {
-            if (isset($request[$fieldName])) {
-                if (strtolower($fieldDefinition['type']) == 'passwordfield') {
-                    continue;
+
+        if ($formFields) {
+            foreach ($formFields as $fieldName => $fieldDefinition) {
+                if (isset($request[$fieldName])) {
+                    if (strtolower($fieldDefinition['type']) == 'passwordfield') {
+                        continue;
+                    }
+                    $this->formFields[$fieldName][$this->getFormFieldValueLabel($fieldName)] = $request[$fieldName];
                 }
-                $this->formFields[$fieldName][$this->getFormFieldValueLabel($fieldName)] = $request[$fieldName];
             }
         }
     }
@@ -1287,7 +1305,7 @@ class CustomHtmlForm extends Form {
                         if ($requirement == 'PtCaptchaInput') {
                             $requiredValue = array(
                                 'formName'  => $this->class,
-                                'fieldName' => $this->name.$fieldName
+                                'fieldName' => $this->name.'PtCaptchaImageField'
                             );
                         }
 
@@ -1437,7 +1455,7 @@ class CustomHtmlForm extends Form {
                 'CustomHtmlForm: Field type must be specified.'
             );
         }
-        
+
         // SelectionGroup fields use '//' as separator for key/label definition
         if (strpos($fieldName, '//') !== false) {
             list($fieldName, $fieldLabel) = explode('//', $fieldName, 2);
@@ -1525,6 +1543,13 @@ class CustomHtmlForm extends Form {
                 method_exists($field, 'setPlaceholder')) {
                 $field->setPlaceholder($fieldDefinition['placeholder']);
             }
+        } else if ($fieldDefinition['type'] == 'PtCaptchaImageField') {
+            $field = new $fieldDefinition['type'](
+                $fieldName,
+                $fieldDefinition['title'],
+                $fieldDefinition['value'],
+                $fieldDefinition['form']
+            );
         } else if ($fieldDefinition['type'] == 'PasswordField') {
             $field = new $fieldDefinition['type'](
                 $fieldName,
@@ -1567,9 +1592,6 @@ class CustomHtmlForm extends Form {
                 $fieldDefinition['value'],
                 $fieldDefinition['form']
             );
-        } else if ($fieldDefinition['type'] == 'RecaptchaField') {
-            $field = new RecaptchaField('Recaptcha');
-            $recaptchaField->jsOptions = array('theme' => 'clean');
         } else if ($fieldDefinition['type'] == 'MultipleImageUploadField' ||
                    $fieldDefinition['type'] == 'MultipleFileUploadField') {
 
@@ -1655,7 +1677,7 @@ class CustomHtmlForm extends Form {
     public function getCustomHtmlFormName() {
         return $this->name;
     }
-    
+
     /**
      * Returns the forms fields.
      * 
@@ -1664,10 +1686,49 @@ class CustomHtmlForm extends Form {
      * @return array
      */
     public function getFormFields($withUpdate = true) {
-        if ($withUpdate && !empty($this->class)) {
-            $this->extend('updateFormFields', $this->formFields);
+        if (is_null($this->class)) {
+            return false;
         }
-        return $this->formFields;
+        if(is_null($this->cachedFormFields)) {
+            $this->injectSpecialFormFields();
+
+            if ($withUpdate && !empty($this->class)) {
+                $this->extend('updateFormFields', $this->formFields);
+            }
+
+            $this->cachedFormFields = $this->formFields;
+        }
+
+        return $this->cachedFormFields;
+    }
+
+    /**
+     * Injects special form fields before the form gets calculated.
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 07.12.2012
+     */
+    public function injectSpecialFormFields() {
+        if ($this->useSpamCheck) {
+            $this->formFields['PtCaptchaInputField'] = array(
+                'type'              => 'PtCaptchaInputField',
+                'title'             => 'Captcha',
+                'form'              => $this,
+                'checkRequirements' => array
+                (
+                    'isFilledIn'        => true,
+                    'hasLength'         => 8,
+                    'PtCaptchaInput'    => true
+                )
+            );
+            $this->formFields['PtCaptchaImageField'] = array(
+                'type'  => 'PtCaptchaImageField',
+                'title' => 'CaptchaImage',
+                'form'  => $this,
+            );
+        }
     }
 
     /**
@@ -1848,7 +1909,7 @@ class CustomHtmlForm extends Form {
             $fieldGroup->push(
                 new ArrayData(
                     array(
-                        'CustomHtmlFormField'   => $this->CustomHtmlFormFieldByName($fieldName, $template)
+                        'CustomHtmlFormField' => $this->CustomHtmlFormFieldByName($fieldName, $template)
                     )
                 )
             );
@@ -1858,12 +1919,45 @@ class CustomHtmlForm extends Form {
     }
 
     /**
+     * Returns all special fields if configured so as HTML string.
+     *
+     * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 07.12.2012
+     */
+    public function CustomHtmlFormSpecialFields() {
+        $fields = '';
+
+        if ($this->useSpamCheck) {
+            $fields .= $this->SpamCheckField();
+        }
+
+        return $fields;
+    }
+
+    /**
+     * Returns the HTML Code for a spam check field.
+     *
+     * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 07.12.2012
+     */
+    public function SpamCheckField() {
+        $field  = $this->CustomHtmlFormFieldByName('PtCaptchaImageField');
+        $field .= $this->CustomHtmlFormFieldByName('PtCaptchaInputField');
+
+        return $field;
+    }
+
+    /**
      * Returns the HTML code for the passed field; created with the standard
      * template for fields
      *
      * @param string $fieldName the field's name
      * @param string $template  optional; path to template snippet, relative to
-     *                  the sit root; by dot notation search in modul directory
+     *                  the site root; by dot notation search in modul directory
      *                  can be set:
      *                  "module.myTemplate" searches in the modul directory
      *                  "modul/templates" for the template "myTemplate.ss
@@ -1871,11 +1965,9 @@ class CustomHtmlForm extends Form {
      * @return string
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
      * @since 25.10.2010
      */
     public function CustomHtmlFormFieldByName($fieldName, $template = null) {
-
         $fieldReference = '';
         $templatePath   = '';
         $output         = '';
@@ -1934,17 +2026,18 @@ class CustomHtmlForm extends Form {
                 $isRequiredField = false;
             }
 
+            $field = $this->SSformFields['fields']->dataFieldByName($fieldName);
             $output = $viewableObj->customise(
                 array(
                     'FormName'            => $this->name,
                     'FieldName'           => $fieldName,
-                    'FieldValue'          => $this->SSformFields['fields']->fieldByName($fieldName)->Value(),
+                    'FieldValue'          => $field->Value(),
                     'Label'               => isset($fieldReference['title']) ? $fieldReference['title'] : '',
                     'errorMessage'        => isset($this->errorMessages[$fieldName]) ?  $this->errorMessages[$fieldName] : '',
-                    'FieldTag'            => $this->SSformFields['fields']->fieldByName($fieldName)->Field(),
-                    'FieldHolder'         => $this->SSformFields['fields']->fieldByName($fieldName)->FieldHolder(),
-                    'FieldID'             => $this->SSformFields['fields']->fieldByName($fieldName)->id(),
-                    'FieldObject'         => $this->SSformFields['fields']->fieldByName($fieldName),
+                    'FieldTag'            => $field,
+                    'FieldHolder'         => $field->FieldHolder(),
+                    'FieldID'             => $field->id(),
+                    'FieldObject'         => $field,
                     'Parent'              => $this,
                     'isRequiredField'     => $isRequiredField,
                     'RequiredFieldMarker' => $this->RequiredFieldMarker($isRequiredField),

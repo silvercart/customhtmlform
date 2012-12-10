@@ -56,7 +56,6 @@ class CheckFormData {
      * @return array
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
      * @since 25.10.2010
      */
     public function hasSpecialSigns($expectedResult) {
@@ -104,7 +103,6 @@ class CheckFormData {
      * @return array
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>, Sebastian Diel <sdiel@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
      * @since 21.06.2011
      */
     public function isEmailAddress($expectedResult) {
@@ -146,30 +144,27 @@ class CheckFormData {
      * @return array
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
      * @since 25.10.2010
      */
     public function PtCaptchaInput($parameters) {
-        $session_key    = $parameters['fieldName'];
+        if (!array_key_exists('CustomHtmlForm', $_SESSION)) {
+            $_SESSION['CustomHtmlForm'] = array();
+        }
+        if (!array_key_exists('SpamCheck', $_SESSION['CustomHtmlForm'])) {
+            $_SESSION['CustomHtmlForm']['SpamCheck'] = array();
+        }
+
+        $codeToMatch = $_SESSION['CustomHtmlForm']['SpamCheck'][$parameters['fieldName']];
+
         $success        = false;
         $errorMessage   = '';
-        $checkValue     = $this->getValueWithoutWhitespace($this->value);
-        $temp_dir       = TEMP_FOLDER;
+        $checkCode      = md5(strtolower($this->getValueWithoutWhitespace($this->value)));
 
-        if (file_exists($temp_dir.'/'.'cap_'.$session_key.'.txt')) {
-            $fh     = fopen($temp_dir.'/'.'cap_'.$session_key.'.txt', "r");
-            $hash   = fgets($fh);
-            $hash2  = md5(strtolower($checkValue));
-
-            if ($hash2 == $hash) {
-                $success = true;
-            } else {
-                $success        = false;
-                $errorMessage   = _t('Form.CAPTCHAFIELDNOMATCH', 'Your entry was not correct. Please try again!');
-            }
+        if ($checkCode === $codeToMatch) {
+            $success = true;
         } else {
             $success        = false;
-            $errorMessage   = _t('Form.CAPTCHAFIELDNOMATCH');
+            $errorMessage   = _t('Form.CAPTCHAFIELDNOMATCH', 'Your entry was not correct. Please try again!');
         }
 
         return array(
@@ -186,7 +181,6 @@ class CheckFormData {
      * @return array
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
      * @since 25.10.2010
      */
     public function isFilledIn($expectedResult) {
@@ -238,7 +232,6 @@ class CheckFormData {
      * )
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
      * @since 25.10.2010
      */
     public function isFilledInDependantOn($parameters) {
@@ -283,7 +276,6 @@ class CheckFormData {
      * )
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
      * @since 25.10.2010
      */
     public function hasMinLength($minLength) {
@@ -313,7 +305,6 @@ class CheckFormData {
      * )
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
      * @since 25.10.2010
      */
     public function hasLength($length) {
@@ -347,7 +338,6 @@ class CheckFormData {
      * )
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
      * @since 25.10.2010
      */
     public function mustEqual($parameters) {
@@ -384,7 +374,6 @@ class CheckFormData {
      * )
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
      * @since 25.10.2010
      */
     public function mustNotEqual($parameters) {
@@ -417,7 +406,6 @@ class CheckFormData {
      * )
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
      * @since 25.10.2010
      */
     public function isNumbersOnly($expectedResult) {
@@ -507,7 +495,6 @@ class CheckFormData {
      * )
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
      * @since 25.10.2010
      */
     public function isCurrency($expectedResult) {
@@ -538,7 +525,6 @@ class CheckFormData {
      * )
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
      * @since 25.10.2010
      */
     public function isDate($expectedResult) {
@@ -566,7 +552,6 @@ class CheckFormData {
      * @return string the cheaned value
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
      * @since 25.10.2010
      */
     private function getValueWithoutWhitespace($value) {
