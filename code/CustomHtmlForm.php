@@ -1714,7 +1714,7 @@ class CustomHtmlForm extends Form {
         if ($this->useSpamCheck) {
             $this->formFields['PtCaptchaInputField'] = array(
                 'type'              => 'PtCaptchaInputField',
-                'title'             => 'Captcha',
+                'title'             => _t('CustomHtmlFormField.PtCaptchaInputField_Title'),
                 'form'              => $this,
                 'checkRequirements' => array
                 (
@@ -1725,7 +1725,7 @@ class CustomHtmlForm extends Form {
             );
             $this->formFields['PtCaptchaImageField'] = array(
                 'type'  => 'PtCaptchaImageField',
-                'title' => 'CaptchaImage',
+                'title' => _t('CustomHtmlFormField.PtCaptchaImageField_Title'),
                 'form'  => $this,
             );
         }

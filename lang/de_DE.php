@@ -69,5 +69,8 @@ $lang['de_DE']['CustomHtmlFormConfigurationAdmin']['TAB_SPAMCHECK'] = 'Captcha';
 
 $lang['de_DE']['CustomHtmlFormErrorMessages']['CHECK_FIELDS'] = 'Bitte pr&uuml;fen Sie Ihre Eingaben in folgenden Feldern:';
 
+$lang['de_DE']['CustomHtmlFormField']['PtCaptchaImageField_Title'] = 'Bitte diesen Captcha-Code im folgenden Feld eingeben:';
+$lang['de_DE']['CustomHtmlFormField']['PtCaptchaInputField_Title'] = 'Captcha-Code:';
+
 $lang['de_DE']['SilvercartCustomHtmlFormAdmin']['PLURALNAME'] = 'Formulare';
 $lang['de_DE']['SilvercartCustomHtmlFormAdmin']['SINGULARNAME'] = 'Formulare';
