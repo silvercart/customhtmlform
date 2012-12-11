@@ -41,9 +41,9 @@ class CustomHtmlForm extends Form {
     /**
      * Set to true to provide a spam check field
      *
-     * @var bool
+     * @var array
      */
-    protected $useSpamCheck = false;
+    public static $useSpamCheck = array();
 
     /**
      * Set to true to exclude this form from caching.
@@ -1711,7 +1711,9 @@ class CustomHtmlForm extends Form {
      * @since 07.12.2012
      */
     public function injectSpecialFormFields() {
-        if ($this->useSpamCheck) {
+        print $this->class."<br />";
+        if (array_key_exists($this->class, self::$useSpamCheck)) {
+            print "SPAM CHECK!<br />";
             $this->formFields['PtCaptchaInputField'] = array(
                 'type'              => 'PtCaptchaInputField',
                 'title'             => _t('CustomHtmlFormField.PtCaptchaInputField_Title'),
@@ -1729,6 +1731,20 @@ class CustomHtmlForm extends Form {
                 'form'  => $this,
             );
         }
+    }
+
+    /**
+     * Set spam check for a form
+     *
+     * @param string $formName The name of the form that should use the spam check-
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 2012-12-11
+     */
+    public static function useSpamCheckFor($formName) {
+        self::$useSpamCheck[$formName] = true;
     }
 
     /**
@@ -1929,7 +1945,7 @@ class CustomHtmlForm extends Form {
     public function CustomHtmlFormSpecialFields() {
         $fields = '';
 
-        if ($this->useSpamCheck) {
+        if (array_key_exists($this->class, self::$useSpamCheck)) {
             $fields .= $this->SpamCheckField();
         }
 
