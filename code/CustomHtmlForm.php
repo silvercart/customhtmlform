@@ -1711,9 +1711,7 @@ class CustomHtmlForm extends Form {
      * @since 07.12.2012
      */
     public function injectSpecialFormFields() {
-        print $this->class."<br />";
         if (array_key_exists($this->class, self::$useSpamCheck)) {
-            print "SPAM CHECK!<br />";
             $this->formFields['PtCaptchaInputField'] = array(
                 'type'              => 'PtCaptchaInputField',
                 'title'             => _t('CustomHtmlFormField.PtCaptchaInputField_Title'),
