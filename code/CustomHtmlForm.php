@@ -1693,17 +1693,18 @@ class CustomHtmlForm extends Form {
      * @return array
      */
     public function getFormFields($withUpdate = true) {
-        if (is_null($this->class)) {
-            $this->class = get_class($this);
-        }
-        if (!$this->injectedSpecialFormFields) {
-            $this->injectedSpecialFormFields = true;
-            $this->injectSpecialFormFields();
-        }
-        if ($withUpdate &&
-           !$this->updatedFormFields) {
-            $this->updatedFormFields = true;
-            $this->extend('updateFormFields', $this->formFields);
+        if (!is_null($this->class)) {
+            if (!$this->injectedSpecialFormFields) {
+                $this->injectedSpecialFormFields = true;
+                $this->injectSpecialFormFields();
+            }
+
+            if ($withUpdate &&
+               !$this->updatedFormFields) {
+
+                $this->updatedFormFields = true;
+                $this->extend('updateFormFields', $this->formFields);
+            }
         }
 
         return $this->formFields;
@@ -1917,7 +1918,7 @@ class CustomHtmlForm extends Form {
      */
     public function CustomHtmlFormFieldsByGroup($groupName, $template = null, $argument1 = null) {
         $fieldGroup = new DataObjectSet();
-        
+
         if ($this->extend('overwriteCustomHtmlFormFieldsByGroup', $groupName, $template, $fieldGroup, $argument1)) {
             return $fieldGroup;
         }
