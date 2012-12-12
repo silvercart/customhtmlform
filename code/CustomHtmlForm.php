@@ -32,11 +32,18 @@
 class CustomHtmlForm extends Form {
 
     /**
-     * Contains the cached form fields from $this->getFormFields().
+     * Indicator to check whether the special form fields are already injected
      *
-     * @var array
+     * @var bool
      */
-    protected $cachedFormFields = null;
+    protected $injectedSpecialFormFields = false;
+
+    /**
+     * Indicator to check whether the form fields are already updated by decorators
+     *
+     * @var bool
+     */
+    protected $updatedFormFields = false;
 
     /**
      * Set to true to provide a spam check field
@@ -1687,19 +1694,19 @@ class CustomHtmlForm extends Form {
      */
     public function getFormFields($withUpdate = true) {
         if (is_null($this->class)) {
-            return false;
+            $this->class = get_class($this);
         }
-        if(is_null($this->cachedFormFields)) {
+        if (!$this->injectedSpecialFormFields) {
+            $this->injectedSpecialFormFields = true;
             $this->injectSpecialFormFields();
-
-            if ($withUpdate && !empty($this->class)) {
-                $this->extend('updateFormFields', $this->formFields);
-            }
-
-            $this->cachedFormFields = $this->formFields;
+        }
+        if ($withUpdate &&
+           !$this->updatedFormFields) {
+            $this->updatedFormFields = true;
+            $this->extend('updateFormFields', $this->formFields);
         }
 
-        return $this->cachedFormFields;
+        return $this->formFields;
     }
 
     /**
@@ -2883,12 +2890,10 @@ class CustomHtmlForm extends Form {
 
         if (!is_null($request)) {
             foreach ($formFields as $fieldName => $fieldDefinition) {
-                if (array_key_exists($fieldName, $request)) {
-                    $requestString .= $fieldName . ':' . $request[$fieldName] . ';';
-                }
+                $requestString .= $fieldName . ':' . $request[$fieldName] . ';';
             }
         }
-
+        
         $requestString = $requestString.'_'.Translatable::get_current_locale();
 
         $this->cacheKey .= sha1($requestString);
@@ -2980,11 +2985,11 @@ class CustomHtmlForm extends Form {
      * @return string
      */
     public function getCachedFormOutput() {
+        $cachedFormOutput = '';
         if ($this->excludeFromCache === false) {
             $cache = self::getCache();
-            return $cache->load($this->getCacheKey());
+            $cachedFormOutput = $cache->load($this->getCacheKey());
         }
-
-        return '';
+        return $cachedFormOutput;
     }
 }
