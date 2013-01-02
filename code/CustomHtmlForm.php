@@ -83,14 +83,14 @@ class CustomHtmlForm extends Form {
      *
      * @var array
      */
-    protected $errorMessages;
+    protected $errorMessages = array();
 
     /**
      * contains the messages for a form
      *
      * @var array
      */
-    protected $messages;
+    protected $messages = array();
 
     /**
      * Contains an associative array with values that are passed to the form as
@@ -1402,7 +1402,6 @@ class CustomHtmlForm extends Form {
             );
             $field->value = $fieldDefinition['value'];
         } else if ($fieldDefinition['type'] == 'TextField' ||
-                   $fieldDefinition['type'] == 'SilvercartTextField' ||
                    $fieldDefinition['type'] == 'EmailField' ||
                    $fieldDefinition['type'] == 'PtCaptchaField') {
             $field = new $fieldDefinition['type'](
@@ -1658,7 +1657,7 @@ class CustomHtmlForm extends Form {
                 $metadata .= sprintf(
                     '<input type="hidden" id="%s" name="SecurityID" value="%s" />',
                     $this->FormName().'_SecurityID',
-                    $this->getSecurityID()
+                    SecurityToken::inst()->getValue()
                 );
             }
         }
@@ -1849,8 +1848,8 @@ class CustomHtmlForm extends Form {
         // make validation errors in the template evaluable
         // aufgetretene Validierungsfehler in Template auswertbar machen
         $data = array(
-            'errorMessages' => new DataList($this->errorMessages),
-            'messages'      => new DataList($this->messages)
+            'errorMessages' => new ArrayList($this->errorMessages),
+            'messages'      => new ArrayList($this->messages)
         );
 
         $defaultTemplatePath = '/customhtmlform/templates/forms/CustomHtmlFormErrorMessages.ss';
