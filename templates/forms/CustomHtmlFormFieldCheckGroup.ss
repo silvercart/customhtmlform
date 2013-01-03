@@ -1,4 +1,4 @@
-<div id="{$FormName}_{$FieldName}_Box" class="type-select<% if errorMessage %> error<% end_if %><% if isRequiredField %> requiredField<% end_if %>">
+<div id="{$FormName}_{$FieldName}_Box" class="type-check<% if errorMessage %> error<% end_if %><% if isRequiredField %> requiredField<% end_if %>">
     <% if errorMessage %>
         <div class="errorList">
             <% with errorMessage %>

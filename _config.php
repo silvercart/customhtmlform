@@ -26,3 +26,22 @@ Requirements::set_write_js_to_body(false); // write javascriptcode into the html
 
 DataObject::add_extension('ContentController', 'CustomHtmlFormPage_Controller');
 DataObject::add_extension('Security',          'CustomHtmlFormPage_Controller');
+
+$cacheBaseDir   = getTempFolder() . DIRECTORY_SEPARATOR . 'cache';
+$cacheDir       = $cacheBaseDir . DIRECTORY_SEPARATOR . 'CustomHtmlForm';
+if (!is_dir($cacheDir)) {
+    if (!is_dir($cacheBaseDir)) {
+        mkdir($cacheBaseDir);
+    }
+    mkdir($cacheDir);
+}
+SS_Cache::set_cache_lifetime('CustomHtmlForm', 86400);
+SS_Cache::add_backend(
+        'CustomHtmlForm',
+        'File',
+        array(
+            'cache_dir'                 => $cacheDir,
+            'hashed_directory_level'    => 3,
+        )
+);
+SS_Cache::pick_backend('CustomHtmlForm', 'CustomHtmlForm');

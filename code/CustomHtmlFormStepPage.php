@@ -44,25 +44,6 @@ class CustomHtmlFormStepPage extends Page {
         'showCancelLink'    => 'Boolean(1)',
         'cancelPageID'      => 'Varchar(255)'
     );
-
-    /**
-     * list of URL from which the step form can be call without resetting the form
-     *
-     * @var array
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 19.11.2010
-     */
-    public $allowedOutsideReferers = array(
-        '/de/cgi-bin/webscr',
-        '/de/cgi-bin/merchantpaymentweb',
-        '/auktion-erstellen/customHtmlFormSubmit',
-        '/auktion-erstellen/uploadifyUpload',
-        '/auktion-erstellen/uploadifyRefresh',
-        '/auktion-erstellen/uploadifyRemoveFile',
-        '/webshop/checkout/customHtmlFormSubmit'
-    );
     
     /**
      * defines the CMS interface for $this
@@ -182,15 +163,10 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      *
      * @return void
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
-     * @since 25.10.2010
+     * @author Sascha Koehler <skoehler@pixeltricks.de>, Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 06.12.2012
      */
     public function init() {
-        if ($this->isStepPageCalledFromOutside()) {
-            $this->deleteSessionData(false);
-        }
-
         $this->initialiseSessionData();
         $this->generateStepMapping();
 
@@ -744,6 +720,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
                         'stepIsCompleted' => $this->isStepCompleted($stepIdx),
                         'isCurrentStep'   => $isCurrentStep,
                         'stepNr'          => $stepIdx,
+                        'visibleStepNr'   => $nrOfVisibleSteps + 1,
                         'step'            => new $stepClassName($this, null, null ,false)
                     );
                     
@@ -1132,65 +1109,5 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         }
         
         return $templateDir;
-    }
-
-    /**
-     * Has the step page been called by itself or from the outside?
-     *
-     * @return void
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 19.11.2010
-     */
-    protected function isStepPageCalledFromOutside() {
-        $callFromOutside = true;
-        $requestUri      = $_SERVER['REQUEST_URI'];
-
-        if (isset($_SERVER['HTTP_REFERER'])) {
-            $parsedRefererUrl = parse_url($_SERVER['HTTP_REFERER']);
-            $refererUri       = $parsedRefererUrl['path'];
-
-            if (strpos($requestUri, '?') !== false) {
-                $requestUriElems = explode('?', $requestUri);
-                $requestUri      = $requestUriElems[0];
-            }
-
-            if (substr($refererUri, -1) != '/') {
-                $refererUri .= '/';
-            }
-            if (substr($requestUri, -1) != '/') {
-                $requestUri .= '/';
-            }
-
-            if ($refererUri === substr($requestUri, 0, strlen($refererUri))) {
-                $callFromOutside = false;
-            }
-
-            // did a member of the whitelist make this call?
-            // Pruefen, ob der Aufruf durch ein Whitelist-Mitglied durchgefuehrt
-            // wurde.
-            if ($callFromOutside) {
-                foreach ($this->allowedOutsideReferers as $allowedOutsideReferer) {
-                    $allowedRefererUrl = parse_url($allowedOutsideReferer);
-                    $allowedRefererUri = $allowedRefererUrl['path'];
-
-                    if (substr($refererUri, -1) == '/') {
-                        if (substr($allowedRefererUri, -1) != '/') {
-                            $allowedRefererUri .= '/';
-                        }
-                    }
-
-                    if ($refererUri === substr($allowedRefererUri, 0, strlen($refererUri))) {
-                        $callFromOutside = false;
-                        break;
-                    }
-                }
-            }
-        } else {
-            $callFromOutside = false;
-        }
-
-        return $callFromOutside;
     }
 }

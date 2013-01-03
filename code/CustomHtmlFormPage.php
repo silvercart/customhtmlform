@@ -29,7 +29,7 @@
  * @since 25.10.2010
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
-class CustomHtmlFormPage_Controller extends DataExtension {
+class CustomHtmlFormPage_Controller extends DataObjectDecorator {
 
     /**
      * defines allowed methods
@@ -42,7 +42,10 @@ class CustomHtmlFormPage_Controller extends DataExtension {
      * @var array
      */
     public static $allowed_actions = array(
-        'customHtmlFormSubmit'
+        'customHtmlFormSubmit',
+        'uploadifyUpload',
+        'uploadifyRefresh',
+        'uploadifyRemoveFile'
     );
 
     /**
@@ -205,12 +208,11 @@ class CustomHtmlFormPage_Controller extends DataExtension {
      *
      * @return CustomHtmlForm
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
-     * @since 25.10.2010
+     * @author Sascha Koehler <skoehler@pixeltricks.de>, Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 22.11.2012
+     * 
      */
     public function InsertCustomHtmlForm($formIdentifier, $renderWithObject = null) {
-
         if (!isset($this->registeredCustomHtmlForms[$formIdentifier])) {
             throw new Exception(
                 sprintf(
@@ -219,39 +221,42 @@ class CustomHtmlFormPage_Controller extends DataExtension {
                 )
             );
         }
+        $outputForm = $this->registeredCustomHtmlForms[$formIdentifier]->getCachedFormOutput();
+        if (empty($outputForm)) {
+            // Inject controller
+            $customFields = array(
+                'Controller' => $this->owner
+            );
 
-        // Inject controller
-        $customFields = array(
-            'Controller' => $this->owner
-        );
-
-        if ($renderWithObject !== null) {
-            if (is_array($renderWithObject)) {
-                foreach ($renderWithObject as $renderWithSingleObject) {
-                    if ($renderWithSingleObject instanceof DataObject) {
-                        if (isset($customFields)) {
-                            $customFields = array_merge($customFields, $renderWithSingleObject->getAllFields());
-                        } else {
-                            $customFields = $renderWithSingleObject->getAllFields();
+            if ($renderWithObject !== null) {
+                if (is_array($renderWithObject)) {
+                    foreach ($renderWithObject as $renderWithSingleObject) {
+                        if ($renderWithSingleObject instanceof DataObject) {
+                            if (isset($customFields)) {
+                                $customFields = array_merge($customFields, $renderWithSingleObject->getAllFields());
+                            } else {
+                                $customFields = $renderWithSingleObject->getAllFields();
+                            }
+                            unset($customFields['ClassName']);
+                            unset($customFields['RecordClassName']);
                         }
+                    }
+                } else {
+                    if ($renderWithObject instanceof DataObject) {
+                        $customFields = $renderWithObject->getAllFields();
                         unset($customFields['ClassName']);
                         unset($customFields['RecordClassName']);
                     }
                 }
-            } else {
-                if ($renderWithObject instanceof DataObject) {
-                    $customFields = $renderWithObject->getAllFields();
-                    unset($customFields['ClassName']);
-                    unset($customFields['RecordClassName']);
-                }
             }
-        }
 
-        $outputForm = $this->registeredCustomHtmlForms[$formIdentifier]->customise($customFields)->renderWith(
-            array(
-                $this->registeredCustomHtmlForms[$formIdentifier]->class,
-            )
-        );
+            $outputForm = $this->registeredCustomHtmlForms[$formIdentifier]->customise($customFields)->renderWith(
+                array(
+                    $this->registeredCustomHtmlForms[$formIdentifier]->class,
+                )
+            );
+            $this->registeredCustomHtmlForms[$formIdentifier]->setCachedFormOutput($outputForm);
+        }
 
         return $outputForm;
     }
@@ -266,6 +271,8 @@ class CustomHtmlFormPage_Controller extends DataExtension {
      * @since 25.10.2010
      */
     public function onBeforeInit() {
+        Validator::set_javascript_validation_handler('none');
+
         if (!$this->owner instanceof Security ||
              $this->owner->urlParams['Action'] != 'ping') {
             // -------------------------------------------------------------------
@@ -372,7 +379,83 @@ class CustomHtmlFormPage_Controller extends DataExtension {
         if ($registeredCustomHtmlFormObj instanceof CustomHtmlForm) {
             return $registeredCustomHtmlFormObj->submit($form, null);
         } else {
-            $this->owner->redirectBack();
+            if ($this->owner->request->requestVar('_REDIRECT_BACK_URL')) {
+                $url = $this->owner->request->requestVar('_REDIRECT_BACK_URL');
+            } elseif ($this->owner->request->getHeader('Referer')) {
+                $url = $this->owner->request->getHeader('Referer');
+            } else {
+                $url = Director::baseURL();
+            }
+            
+            if (substr($url, -20) == 'customHtmlFormSubmit') {
+                $url = substr($url, 0, -20);
+            }
+            
+            // absolute redirection URLs not located on this site may cause phishing
+            if (Director::is_site_url($url)) {
+                $this->owner->redirect($url);
+            }
+        }
+    }
+
+    /**
+     * wrapper for action to uploadify field
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 03.11.2010
+     */
+    public function uploadifyUpload() {
+
+        $fieldReference = $this->getFieldObject();
+
+        if ($fieldReference != '') {
+            $result = $fieldReference->upload();
+            return $result;
+        } else {
+            return -1;
+        }
+    }
+
+    /**
+     * wrapper for action to uploadify field
+     *
+     * @param SS_HTTPRequest $request the request parameter
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 03.11.2010
+     */
+    public function uploadifyRefresh(SS_HTTPRequest $request) {
+        $fieldReference = $this->getFieldObject();
+
+        if ($fieldReference != '') {
+            return $fieldReference->refresh($request);
+        } else {
+            return -1;
+        }
+    }
+
+    /**
+     * wrapper for action to uploadify field
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @copyright 2010 pixeltricks GmbH
+     * @since 03.11.2010
+     */
+    public function uploadifyRemoveFile() {
+        $fieldReference = $this->getFieldObject();
+
+        if ($fieldReference != '') {
+            return $fieldReference->removefile();
+        } else {
+            return -1;
         }
     }
 
