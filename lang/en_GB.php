@@ -23,15 +23,7 @@
  * @ignore
  */
 
-i18n::include_locale_file('customhtmlform', 'en_US');
-
 global $lang;
-
-if (array_key_exists('en_GB', $lang) && is_array($lang['en_GB'])) {
-    $lang['en_GB'] = array_merge($lang['en_US'], $lang['en_GB']);
-} else {
-    $lang['en_GB'] = $lang['en_US'];
-}
 
 $lang['en_GB']['CustomHtmlForm']['REQUIRED_FIELD_MARKER'] = '<span class="required-field">[ Required ]</span>';
 

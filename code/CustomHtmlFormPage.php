@@ -29,7 +29,7 @@
  * @since 25.10.2010
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
-class CustomHtmlFormPage_Controller extends DataObjectDecorator {
+class CustomHtmlFormPage_Controller extends DataExtension {
 
     /**
      * defines allowed methods
@@ -271,7 +271,6 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
      * @since 25.10.2010
      */
     public function onBeforeInit() {
-        Validator::set_javascript_validation_handler('none');
 
         if (!$this->owner instanceof Security ||
              $this->owner->urlParams['Action'] != 'ping') {

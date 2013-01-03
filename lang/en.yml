@@ -1,8 +1,20 @@
 en:
   CustomHtmlForm:
     REQUIRED_FIELD_MARKER: "<span class=\"required-field\">[ Required ]</span>"
+  CustomHtmlFormConfiguration:
+    PLURALNAME: "Form configuration"
+    SINGULARNAME: "Form configuration"
+    SpamCheck_height: "Height in pixels"
+    SpamCheck_jpgQuality: "JPG quality setting for the rendering of the captcha image (0 [worst] to 100 [best])"
+    SpamCheck_numberOfCharsInCaptcha: "Number of characters in the captcha"
+    SpamCheck_width: "Width in pixels"
+  CustomHtmlFormConfigurationAdmin:
+    TAB_SPAMCHECK: "Captcha"
   CustomHtmlFormErrorMessages:
     CHECK_FIELDS: "Please check your input on the following fields:"
+  CustomHtmlFormField:
+    PtCaptchaImageField_Title: "Enter this captcha code in the following field please:"
+    PtCaptchaInputField_Title: "Captcha code:"
   CustomHtmlFormStepPage:
     BASE_NAME: "base name for form object and template files: "
     CANCEL_TARGET: "To which page should the cancel link direct: "
@@ -18,9 +30,14 @@ en:
     HASNOSPECIALSIGNS: "This field must contain special signs (other signs than letters, numbers and the signs \"@\" and \".\")."
     HASSPECIALSIGNS: "This field must not contain special signs (letters, numbers and the signs \"@\" and \".\")."
     MANDATORYFIELD: "This field must be filled in."
+    MAX_DECIMAL_PLACES_ALLOWED_: "This field can not have more than %s decimal places."
     MIN_CHARS: "Enter at least %s characters."
     MUSTBEEMAILADDRESS: "Please enter a valid email address."
     MUSTNOTBEEMAILADDRESS: "Please don't enter an email address."
     NUMBERS_ONLY: "This field may consist of numbers only."
+    QUANTITY_ONLY: "This field may consist of numbers and \".\" or \",\" only."
     REQUIRES_OTHER_VALUE_AS_IN_FIELD: "This field may not have the same value as field \"%s\"."
     REQUIRES_SAME_VALUE_AS_IN_FIELD: "Please enter the same value as in field \"%s\"."
+  SilvercartCustomHtmlFormAdmin:
+    PLURALNAME: "Forms"
+    SINGULARNAME: "Forms"

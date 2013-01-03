@@ -48,7 +48,7 @@ class CustomHtmlFormStepPage extends Page {
     /**
      * defines the CMS interface for $this
      * 
-     * @return FieldSet
+     * @return FieldList
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
      * @copyright 2010 pxieltricks GmbH

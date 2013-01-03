@@ -85,8 +85,8 @@ class CustomHtmlForm extends Form {
      *
      * scheme:
      * $SSformFields = array(
-     *     'fields' => array(FieldSet),
-     *     'actions' => array(FieldSet)
+     *     'fields' => array(FieldList),
+     *     'actions' => array(FieldList)
      * );
      *
      * @var array
@@ -290,8 +290,8 @@ class CustomHtmlForm extends Form {
         parent::__construct(
             $this->getFormController($controller, $preferences),
             $name,
-            new FieldSet(),
-            new FieldSet()
+            new FieldList(),
+            new FieldList()
         );
         
         // Hook for setting preferences via a method call; we need to do this
@@ -1364,8 +1364,8 @@ class CustomHtmlForm extends Form {
      *
      * @return array retunrs form fields and form actions
      *      array(
-     *          'fields'    => FieldSet,
-     *          'actions'   => FieldSet
+     *          'fields'    => FieldList,
+     *          'actions'   => FieldList
      *      )
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>, Sebastian Diel <sdiel@pixeltricks.de>
@@ -1373,7 +1373,7 @@ class CustomHtmlForm extends Form {
      */
     protected function getForm() {
         if (is_null($this->form)) {
-            $fields = new FieldSet();
+            $fields = new FieldList();
 
             // --------------------------------------------------------------------
             // define meta data
@@ -1409,7 +1409,7 @@ class CustomHtmlForm extends Form {
             );
             $formAction->description = $this->getSubmitButtonToolTip();
 
-            $actions = new FieldSet(
+            $actions = new FieldList(
                 $formAction
             );
 
@@ -1838,7 +1838,7 @@ class CustomHtmlForm extends Form {
      */
     public function getSecurityID() {
         SecurityToken::enable();
-        return parent::getSecurityID();
+        return SecurityToken::inst()->getValue();
     }
 
     /**
@@ -1855,12 +1855,12 @@ class CustomHtmlForm extends Form {
         $metadata = '';
 
         // form name
-        $metadata .= $this->dataFieldByName('CustomHtmlFormName')->Field();
+        $metadata .= $this->Fields()->dataFieldByName('CustomHtmlFormName')->Field();
         
         // SecurityID
         if ($this->securityTokenEnabled) {
-            if ($this->dataFieldByName('SecurityID')) {
-                $metadata .= $this->dataFieldByName('SecurityID')->Field();
+            if ($this->Fields()->dataFieldByName('SecurityID')) {
+                $metadata .= $this->Fields()->dataFieldByName('SecurityID')->Field();
             } else {
                 $metadata .= sprintf(
                     '<input type="hidden" id="%s" name="SecurityID" value="%s" />',
@@ -1874,7 +1874,7 @@ class CustomHtmlForm extends Form {
         // Eigene Datenfelder
         if (!empty($this->customParameters)) {
             foreach ($this->customParameters as $customParameterKey => $customParameterValue) {
-                $metadata .= $this->dataFieldByName($customParameterKey)->Field();
+                $metadata .= $this->Fields()->dataFieldByName($customParameterKey)->Field();
             }
         }
 
@@ -2899,7 +2899,7 @@ class CustomHtmlForm extends Form {
 
         $this->cacheKey .= sha1($requestString);
         if (SecurityToken::is_enabled()) {
-            $this->cacheKey .= $this->getSecurityID();
+            $this->cacheKey .= SecurityToken::inst()->getValue();
         }
         if ($this->hasCacheKeyExtension()) {
             $this->cacheKey .= $this->getCacheKeyExtension();

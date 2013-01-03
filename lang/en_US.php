@@ -22,16 +22,8 @@
  * @subpackage i18n
  * @ignore
  */
+
 global $lang;
-
-
-
-
-
-
-
-
-
 
 $lang['en_US']['CustomHtmlForm']['REQUIRED_FIELD_MARKER'] = '<span class="required-field">[ Required ]</span>';
 

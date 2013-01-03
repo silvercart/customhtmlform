@@ -178,14 +178,14 @@ class CustomHtmlFormConfiguration extends DataObject {
     /**
      * Create CMS fields
      *
-     * @return FieldSet
+     * @return FieldList
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
      * @since 2012-12-10
      */
     public function getCMSFields() {
         $parentFields = parent::getCMSFields();
-        $CMSFields    = new FieldSet(
+        $CMSFields    = new FieldList(
             $rootTab  = new TabSet(
                 'Root',
                 $generalTab = new TabSet(
