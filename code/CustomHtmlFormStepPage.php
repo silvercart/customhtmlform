@@ -80,9 +80,9 @@ class CustomHtmlFormStepPage extends Page {
         $cancelLinkField     = new TreeDropdownField('cancelPageID', _t('CustomHtmlFormStepPage.CANCEL_TARGET', 'To which page should the cancel link direct: ', null, 'Auf welche Seite soll der Abbrechen-Link fuehren: '), 'SiteTree');
 
         $fields = parent::getCMSFields();
-        $fields->addFieldToTab('Root.Content.MultistepConfiguration', $basenameField);
-        $fields->addFieldToTab('Root.Content.MultistepConfiguration', $showCancelLinkField);
-        $fields->addFieldToTab('Root.Content.MultistepConfiguration', $cancelLinkField);
+        $fields->addFieldToTab('Root.MultistepConfiguration', $basenameField);
+        $fields->addFieldToTab('Root.MultistepConfiguration', $showCancelLinkField);
+        $fields->addFieldToTab('Root.MultistepConfiguration', $cancelLinkField);
 
         return $fields;
     }
