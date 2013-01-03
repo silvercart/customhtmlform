@@ -709,6 +709,28 @@ class CustomHtmlForm extends Form {
     }
 
     /**
+     * Returns whether the given type is a textarea field.
+     *
+     * @param string $type The type to check
+     *
+     * @return boolean
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 2013-01-03
+     */
+    public function isTextareaField($type) {
+        $isField = false;
+
+        if ($type == 'TextareaField' ||
+            in_array('TextareaField', class_parents($type))) {
+
+            $isField = true;
+        }
+
+        return $isField;
+    }
+
+    /**
      * Set a form field.
      *
      * @param string $identifier      The identifier of the field
@@ -1484,6 +1506,7 @@ class CustomHtmlForm extends Form {
             'selectedValue'         => '',
             'size'                  => null,
             'multiple'              => null,
+            'tabIndex'              => 1,
             'form'                  => $this,
             'maxLength'             => $this->isTextField($fieldDefinition['type']) ? 255 : null,
         );
@@ -1580,7 +1603,7 @@ class CustomHtmlForm extends Form {
                     $field->setConfig($key, $value);
                 }
             }
-        } else if ($fieldDefinition['type'] == 'TextareaField') {
+        } else if ($this->isTextareaField($fieldDefinition['type'])) {
 
             if (!isset($fieldDefinition['rows'])) {
                 $fieldDefinition['rows'] = 10;
@@ -1668,6 +1691,8 @@ class CustomHtmlForm extends Form {
         } else {
             $field->isRequiredField = false;
         }
+
+        $field->setTabIndex($fieldDefinition['tabIndex']);
 
         return $field;
     }
