@@ -1727,7 +1727,7 @@ class CustomHtmlForm extends Form {
                 'checkRequirements' => array
                 (
                     'isFilledIn'        => true,
-                    'hasLength'         => 8,
+                    'hasLength'         => CustomHtmlFormConfiguration::SpamCheck_numberOfCharsInCaptcha(),
                     'PtCaptchaInput'    => true
                 )
             );
