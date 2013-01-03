@@ -247,6 +247,9 @@ HTML;
         // generate a picture file that displays the random string
         if ($this->generateImage($this->temp_dir.'/'.'cap_'.$captchaIdentifier.'.jpg', $captcha_str)) {
 
+            if (!is_array($_SESSION)) {
+                $_SESSION = array();
+            }
             if (!array_key_exists('CustomHtmlForm', $_SESSION)) {
                 $_SESSION['CustomHtmlForm'] = array();
             }
