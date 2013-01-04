@@ -1070,6 +1070,7 @@ class CustomHtmlForm extends Form {
         $formData = $this->getFormData($data);
         $this->checkFormData($formData);
         $result = null;
+
         ob_start();
         if (empty($this->errorMessages)) {
             $this->setSubmitSuccess(true);
