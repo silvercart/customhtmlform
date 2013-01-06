@@ -38,6 +38,3 @@ de:
     QUANTITY_ONLY: "Dieses Feld darf nur Zahlen sowie \".\" und \",\" enthalten."
     REQUIRES_OTHER_VALUE_AS_IN_FIELD: "Dieses Feld darf nicht den gleichen Wert wie das Feld \"%s\" haben."
     REQUIRES_SAME_VALUE_AS_IN_FIELD: "Bitte geben Sie den gleichen Wert ein wie im Feld \"%s\"."
-  SilvercartCustomHtmlFormAdmin:
-    PLURALNAME: "Formulare"
-    SINGULARNAME: "Formulare"

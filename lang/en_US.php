@@ -63,6 +63,3 @@ $lang['en_US']['CustomHtmlFormErrorMessages']['CHECK_FIELDS'] = 'Please check yo
 
 $lang['en_US']['CustomHtmlFormField']['PtCaptchaImageField_Title'] = 'Enter this captcha code in the following field please:';
 $lang['en_US']['CustomHtmlFormField']['PtCaptchaInputField_Title'] = 'Captcha code:';
-
-$lang['en_US']['SilvercartCustomHtmlFormAdmin']['PLURALNAME'] = 'Forms';
-$lang['en_US']['SilvercartCustomHtmlFormAdmin']['SINGULARNAME'] = 'Forms';
