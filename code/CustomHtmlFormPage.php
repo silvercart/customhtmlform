@@ -278,7 +278,7 @@ class CustomHtmlFormPage_Controller extends DataExtension {
             // load scripts
             // -------------------------------------------------------------------
             Requirements::block(THIRDPARTY_DIR.'/jquery/jquery.js');
-            Requirements::insertHeadTags('<meta http-equiv="Content-language" content="' . i18n::get_locale() . '" />');
+            Requirements::insertHeadTags('<meta http-equiv="Content-language" content="' . i18n::get_locale() . '" />', 'CustomHtmlFormContentLanguageTag');
             Requirements::javascript('customhtmlform/script/jquery.js');
             Requirements::javascript('customhtmlform/script/jquery.scrollTo.min.js');
             Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.checkFormData.js');
