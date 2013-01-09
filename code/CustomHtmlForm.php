@@ -606,7 +606,6 @@ class CustomHtmlForm extends Form {
             $type == 'SilvercartCheckoutOptionsetField' ||
             $type == 'SilvercartShippingOptionsetField' ||
             $type == 'OptionsetField' ||
-            $type == 'SelectionGroup' ||
             in_array('OptionsetField', class_parents($type)) ||
             in_array('DropdownField', class_parents($type))) {
 
