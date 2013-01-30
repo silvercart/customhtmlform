@@ -1084,7 +1084,7 @@ class CustomHtmlForm extends Form {
         $output = ob_get_contents();
         ob_end_clean();
 
-        if (!Director::redirected_to() &&
+        if (!Controller::curr()->redirectedTo() &&
             empty($result) &&
             !empty($output)) {
             Controller::curr()->redirectBack();
