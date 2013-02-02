@@ -233,9 +233,9 @@ class CustomHtmlFormPage_Controller extends DataExtension {
                     foreach ($renderWithObject as $renderWithSingleObject) {
                         if ($renderWithSingleObject instanceof DataObject) {
                             if (isset($customFields)) {
-                                $customFields = array_merge($customFields, $renderWithSingleObject->getAllFields());
+                                $customFields = array_merge($customFields, $renderWithSingleObject->toMap());
                             } else {
-                                $customFields = $renderWithSingleObject->getAllFields();
+                                $customFields = $renderWithSingleObject->toMap();
                             }
                             unset($customFields['ClassName']);
                             unset($customFields['RecordClassName']);
@@ -243,7 +243,7 @@ class CustomHtmlFormPage_Controller extends DataExtension {
                     }
                 } else {
                     if ($renderWithObject instanceof DataObject) {
-                        $customFields = $renderWithObject->getAllFields();
+                        $customFields = $renderWithObject->toMap();
                         unset($customFields['ClassName']);
                         unset($customFields['RecordClassName']);
                     }
