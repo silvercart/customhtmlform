@@ -696,10 +696,12 @@ class CustomHtmlForm extends Form {
     public function isTextField($type) {
         $isField = false;
 
-        if ($type == 'TextField' ||
+        if ($type != 'PtCaptchaImageField' &&
+            ($type == 'TextField' ||
             $type == 'SilvercartTextField' ||
             $type == 'EmailField' ||
-            $type == 'PtCaptchaInputField') {
+            $type == 'PtCaptchaInputField' ||
+            in_array('TextField', class_parents($type)))) {
 
             $isField = true;
         }
