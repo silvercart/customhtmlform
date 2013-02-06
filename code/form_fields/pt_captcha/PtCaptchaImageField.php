@@ -58,13 +58,13 @@ class PtCaptchaImageField extends TextField {
     function __construct($name, $title = null, $value = null, $form = null, $rightTitle = null) {
         parent::__construct($name, $title, $value, $form, $rightTitle);
 
-        $this->modulePath       = Director::baseFolder().'/customhtmlform/form_fields/pt_captcha';
+        $this->modulePath       = Director::baseFolder().'/customhtmlform/code/form_fields/pt_captcha';
         $this->temp_dir         = TEMP_FOLDER;
         $this->width            = CustomHtmlFormConfiguration::SpamCheck_width();
         $this->height           = CustomHtmlFormConfiguration::SpamCheck_height();
         $this->jpg_quality      = CustomHtmlFormConfiguration::SpamCheck_jpgQuality();
         $this->nr_of_chars      = CustomHtmlFormConfiguration::SpamCheck_numberOfCharsInCaptcha();
-        $this->font             = $this->modulePath.'/fonts/Aller_Rg.ttf';
+        $this->font             = Director::baseFolder().'/customhtmlform/fonts/Aller_Rg.ttf';
         $this->formIdentifier   = $form->name.$this->Name();
     }
 
