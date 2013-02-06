@@ -33,38 +33,83 @@
  */
 class PtCaptchaImageField extends TextField {
 
+    /**
+     * Request chached field markup
+     *
+     * @var string
+     */
     protected $cachedField = null;
+    
+    /**
+     * Identifier
+     *
+     * @var string 
+     */
     protected $formIdentifier;
+    
+    /**
+     * Temporary dir
+     *
+     * @var string
+     */
     protected $temp_dir;
+    
+    /**
+     * Width of the captcha
+     *
+     * @var int
+     */
     protected $width;
+    
+    /**
+     * height of the captcha
+     *
+     * @var int
+     */
     protected $height;
+    
+    /**
+     * Quality of the captcha
+     *
+     * @var int
+     */
     protected $jpg_quality;
+    
+    /**
+     * Font of the captcha
+     *
+     * @var int
+     */
     protected $font;
+    
+    /**
+     * number of chars
+     *
+     * @var int
+     */
     protected $nr_of_chars;
-    protected $modulePath = '';
 
     /**
-     * Setzt die Defaultwerte fuer das Feld.
+     * Initializes the field.
      *
-     * @param string $name
-     * @param string $title
-     * @param mixed $value
-     * @param Form $form
-     * @param string $rightTitle
+     * @param string $name       Name of the field
+     * @param string $title      Title of the field
+     * @param mixed  $value      Value of the field
+     * @param Form   $form       Form to relate field with
+     * @param string $rightTitle Right title (additional description) of the field
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 10.12.2012
+     * @author Sascha Koehler <skoehler@pixeltricks.de>, Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 06.02.2013
      */
-    function __construct($name, $title = null, $value = null, $form = null, $rightTitle = null) {
+    public function __construct($name, $title = null, $value = null, $form = null, $rightTitle = null) {
         parent::__construct($name, $title, $value, $form, $rightTitle);
 
-        $this->modulePath       = Director::baseFolder().'/customhtmlform/code/form_fields/pt_captcha';
         $this->temp_dir         = TEMP_FOLDER;
         $this->width            = CustomHtmlFormConfiguration::SpamCheck_width();
         $this->height           = CustomHtmlFormConfiguration::SpamCheck_height();
         $this->jpg_quality      = CustomHtmlFormConfiguration::SpamCheck_jpgQuality();
         $this->nr_of_chars      = CustomHtmlFormConfiguration::SpamCheck_numberOfCharsInCaptcha();
-        $this->font             = Director::baseFolder().'/customhtmlform/fonts/Aller_Rg.ttf';
+        $this->font             = Director::baseFolder() . '/customhtmlform/fonts/Aller_Rg.ttf';
         $this->formIdentifier   = $form->name.$this->Name();
     }
 
@@ -123,12 +168,12 @@ HTML;
     /**
      * Validate by submitting to external service
      *
-     * @param Validator $validator
+     * @param Validator $validator Validator
      *
      * @return boolean
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 10.12.2012
+     * @author Sascha Koehler <skoehler@pixeltricks.de>, Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 06.02.2013
      */
     public function validate($validator) {
         $checkValue     = $_REQUEST[$this->name.'Field'];
@@ -157,13 +202,13 @@ HTML;
     /**
      * Generates Image file for captcha
      *
-     * @param string $location
-     * @param string $char_seq
+     * @param string $location Location
+     * @param string $char_seq Sequence of characters
      *
      * @return boolean true
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 10.12.2012
+     * @author Sascha Koehler <skoehler@pixeltricks.de>, Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 06.02.2013
      */
     protected function generateImage($location, $char_seq) {
         $num_chars = strlen($char_seq);
@@ -221,10 +266,10 @@ HTML;
      *
      * @return mixed boolean false|string
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 10.12.2012
+     * @author Sascha Koehler <skoehler@pixeltricks.de>, Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 06.02.2013
      */
-    function getPic($num_chars=8) {
+    public function getPic($num_chars=8) {
         // define characters of which the captcha can consist
         $alphabet = array(
             'A','B','C','D','E','F','G','H','J','K','M',

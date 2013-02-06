@@ -243,6 +243,11 @@ class CustomHtmlForm extends Form {
      */
     protected $form = null;
 
+    /**
+     * Indicates whether the form is called in barebone mode
+     *
+     * @var bool
+     */
     protected $barebone = null;
 
     /**
