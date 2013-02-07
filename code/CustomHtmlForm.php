@@ -53,6 +53,27 @@ class CustomHtmlForm extends Form {
     public static $useSpamCheck = array();
 
     /**
+     * Set to true to use a custom tabindex order for the forms fields
+     *
+     * @var array
+     */
+    protected $useCustomTabIndex = false;
+
+    /**
+     * Holds the highest tab index
+     *
+     * @var array
+     */
+    protected $highestTabIndex = 0;
+    
+    /**
+     * Holds the forms using custom tabindexes
+     *
+     * @var int
+     */
+    public static $customTabIndexForms = array();
+
+    /**
      * Set to true to exclude this form from caching.
      *
      * @var bool
@@ -1513,7 +1534,7 @@ class CustomHtmlForm extends Form {
             'selectedValue'         => '',
             'size'                  => null,
             'multiple'              => null,
-            'tabIndex'              => 1,
+            'tabIndex'              => 0,
             'form'                  => $this,
             'maxLength'             => $this->isTextField($fieldDefinition['type']) ? 255 : null,
         );
@@ -1699,7 +1720,20 @@ class CustomHtmlForm extends Form {
             $field->isRequiredField = false;
         }
 
-        $field->setTabIndex($fieldDefinition['tabIndex']);
+        if ($this->useCustomTabIndex()) {
+            if (!in_array($this->name, self::$customTabIndexForms)) {
+                self::$customTabIndexForms[] = $this->name;
+            }
+            $baseIndex  = count(self::$customTabIndexForms) * 100;
+            $tabIndex   = $baseIndex + (int) $fieldDefinition['tabIndex'];
+            if ($tabIndex > $this->highestTabIndex) {
+                $this->highestTabIndex = $tabIndex;
+            }
+            if ($tabIndex == $baseIndex) {
+                $tabIndex = ++$this->highestTabIndex;
+            }
+            $field->setTabIndex($tabIndex);
+        }
 
         return $field;
     }
@@ -1783,6 +1817,38 @@ class CustomHtmlForm extends Form {
      */
     public static function useSpamCheckFor($formName) {
         self::$useSpamCheck[$formName] = true;
+    }
+    
+    /**
+     * Returns whether to use a custom tabindex order for the form
+     * 
+     * @return bool
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 07.02.2013
+     */
+    public function useCustomTabIndex() {
+        return $this->getUseCustomTabIndex();
+    }
+    
+    /**
+     * Sets whether to use a custom tabindex order for the form
+     * 
+     * @param bool $useCustomTabIndex Set to true to use a custom tabindex order for the formfields
+     * 
+     * @return void
+     */
+    public function setUseCustomTabIndex($useCustomTabIndex) {
+        $this->useCustomTabIndex = $useCustomTabIndex;
+    }
+    
+    /**
+     * Returns whether to use a custom tabindex order for the form
+     * 
+     * @return bool
+     */
+    public function getUseCustomTabIndex() {
+        return $this->useCustomTabIndex;
     }
 
     /**
