@@ -231,11 +231,7 @@ class CustomHtmlFormConfiguration extends DataObject {
             self::$config = DataObject::get_one('CustomHtmlFormConfiguration');
 
             if (!self::$config) {
-                if (array_key_exists('QUERY_STRING', $_SERVER) &&
-                    (strpos($_SERVER['QUERY_STRING'], 'dev/tests') !== false ||
-                     strpos($_SERVER['QUERY_STRING'], 'dev/build') !== false)
-                   ) {
-
+                if (SilvercartTools::isIsolatedEnvironment()) {
                     return false;
                 }
                 $errorMessage = _t('CustomHtmlFormConfiguration.ERROR_NO_CONFIG');
@@ -269,7 +265,7 @@ class CustomHtmlFormConfiguration extends DataObject {
      * @since 2012-12-10
      */
     public function requireDefaultRecords() {
-        if (!DataObject::get_one('CustomHtmlFormConfiguration')) {
+        if (!CustomHtmlFormConfiguration::get()->exists()) {
             $config = new CustomHtmlFormConfiguration();
             $config->SpamCheck_numberOfCharsInCaptcha   = 8;
             $config->SpamCheck_width                    = 160;
@@ -289,7 +285,7 @@ class CustomHtmlFormConfiguration extends DataObject {
      */
     public function onBeforeWrite() {
         parent::onBeforeWrite();
-        if (DataObject::get_one('CustomHtmlFormConfiguration')) {
+        if (CustomHtmlFormConfiguration::get()->exists()) {
             if (DataObject::get_one('CustomHtmlFormConfiguration')->ID !== $this->ID) {
                 $this->record = array();
             }
