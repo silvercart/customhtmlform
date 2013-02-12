@@ -46,10 +46,39 @@ class CustomHtmlFormConfiguration extends DataObject {
         'SpamCheck_jpgQuality'             => 'Int',
     );
 
+    /**
+     * CustomHtmlFormConfiguration object
+     *
+     * @var CustomHtmlFormConfiguration 
+     */
     public static $config                           = null;
+    
+    /**
+     * Number of chars in captcha
+     *
+     * @var int 
+     */
     public static $SpamCheck_numberOfCharsInCaptcha = null;
+    
+    /**
+     * Captcha width
+     *
+     * @var int
+     */
     public static $SpamCheck_width                  = null;
+    
+    /**
+     * Captcha height
+     *
+     * @var int
+     */
     public static $SpamCheck_height                 = null;
+    
+    /**
+     * Captcha quality
+     *
+     * @var int
+     */
     public static $SpamCheck_jpgQuality             = null;
 
     /**

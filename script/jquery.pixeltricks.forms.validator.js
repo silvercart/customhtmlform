@@ -237,15 +237,34 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
             this.validationResult = 'FAILURE';
             this.toggleErrorFields(errorMessages);
 
-            return false;
+            return this.setValidationFailure();
         }
         else
         {
             this.validationResult = 'SUCCESS';
             this.toggleErrorFields(errorMessages);
 
-            return true;
+            return this.setValidationSuccess();
         }
+    }
+
+    /**
+     * Fired after validation has failed.
+     *
+     * @return {Boolean} false
+     */
+    this.setValidationFailure = function() {
+        return false;
+    }
+
+    /**
+     * Fired after validation has been successful.
+     *
+     * @return {Boolean} true
+     */
+    this.setValidationSuccess = function() {
+        $('#' + that.formName).trigger('validation-success');
+        return true;
     }
 
     /**

@@ -53,6 +53,27 @@ class CustomHtmlForm extends Form {
     public static $useSpamCheck = array();
 
     /**
+     * Set to true to use a custom tabindex order for the forms fields
+     *
+     * @var array
+     */
+    protected $useCustomTabIndex = false;
+
+    /**
+     * Holds the highest tab index
+     *
+     * @var array
+     */
+    protected $highestTabIndex = 0;
+    
+    /**
+     * Holds the forms using custom tabindexes
+     *
+     * @var int
+     */
+    public static $customTabIndexForms = array();
+
+    /**
      * Set to true to exclude this form from caching.
      *
      * @var bool
@@ -243,6 +264,11 @@ class CustomHtmlForm extends Form {
      */
     protected $form = null;
 
+    /**
+     * Indicates whether the form is called in barebone mode
+     *
+     * @var bool
+     */
     protected $barebone = null;
 
     /**
@@ -606,7 +632,6 @@ class CustomHtmlForm extends Form {
             $type == 'SilvercartCheckoutOptionsetField' ||
             $type == 'SilvercartShippingOptionsetField' ||
             $type == 'OptionsetField' ||
-            $type == 'SelectionGroup' ||
             in_array('OptionsetField', class_parents($type)) ||
             in_array('DropdownField', class_parents($type))) {
 
@@ -697,10 +722,34 @@ class CustomHtmlForm extends Form {
     public function isTextField($type) {
         $isField = false;
 
-        if ($type == 'TextField' ||
+        if ($type != 'PtCaptchaImageField' &&
+            ($type == 'TextField' ||
             $type == 'SilvercartTextField' ||
             $type == 'EmailField' ||
-            $type == 'PtCaptchaInputField') {
+            $type == 'PtCaptchaInputField' ||
+            in_array('TextField', class_parents($type)))) {
+
+            $isField = true;
+        }
+
+        return $isField;
+    }
+
+    /**
+     * Returns whether the given type is a textarea field.
+     *
+     * @param string $type The type to check
+     *
+     * @return boolean
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 2013-01-03
+     */
+    public function isTextareaField($type) {
+        $isField = false;
+
+        if ($type == 'TextareaField' ||
+            in_array('TextareaField', class_parents($type))) {
 
             $isField = true;
         }
@@ -1048,6 +1097,7 @@ class CustomHtmlForm extends Form {
         $formData = $this->getFormData($data);
         $this->checkFormData($formData);
         $result = null;
+
         ob_start();
         if (empty($this->errorMessages)) {
             $this->setSubmitSuccess(true);
@@ -1484,6 +1534,7 @@ class CustomHtmlForm extends Form {
             'selectedValue'         => '',
             'size'                  => null,
             'multiple'              => null,
+            'tabIndex'              => 0,
             'form'                  => $this,
             'maxLength'             => $this->isTextField($fieldDefinition['type']) ? 255 : null,
         );
@@ -1580,7 +1631,7 @@ class CustomHtmlForm extends Form {
                     $field->setConfig($key, $value);
                 }
             }
-        } else if ($fieldDefinition['type'] == 'TextareaField') {
+        } else if ($this->isTextareaField($fieldDefinition['type'])) {
 
             if (!isset($fieldDefinition['rows'])) {
                 $fieldDefinition['rows'] = 10;
@@ -1669,6 +1720,21 @@ class CustomHtmlForm extends Form {
             $field->isRequiredField = false;
         }
 
+        if ($this->useCustomTabIndex()) {
+            if (!in_array($this->name, self::$customTabIndexForms)) {
+                self::$customTabIndexForms[] = $this->name;
+            }
+            $baseIndex  = count(self::$customTabIndexForms) * 100;
+            $tabIndex   = $baseIndex + (int) $fieldDefinition['tabIndex'];
+            if ($tabIndex > $this->highestTabIndex) {
+                $this->highestTabIndex = $tabIndex;
+            }
+            if ($tabIndex == $baseIndex) {
+                $tabIndex = ++$this->highestTabIndex;
+            }
+            $field->setTabIndex($tabIndex);
+        }
+
         return $field;
     }
 
@@ -1751,6 +1817,38 @@ class CustomHtmlForm extends Form {
      */
     public static function useSpamCheckFor($formName) {
         self::$useSpamCheck[$formName] = true;
+    }
+    
+    /**
+     * Returns whether to use a custom tabindex order for the form
+     * 
+     * @return bool
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 07.02.2013
+     */
+    public function useCustomTabIndex() {
+        return $this->getUseCustomTabIndex();
+    }
+    
+    /**
+     * Sets whether to use a custom tabindex order for the form
+     * 
+     * @param bool $useCustomTabIndex Set to true to use a custom tabindex order for the formfields
+     * 
+     * @return void
+     */
+    public function setUseCustomTabIndex($useCustomTabIndex) {
+        $this->useCustomTabIndex = $useCustomTabIndex;
+    }
+    
+    /**
+     * Returns whether to use a custom tabindex order for the form
+     * 
+     * @return bool
+     */
+    public function getUseCustomTabIndex() {
+        return $this->useCustomTabIndex;
     }
 
     /**

@@ -277,7 +277,7 @@ class CustomHtmlFormPage_Controller extends DataExtension {
             // -------------------------------------------------------------------
             // load scripts
             // -------------------------------------------------------------------
-            Requirements::block(THIRDPARTY_DIR.'/jquery/jquery.js');
+            Requirements::block(THIRDPARTY_DIR . '/jquery/jquery.js');
             Requirements::insertHeadTags('<meta http-equiv="Content-language" content="' . i18n::get_locale() . '" />', 'CustomHtmlFormContentLanguageTag');
             Requirements::javascript('customhtmlform/script/jquery.js');
             Requirements::javascript('customhtmlform/script/jquery.scrollTo.min.js');
@@ -360,7 +360,7 @@ class CustomHtmlFormPage_Controller extends DataExtension {
     public function customHtmlFormSubmit($form) {
         $formName                    = $this->owner->request->postVar('CustomHtmlFormName');
         $registeredCustomHtmlFormObj = false;
-        
+
         foreach ($this->registeredCustomHtmlForms as $registeredCustomHtmlForm) {
             if ($formName === $registeredCustomHtmlForm->name) {
                 $registeredCustomHtmlFormObj = $registeredCustomHtmlForm;
@@ -374,7 +374,7 @@ class CustomHtmlFormPage_Controller extends DataExtension {
                 }
             }
         }
-        
+
         if ($registeredCustomHtmlFormObj instanceof CustomHtmlForm) {
             return $registeredCustomHtmlFormObj->submit($form, null);
         } else {

@@ -308,11 +308,12 @@ class CheckFormData {
      * @since 25.10.2010
      */
     public function hasLength($length) {
-        $hasLength  = true;
-        $checkValue = trim($this -> value);
+        $hasLength        = true;
+        $checkValue       = trim($this -> value);
+        $checkValueLength = (int) strLen($checkValue);
 
-        if (strLen($checkValue) > 0 &&
-            strlen($checkValue) !== $length) {
+        if ($checkValueLength > 0 &&
+            $checkValueLength !== (int) $length) {
 
             $hasLength = false;
         }
