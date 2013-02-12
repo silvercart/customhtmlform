@@ -1174,8 +1174,8 @@ class CustomHtmlForm extends Form {
 
         // prepare validation errors for template
         $data = array(
-            'errorMessages' => new DataList($this->errorMessages),
-            'messages'      => new DataList($this->messages),
+            'errorMessages' => new ArrayList($this->errorMessages),
+            'messages'      => new ArrayList($this->messages),
             $this->SSformFields['fields'],
             $this->SSformFields['actions'],
             'CustomHtmlFormErrorMessages' => $this->CustomHtmlFormErrorMessages()
@@ -1593,10 +1593,10 @@ class CustomHtmlForm extends Form {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
-                $fieldDefinition['value'],
-                $fieldDefinition['maxLength'],
-                $fieldDefinition['form']
+                $fieldDefinition['value']
             );
+            $field->setMaxLength($fieldDefinition['maxLength']);
+            $field->setForm($fieldDefinition['form']);
             if (isset($fieldDefinition['placeholder']) &&
                 method_exists($field, 'setPlaceholder')) {
                 $field->setPlaceholder($fieldDefinition['placeholder']);
@@ -1606,6 +1606,7 @@ class CustomHtmlForm extends Form {
                 $fieldName,
                 $fieldDefinition['title'],
                 $fieldDefinition['value'],
+                $fieldDefinition['maxLength'],
                 $fieldDefinition['form']
             );
         } else if ($fieldDefinition['type'] == 'PasswordField') {
@@ -1645,11 +1646,11 @@ class CustomHtmlForm extends Form {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
-                $fieldDefinition['rows'],
-                $fieldDefinition['cols'],
-                $fieldDefinition['value'],
-                $fieldDefinition['form']
+                $fieldDefinition['value']
             );
+            $field->setColumns($fieldDefinition['cols']);
+            $field->setRows($fieldDefinition['rows']);
+            $field->setForm($fieldDefinition['form']);
         } else if ($fieldDefinition['type'] == 'MultipleImageUploadField' ||
                    $fieldDefinition['type'] == 'MultipleFileUploadField') {
 
@@ -1781,8 +1782,8 @@ class CustomHtmlForm extends Form {
      *
      * @return void
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 07.12.2012
+     * @author Sascha Koehler <skoehler@pixeltricks.de>, Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 12.02.2013
      */
     public function injectSpecialFormFields() {
         if (array_key_exists($this->class, self::$useSpamCheck)) {
@@ -1798,9 +1799,10 @@ class CustomHtmlForm extends Form {
                 )
             );
             $this->formFields['PtCaptchaImageField'] = array(
-                'type'  => 'PtCaptchaImageField',
-                'title' => _t('CustomHtmlFormField.PtCaptchaImageField_Title'),
-                'form'  => $this,
+                'type'      => 'PtCaptchaImageField',
+                'title'     => _t('CustomHtmlFormField.PtCaptchaImageField_Title'),
+                'form'      => $this,
+                'maxLength' => CustomHtmlFormConfiguration::SpamCheck_numberOfCharsInCaptcha(),
             );
         }
     }
