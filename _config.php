@@ -45,3 +45,12 @@ SS_Cache::add_backend(
         )
 );
 SS_Cache::pick_backend('CustomHtmlForm', 'CustomHtmlForm');
+
+if (class_exists('RequirementsEngine')) {
+    RequirementsEngine::registerJsFile('customhtmlform/script/jquery.js');
+    RequirementsEngine::registerJsFile('customhtmlform/script/jquery.scrollTo.min.js');
+    RequirementsEngine::registerJsFile('customhtmlform/script/jquery.pixeltricks.forms.checkFormData.js');
+    RequirementsEngine::registerJsFile('customhtmlform/script/jquery.pixeltricks.forms.events.js');
+    RequirementsEngine::registerJsFile('customhtmlform/script/jquery.pixeltricks.forms.validator.js');
+    RequirementsEngine::registerJsFile(SAPPHIRE_DIR . "/javascript/i18n.js");
+}
