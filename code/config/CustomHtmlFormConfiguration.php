@@ -209,40 +209,13 @@ class CustomHtmlFormConfiguration extends DataObject {
      *
      * @return FieldList
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 2012-12-10
+     * @author Sascha Koehler <skoehler@pixeltricks.de>, Roland Lehmann
+     * @since 10.02.2013
      */
     public function getCMSFields() {
-        $parentFields = parent::getCMSFields();
-        $CMSFields    = new FieldList(
-            $rootTab  = new TabSet(
-                'Root',
-                $generalTab = new TabSet(
-                    'General',
-                    _t('SilvercartConfig.GENERAL'),
-                    $tabGeneralSpamCheck = new Tab('SpamCheck', _t('CustomHtmlFormConfigurationAdmin.TAB_SPAMCHECK'))
-                )
-            )
-        );
+        $fields = SilvercartDataObject::getCMSFields($this);
 
-        $CMSFields->addFieldToTab(
-            'Root.General.SpamCheck',
-            $parentFields->dataFieldByName('SpamCheck_numberOfCharsInCaptcha')
-        );
-        $CMSFields->addFieldToTab(
-            'Root.General.SpamCheck',
-            $parentFields->dataFieldByName('SpamCheck_width')
-        );
-        $CMSFields->addFieldToTab(
-            'Root.General.SpamCheck',
-            $parentFields->dataFieldByName('SpamCheck_height')
-        );
-        $CMSFields->addFieldToTab(
-            'Root.General.SpamCheck',
-            $parentFields->dataFieldByName('SpamCheck_jpgQuality')
-        );
-
-        return $CMSFields;
+        return $fields;
     }
 
     // -----------------------------------------------------------------------
@@ -250,14 +223,14 @@ class CustomHtmlFormConfiguration extends DataObject {
     /**
      * Returns the CustomHtmlFormConfig or triggers an error if not existent.
      *
-     * @return SilvercartConfig
+     * @return SilvercartConfig|false
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 2012-12-10
+     * @author Sascha Koehler <skoehler@pixeltricks.de>, Roland Lehmann
+     * @since 10.02.2013
      */
     public static function getConfig() {
         if (is_null(self::$config)) {
-            self::$config = DataObject::get_one('CustomHtmlFormConfiguration');
+            self::$config = CustomHtmlFormConfiguration::get()->first();
 
             if (!self::$config) {
                 if (SilvercartTools::isIsolatedEnvironment()) {
@@ -315,7 +288,7 @@ class CustomHtmlFormConfiguration extends DataObject {
     public function onBeforeWrite() {
         parent::onBeforeWrite();
         if (CustomHtmlFormConfiguration::get()->exists()) {
-            if (DataObject::get_one('CustomHtmlFormConfiguration')->ID !== $this->ID) {
+            if (CustomHtmlFormConfiguration::get()->first()->ID !== $this->ID) {
                 $this->record = array();
             }
         }
