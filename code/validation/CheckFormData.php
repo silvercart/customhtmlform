@@ -25,7 +25,7 @@
  *
  * @package CustomHtmlForm
  * @author Sascha Koehler <skoehler@pixeltricks.de>
- * @copyright 2010 pxieltricks GmbH
+ * @copyright 2010 pixeltricks GmbH
  * @since 25.10.2010
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
@@ -59,8 +59,6 @@ class CheckFormData {
      * @since 25.10.2010
      */
     public function hasSpecialSigns($expectedResult) {
-
-        $success        = false;
         $errorMessage   = '';
         $match          = false;
 
@@ -225,6 +223,8 @@ class CheckFormData {
      *              'field'     => mixed
      *          )
      *      )
+     *
+     * @throws Exception
      *
      * @return array(
      *      'success'       => bool,
@@ -844,7 +844,7 @@ class CheckFormData {
                 # this should be IPv6 - a bunch of tests are needed here :)
                 #
 
-                while (1){
+                while (1) {
 
                     if (preg_match("!^\[$IPv6_full\]$!", $bits['domain'])) {
                         break;
@@ -860,7 +860,7 @@ class CheckFormData {
                         break;
                     }
 
-                    if (preg_match("!^\[$IPv6v4_full\]$!", $bits['domain'], $m)){
+                    if (preg_match("!^\[$IPv6v4_full\]$!", $bits['domain'], $m)) {
 
                         if (intval($m[1]) > 255) {
                             return false;
@@ -869,7 +869,7 @@ class CheckFormData {
                             return false;
                         }
                         if (intval($m[3]) > 255) {
-                            return false3;
+                            return false;
                         }
                         if (intval($m[4]) > 255) {
                             return false;
@@ -904,7 +904,7 @@ class CheckFormData {
             # public internet, so we'll fail it (e.g. user@localhost)
             #
 
-            if ($options['public_internet']){
+            if ($options['public_internet']) {
                 if (count($labels) == 1) {
                     return false;
                 }
@@ -914,7 +914,7 @@ class CheckFormData {
             # checks on each label
             #
 
-            foreach ($labels as $label){
+            foreach ($labels as $label) {
 
                 if (strlen($label) > 63) {
                     return false;
@@ -931,7 +931,7 @@ class CheckFormData {
             # last label can't be all numeric
             #
 
-            if ($options['public_internet']){
+            if ($options['public_internet']) {
                 if (preg_match('!^[0-9]+$!', array_pop($labels))) {
                     return false;
                 }
@@ -946,9 +946,9 @@ class CheckFormData {
      *
      * Removes comments from an email.
      *
-     * @param string $comment
-     * @param string $email
-     * @param string $replace
+     * @param string $comment The comment
+     * @param string $email   The email
+     * @param string $replace The replace string
      *
      * @return string
      *
@@ -956,7 +956,7 @@ class CheckFormData {
      * @since 19.11.2012
      */
     private function email_strip_comments($comment, $email, $replace='') {
-        while (1){
+        while (1) {
             $new = preg_replace("!$comment!", $replace, $email);
             if (strlen($new) == strlen($email)) {
                 return $email;

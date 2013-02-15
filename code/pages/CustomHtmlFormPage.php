@@ -25,7 +25,7 @@
  *
  * @package CustomHtmlForm
  * @author Sascha Koehler <skoehler@pixeltricks.de>
- * @copyright 2010 pxieltricks GmbH
+ * @copyright 2010 pixeltricks GmbH
  * @since 25.10.2010
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
@@ -78,7 +78,7 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function addJavascriptOnloadSnippet($snippet) {
@@ -93,7 +93,7 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function addJavascriptSnippet($snippet) {
@@ -133,7 +133,7 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function registerCustomHtmlForm($formIdentifier, CustomHtmlForm $formObj) {
@@ -267,7 +267,7 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function onBeforeInit() {
@@ -309,7 +309,7 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function onAfterInit() {
@@ -358,7 +358,7 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
      * @return mixed depends on processing form method
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function customHtmlFormSubmit($form) {

@@ -28,7 +28,7 @@
  *
  * @package CustomHtmlForm
  * @author Sascha Koehler <skoehler@pixeltricks.de>
- * @copyright 2010 pxieltricks GmbH
+ * @copyright 2010 pixeltricks GmbH
  * @since 25.10.2010
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
@@ -51,7 +51,7 @@ class CustomHtmlFormStepPage extends Page {
      * @return FieldSet
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function getCMSFields() {
@@ -76,7 +76,7 @@ class CustomHtmlFormStepPage extends Page {
  *
  * @package CustomHtmlForm
  * @author Sascha Koehler <skoehler@pixeltricks.de>
- * @copyright 2010 pxieltricks GmbH
+ * @copyright 2010 pixeltricks GmbH
  * @since 25.10.2010
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
@@ -201,7 +201,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return CustomHtmlForm
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pxieltricks GmbH
+     * @copyright 2011 pixeltricks GmbH
      * @since 24.02.2011
      */
     public function getCurrentFormInstance() {
@@ -214,7 +214,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return int
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function getCurrentStep() {
@@ -227,7 +227,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return array
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function getCompletedSteps() {
@@ -243,7 +243,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function addCompletedStep($stepNr = null) {
@@ -300,7 +300,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return string
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function InsertCustomHtmlForm($formIdentifier = null) {
@@ -330,7 +330,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function setStepData($formData, $stepNr = null) {
@@ -352,7 +352,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return array | boolean false
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function getStepData($stepNr = null) {
@@ -374,7 +374,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return array
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function getCombinedStepData() {
@@ -435,7 +435,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function fillFormFields(&$fields) {
@@ -467,7 +467,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return integer
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function getPreviousStep() {
@@ -482,7 +482,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return integer
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function getNextStep() {
@@ -499,7 +499,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function setCurrentStep($stepNr) {
@@ -512,7 +512,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return string | boolean false
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function CustomHtmlFormStepLinkPrev() {
@@ -533,7 +533,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return string | boolean false
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function CustomHtmlFormStepLinkNext() {
@@ -554,7 +554,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return string | boolean false
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function CustomHtmlFormStepLinkCancel() {
@@ -573,7 +573,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function NextStep() {
@@ -592,7 +592,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function PreviousStep() {
@@ -610,7 +610,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 07.12.2010
      */
     public function GotoStep() {
@@ -629,7 +629,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function Cancel() {
@@ -653,7 +653,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function deleteSessionData() {
@@ -808,7 +808,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return Object
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     protected function registerCurrentFormStep() {
@@ -828,7 +828,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 16.11.2010
      */
     protected function callMethodOnCurrentFormStep($formInstance, $methodName) {
@@ -856,7 +856,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     protected function initialiseSessionData() {
@@ -891,7 +891,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return integer
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     protected function getNumberOfSteps() {
@@ -904,7 +904,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pxieltricks GmbH
+     * @copyright 2011 pixeltricks GmbH
      * @since 04.04.2011
      */
     public function generateStepMapping() {
@@ -926,7 +926,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pxieltricks GmbH
+     * @copyright 2011 pixeltricks GmbH
      * @since 04.04.2011
      */
     public function resetStepMapping() {
@@ -941,7 +941,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pxieltricks GmbH
+     * @copyright 2011 pixeltricks GmbH
      * @since 04.04.2011
      */
     private function getStepsFromModuleOrThemeDirectory() {
@@ -1006,7 +1006,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pxieltricks GmbH
+     * @copyright 2011 pixeltricks GmbH
      * @since 04.04.2011
      */
     private function getStepsFromAdditionalDirectories() {
@@ -1076,7 +1076,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      *                 directory has already been in the list.
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pxieltricks GmbH
+     * @copyright 2011 pixeltricks GmbH
      * @since 04.04.2011
      */
     public function registerStepDirectory($templateDirectory) {

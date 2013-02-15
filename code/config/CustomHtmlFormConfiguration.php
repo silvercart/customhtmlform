@@ -26,7 +26,7 @@
  * @package CustomHtmlForm
  * @subpackage Config
  * @author Sascha Koehler <skoehler@pixeltricks.de>
- * @copyright 2012 pxieltricks GmbH
+ * @copyright 2012 pixeltricks GmbH
  * @since 2012-12-10
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
