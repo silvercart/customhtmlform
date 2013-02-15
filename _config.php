@@ -29,13 +29,18 @@ DataObject::add_extension('Security',          'CustomHtmlFormPage_Controller');
 
 $cacheBaseDir   = getTempFolder() . DIRECTORY_SEPARATOR . 'cache';
 $cacheDir       = $cacheBaseDir . DIRECTORY_SEPARATOR . 'CustomHtmlForm';
+if (Director::isDev()) {
+    $cachelifetime = 1;
+} else {
+    $cachelifetime = 86400;
+}
 if (!is_dir($cacheDir)) {
     if (!is_dir($cacheBaseDir)) {
         mkdir($cacheBaseDir);
     }
     mkdir($cacheDir);
 }
-SS_Cache::set_cache_lifetime('CustomHtmlForm', 86400);
+SS_Cache::set_cache_lifetime('CustomHtmlForm', $cachelifetime);
 SS_Cache::add_backend(
         'CustomHtmlForm',
         'File',
