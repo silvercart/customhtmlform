@@ -63,3 +63,7 @@ $lang['de_DE']['CustomHtmlFormErrorMessages']['CHECK_FIELDS'] = 'Bitte pr&uuml;f
 
 $lang['de_DE']['CustomHtmlFormField']['PtCaptchaImageField_Title'] = 'Bitte diesen Captcha-Code im folgenden Feld eingeben:';
 $lang['de_DE']['CustomHtmlFormField']['PtCaptchaInputField_Title'] = 'Captcha-Code:';
+
+$lang['de_DE']['CustomHtmlFormAdmin']['PLURALNAME']                             = 'Formulare';
+$lang['de_DE']['CustomHtmlFormAdmin']['SINGULARNAME']                           = 'Formulare';
+$lang['de_DE']['CustomHtmlFormAdmin']['MENUTITLE']                              = 'Formulare';

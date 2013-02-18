@@ -29,13 +29,18 @@ DataObject::add_extension('Security',          'CustomHtmlFormPage_Controller');
 
 $cacheBaseDir   = getTempFolder() . DIRECTORY_SEPARATOR . 'cache';
 $cacheDir       = $cacheBaseDir . DIRECTORY_SEPARATOR . 'CustomHtmlForm';
+if (Director::isDev()) {
+    $cachelifetime = 1;
+} else {
+    $cachelifetime = 86400;
+}
 if (!is_dir($cacheDir)) {
     if (!is_dir($cacheBaseDir)) {
         mkdir($cacheBaseDir);
     }
     mkdir($cacheDir);
 }
-SS_Cache::set_cache_lifetime('CustomHtmlForm', 86400);
+SS_Cache::set_cache_lifetime('CustomHtmlForm', $cachelifetime);
 SS_Cache::add_backend(
         'CustomHtmlForm',
         'File',
@@ -45,3 +50,17 @@ SS_Cache::add_backend(
         )
 );
 SS_Cache::pick_backend('CustomHtmlForm', 'CustomHtmlForm');
+
+if (class_exists('RequirementsEngine')) {
+    RequirementsEngine::registerJsFile('customhtmlform/script/jquery.js');
+    RequirementsEngine::registerJsFile('customhtmlform/script/jquery.scrollTo.min.js');
+    RequirementsEngine::registerJsFile('customhtmlform/script/jquery.pixeltricks.forms.checkFormData.js');
+    RequirementsEngine::registerJsFile('customhtmlform/script/jquery.pixeltricks.forms.events.js');
+    RequirementsEngine::registerJsFile('customhtmlform/script/jquery.pixeltricks.forms.validator.js');
+    RequirementsEngine::registerJsFile(SAPPHIRE_DIR . "/javascript/i18n.js");
+}
+if (class_exists('SilvercartPage')) {
+    Object::set_static('CustomHtmlFormAdmin', 'menuCode',       'config');
+    Object::set_static('CustomHtmlFormAdmin', 'menuSection',    'others');
+    Object::set_static('CustomHtmlFormAdmin', 'menuSortIndex',  129);
+}

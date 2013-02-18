@@ -28,7 +28,7 @@
  *
  * @package CustomHtmlForm
  * @author Sascha Koehler <skoehler@pixeltricks.de>
- * @copyright 2010 pxieltricks GmbH
+ * @copyright 2010 pixeltricks GmbH
  * @since 25.10.2010
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
@@ -75,7 +75,7 @@ class CustomHtmlFormStepPage extends Page {
  *
  * @package CustomHtmlForm
  * @author Sascha Koehler <skoehler@pixeltricks.de>
- * @copyright 2010 pxieltricks GmbH
+ * @copyright 2010 pixeltricks GmbH
  * @since 25.10.2010
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */

@@ -25,7 +25,7 @@
  *
  * @package CustomHtmlForm
  * @author Sascha Koehler <skoehler@pixeltricks.de>
- * @copyright 2010 pxieltricks GmbH
+ * @copyright 2010 pixeltricks GmbH
  * @since 25.10.2010
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
@@ -78,7 +78,7 @@ class CustomHtmlFormPage_Controller extends DataExtension {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function addJavascriptOnloadSnippet($snippet) {
@@ -93,7 +93,7 @@ class CustomHtmlFormPage_Controller extends DataExtension {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function addJavascriptSnippet($snippet) {
@@ -133,7 +133,7 @@ class CustomHtmlFormPage_Controller extends DataExtension {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function registerCustomHtmlForm($formIdentifier, CustomHtmlForm $formObj) {
@@ -267,7 +267,7 @@ class CustomHtmlFormPage_Controller extends DataExtension {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function onBeforeInit() {
@@ -279,13 +279,17 @@ class CustomHtmlFormPage_Controller extends DataExtension {
             // -------------------------------------------------------------------
             Requirements::block(THIRDPARTY_DIR . '/jquery/jquery.js');
             Requirements::insertHeadTags('<meta http-equiv="Content-language" content="' . i18n::get_locale() . '" />', 'CustomHtmlFormContentLanguageTag');
-            Requirements::javascript('customhtmlform/script/jquery.js');
-            Requirements::javascript('customhtmlform/script/jquery.scrollTo.min.js');
-            Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.checkFormData.js');
-            Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.events.js');
-            Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.validator.js');
-            Requirements::javascript(SAPPHIRE_DIR . "/javascript/i18n.js");
             Requirements::add_i18n_javascript('customhtmlform/javascript/lang');
+
+            if (!class_exists('RequirementsEngine')) {
+                Requirements::javascript('customhtmlform/script/jquery.js');
+                Requirements::javascript('customhtmlform/script/jquery.scrollTo.min.js');
+                Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.checkFormData.js');
+                Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.events.js');
+                Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.validator.js');
+                Requirements::javascript(SAPPHIRE_DIR . "/javascript/i18n.js");
+                Requirements::add_i18n_javascript('customhtmlform/javascript/lang');
+            }
         }
         $this->owner->isFrontendPage = true;
     }
@@ -305,7 +309,7 @@ class CustomHtmlFormPage_Controller extends DataExtension {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function onAfterInit() {
@@ -354,7 +358,7 @@ class CustomHtmlFormPage_Controller extends DataExtension {
      * @return mixed depends on processing form method
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function customHtmlFormSubmit($form) {

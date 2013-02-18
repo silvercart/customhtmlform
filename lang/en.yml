@@ -1,6 +1,10 @@
 en:
   CustomHtmlForm:
     REQUIRED_FIELD_MARKER: "<span class=\"required-field\">[ Required ]</span>"
+  CustomHtmlFormAdmin:
+    MENUTITLE: "Forms"
+    PLURALNAME: "Forms"
+    SINGULARNAME: "Form"
   CustomHtmlFormConfiguration:
     PLURALNAME: "Form configuration"
     SINGULARNAME: "Form configuration"

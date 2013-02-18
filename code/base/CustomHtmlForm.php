@@ -25,7 +25,7 @@
  *
  * @package CustomHtmlForm
  * @author Sascha Koehler <skoehler@pixeltricks.de>
- * @copyright 2010 pxieltricks GmbH
+ * @copyright 2010 pixeltricks GmbH
  * @since 25.10.2010
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
@@ -279,10 +279,9 @@ class CustomHtmlForm extends Form {
      * @param array             $preferences optional preferences
      * @param bool              $barebone    defines if a form should only be instanciated or be used too
      *
-     * @return void
+     * @return CustomHtmlForm
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
      * @since 25.10.2010
      */
     public function __construct($controller, $params = null, $preferences = null, $barebone = false) {
@@ -340,7 +339,6 @@ class CustomHtmlForm extends Form {
         }
 
         // Counter for the form class, init or increment
-        // Zaehler fuer die Formularklasse ggfs. initialisieren und erhoehen.
         if (!isset(self::$classInstanceCounter[$this->class])) {
             self::$classInstanceCounter[$this->class] = 0;
         }
@@ -350,11 +348,9 @@ class CustomHtmlForm extends Form {
         }
 
         // new assignment required, because the controller will be overwritten in the form class
-        // Nochmaliges Setzen erforderlich, da der Controller in der Form-Klasse ueberschrieben wird.
         $this->controller = $controller;
 
         // create group structure
-        // Gruppenstruktur erzeugen
         if (isset($this->formFields)) {
             $this->fieldGroups['formFields'] = $this->getFormFields();
         } else {
@@ -370,17 +366,12 @@ class CustomHtmlForm extends Form {
         parent::setActions($this->SSformFields['actions']);
 
         // define form action
-        // Action fuer das Formular setzen
         $this->setFormAction(Controller::join_links($this->getFormController($controller, $preferences)->Link(), $name));
 
         /*
          * load and init JS validators
          * form integration via FormAttributes()
          */
-        // -------------------------------------------------------------------
-        // Javascript-Validator laden und initialisieren.
-        // Einbindung ins Formular erfolgt in Methode "FormAttributes()".
-        // -------------------------------------------------------------------
         if (!$barebone) {
             $javascriptSnippets = $this->getJavascriptValidatorInitialisation();
 
@@ -407,10 +398,10 @@ class CustomHtmlForm extends Form {
      * Here you can set the preferences. This is an alternative to setting
      * them via the $preferences class variable.
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pixeltricks GmbH
-     * @since 23.02.2011
      * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 23.02.2011
      */
     public function preferences() {
         $this->extend('updatePreferences', $this->preferences);
@@ -445,10 +436,10 @@ class CustomHtmlForm extends Form {
      * @param string $moduleName The name of the module
      * @param int    $priority   The priority
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pixeltricks GmbH
-     * @since 28.01.2011
      * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 28.01.2011
      */
     public static function registerModule($moduleName, $priority = 51) {
         self::$registeredModules[$moduleName] = $priority;
@@ -465,13 +456,8 @@ class CustomHtmlForm extends Form {
      * @since 29.03.2012
      */
     public function RequiredFieldMarker($isRequiredField) {
-        $marker = '';
-
-        if (isset($this->preferences['markRequiredFields'])) {
-            $markRequiredFields = $this->preferences['markRequiredFields'];
-        } else {
-            $markRequiredFields = $this->basePreferences['markRequiredFields'];
-        }
+        $marker             = '';
+        $markRequiredFields = $this->getPreference('markRequiredFields');
 
         if ($isRequiredField &&
             $markRequiredFields) {
@@ -532,11 +518,10 @@ class CustomHtmlForm extends Form {
      * @return array
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pixeltricks GmbH
      * @since 21.01.2011
      */
     public function getJavascriptValidatorInitialisation() {
-        $validatorFields    = $this->generateJsValidatorFields();
+        $validatorFields    = CustomHtmlFormToolsJavascript::generateJsValidatorFields($this->fieldGroups);
         $javascriptSnippets = '
             var '.$this->jsName.';
         ';
@@ -564,200 +549,6 @@ class CustomHtmlForm extends Form {
     }
     
     /**
-     * Indicates wether the shoppingcart modules should be loaded.
-     *
-     * @return array
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pixeltricks GmbH
-     * @since 27.04.2011
-     */
-    public function getLoadShoppingCartModules() {
-        $loadModules = false;
-        
-        if (isset($this->preferences['loadShoppingcartModules'])) {
-            $loadModules = $this->preferences['loadShoppingcartModules'];
-        } else {
-            $loadModules = $this->basePreferences['loadShoppingcartModules'];
-        }
-        
-        return $loadModules;
-    }
-    
-    /**
-     * Indicates wether the shoppingcart forms should be drawn.
-     *
-     * @return array
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pixeltricks GmbH
-     * @since 27.04.2011
-     */
-    public function getCreateShoppingCartForms() {
-        $createForms = false;
-        
-        if (isset($this->preferences['createShoppingcartForms'])) {
-            $createForms = $this->preferences['createShoppingcartForms'];
-        } else {
-            $createForms = $this->basePreferences['createShoppingcartForms'];
-        }
-        
-        return $createForms;
-    }
-
-    /**
-     * Returns whether the given type is a dropdown field.
-     *
-     * @param string $type The type to check
-     *
-     * @return boolean
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 21.11.2012
-     */
-    public function isDropdownField($type) {
-        $isField = false;
-
-        if ($type == 'DropdownField' ||
-            $type == 'GroupedDropdownField' ||
-            $type == 'HTMLDropdownField' ||
-            $type == 'CountryDropdownField' ||
-            $type == 'LanguageDropdownField' ||
-            $type == 'SimpleTreeDropdownField' ||
-            $type == 'TreeDropdownField' ||
-            $type == 'TreeDropdownField_Readonly' ||
-            $type == 'StateProvinceDropdownField_Readonly' ||
-            $type == 'Widget_TreeDropdownField_Readonly' ||
-            $type == 'StateDropdownField' ||
-            $type == 'SilvercartCheckoutOptionsetField' ||
-            $type == 'SilvercartShippingOptionsetField' ||
-            $type == 'OptionsetField' ||
-            in_array('OptionsetField', class_parents($type)) ||
-            in_array('DropdownField', class_parents($type))) {
-
-            $isField = true;
-        }
-
-        return $isField;
-    }
-
-    /**
-     * Returns whether the given type is a listbox field.
-     *
-     * @param string $type The type to check
-     *
-     * @return boolean
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 21.11.2012
-     */
-    public function isListboxField($type) {
-        $isField = false;
-
-        if ($type == 'ListboxField' ||
-            in_array('ListboxField', class_parents($type))) {
-
-            $isField = true;
-        }
-
-        return $isField;
-    }
-
-    /**
-     * Returns whether the given type is an optionset field.
-     *
-     * @param string $type The type to check
-     *
-     * @return boolean
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 21.11.2012
-     */
-    public function isOptionsetField($type) {
-        $isField = false;
-
-        if ($type == 'OptionsetField' ||
-            $type == 'SilvercartCheckoutOptionsetField' ||
-            $type == 'SilvercartShippingOptionsetField' ||
-            in_array('OptionsetField', class_parents($type))) {
-
-            $isField = true;
-       }
-
-        return $isField;
-    }
-
-    /**
-     * Returns whether the given type is a selection group field.
-     *
-     * @param string $type The type to check
-     *
-     * @return boolean
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 21.11.2012
-     */
-    public function isSelectiongroupField($type) {
-        $isField = false;
-
-        if ($type == 'SelectionGroup' ||
-            in_array('SelectionGroup', class_parents($type))) {
-
-            $isField = true;
-        }
-
-        return $isField;
-    }
-
-    /**
-     * Returns whether the given type is a text field.
-     *
-     * @param string $type The type to check
-     *
-     * @return boolean
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 21.11.2012
-     */
-    public function isTextField($type) {
-        $isField = false;
-
-        if ($type != 'PtCaptchaImageField' &&
-            ($type == 'TextField' ||
-            $type == 'SilvercartTextField' ||
-            $type == 'EmailField' ||
-            $type == 'PtCaptchaInputField' ||
-            in_array('TextField', class_parents($type)))) {
-
-            $isField = true;
-        }
-
-        return $isField;
-    }
-
-    /**
-     * Returns whether the given type is a textarea field.
-     *
-     * @param string $type The type to check
-     *
-     * @return boolean
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 2013-01-03
-     */
-    public function isTextareaField($type) {
-        $isField = false;
-
-        if ($type == 'TextareaField' ||
-            in_array('TextareaField', class_parents($type))) {
-
-            $isField = true;
-        }
-
-        return $isField;
-    }
-
-    /**
      * Set a form field.
      *
      * @param string $identifier      The identifier of the field
@@ -781,7 +572,6 @@ class CustomHtmlForm extends Form {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pixeltricks GmbH
      * @since 25.01.2011
      */
     public function setFormFieldValue($identifier, $value) {
@@ -796,228 +586,11 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * Creates a string with JS measures that passes the form fields to the JS Validators
-     *
-     * @return string
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
-     * @since 25.10.2010
-     */
-    protected function generateJsValidatorFields() {
-        $fieldStr = '';
-
-        foreach ($this->fieldGroups as $groupName => $groupFields) {
-            foreach ($groupFields as $fieldName => $fieldProperties) {
-                $checkRequirementStr    = '';
-                $eventStr               = '';
-                $configurationStr       = '';
-
-                // ------------------------------------------------------------
-                // create JS requirements
-                // ------------------------------------------------------------
-                if (isset($fieldProperties['checkRequirements'])) {
-                    foreach ($fieldProperties['checkRequirements'] as $requirement => $definition) {
-                        $checkRequirementStr .= $this->generateJsValidatorRequirementString($requirement, $definition);
-                    }
-                }
-                if (!empty($checkRequirementStr)) {
-                    $checkRequirementStr = substr($checkRequirementStr, 0, strlen($checkRequirementStr) - 1);
-                }
-
-                // ------------------------------------------------------------
-                // create JS event
-                // ------------------------------------------------------------
-                if (isset($fieldProperties['jsEvents'])) {
-                    foreach ($fieldProperties['jsEvents'] as $event => $definition) {
-                        $eventStr .= $this->generateJsValidatorEventString($event, $definition);
-                    }
-                }
-                if (!empty($eventStr)) {
-                    $eventStr = substr($eventStr, 0, strlen($eventStr) - 1);
-                }
-
-                // ------------------------------------------------------------
-                // create configuration section
-                // ------------------------------------------------------------
-                if (isset($fieldProperties['configuration'])) {
-                    foreach ($fieldProperties['configuration'] as $configuration => $definition) {
-                        $configurationStr .= $this->generateJsValidatorRequirementString($configuration, $definition);
-                    }
-                }
-                if (!empty($configurationStr)) {
-                    $configurationStr = substr($configurationStr, 0, strlen($configurationStr) - 1);
-                }
-
-                // ------------------------------------------------------------
-                // add additional attributes
-                // ------------------------------------------------------------
-                if (isset($fieldProperties['title'])) {
-                    $titleField = 'title: "'.str_replace('"', '\"', $fieldProperties['title']).'",';
-                } else {
-                    $titleField = '';
-                }
-
-                $fieldStr .= sprintf(
-                    "'%s': {
-                        type: \"%s\",
-                        %s
-                        checkRequirements: {
-                            %s
-                        },
-                        events: {
-                            %s
-                        },
-                        configuration: {
-                            %s
-                        }
-                    },",
-                    $fieldName,
-                    $fieldProperties['type'],
-                    $titleField,
-                    $checkRequirementStr,
-                    $eventStr,
-                    $configurationStr
-                );
-            }
-        }
-
-        if (!empty($fieldStr)) {
-            $fieldStr = substr($fieldStr, 0, strlen($fieldStr) - 1);
-        }
-
-        return $fieldStr;
-    }
-
-    /**
-     * Returns a string of JS code created from the passed parameters
-     *
-     * @param string $requirement name of the requirement
-     * @param mixed  $definition  the definition
-     * 
-     * @return string
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 10.11.2010
-     *
-     */
-    protected function generateJsValidatorRequirementString($requirement, $definition) {
-
-        $checkRequirementStr = '';
-
-        if (is_array($definition)) {
-            $subCheckRequirementStr = '';
-            foreach ($definition as $subRequirement => $subDefinition) {
-                if (is_bool($subDefinition)) {
-                    $subDefinitionStr = $subDefinition ? 'true' : 'false';
-                } else if (is_int($subDefinition)) {
-                    $subDefinitionStr = $subDefinition;
-                } else {
-                    $subDefinitionStr = "'".$subDefinition."'";
-                }
-
-                $subCheckRequirementStr .= $subRequirement.": ".$subDefinitionStr.",";
-            }
-
-            if (!empty($subCheckRequirementStr)) {
-                $subCheckRequirementStr = substr($subCheckRequirementStr, 0, strlen($subCheckRequirementStr) - 1);
-
-                $checkRequirementStr .= $requirement.': {';
-                $checkRequirementStr .= $subCheckRequirementStr;
-                $checkRequirementStr .= '},\n';
-            }
-        } else {
-            if (is_bool($definition)) {
-                $definitionStr = $definition ? 'true' : 'false';
-            } else if (is_int($definition)) {
-                $definitionStr = $definition;
-            } else {
-                $definitionStr = "'".$definition."'";
-            }
-
-            $checkRequirementStr .= $requirement.": ".$definitionStr.",\n";
-        }
-
-        if (!empty($checkRequirementStr)) {
-            $checkRequirementStr = substr($checkRequirementStr, 0, -1);
-        }
-
-        return $checkRequirementStr;
-    }
-
-    /**
-     * Returns a string of JS code created from the passed parameters
-     *
-     * @param string $event      events name
-     * @param mixed  $definition the definition
-     *
-     * @return string
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 10.11.2010
-     */
-    protected function generateJsValidatorEventString($event, $definition) {
-        $eventStr               = '';
-        $subEventStr            = '';
-        $eventFieldMappingsStr  = '';
-
-        if ($event == 'setValueDependantOn') {
-
-            $eventReferenceField = $definition[0];
-
-            foreach ($definition[1] as $referenceFieldValue => $mapping) {
-                
-                $mappingStr = '';
-
-                foreach ($mapping as $key => $value) {
-                    if (is_bool($value)) {
-                        $value = $value ? 'true' : 'false';
-                    } else if (is_int($value)) {
-                        $value = $value;
-                    } else {
-                        $value = "'".$value."'";
-                    }
-                    if (!empty($key)) {
-                        $mappingStr .= $key.': '.$value.',';
-                    } else {
-                        $mappingStr .= 'CustomHtmlFormEmptyValue: '.$value.',';
-                    }
-                }
-                if (!empty($mappingStr)) {
-                    $mappingStr = substr($mappingStr, 0, -1);
-                }
-
-                $eventFieldMappingsStr .= $referenceFieldValue.': {';
-                $eventFieldMappingsStr .= $mappingStr;
-                $eventFieldMappingsStr .= '},';
-            }
-            if (!empty($eventFieldMappingsStr)) {
-                $eventFieldMappingsStr = substr($eventFieldMappingsStr, 0, -1);
-            }
-
-            $eventStr .= $event.': {';
-            $eventStr .= $eventReferenceField.': {';
-            $eventStr .= $eventFieldMappingsStr;
-            $eventStr .= '}';
-            $eventStr .= '},';
-        } else {
-            $eventStr .= $event.': ';
-            $eventStr .= $this->createJsonFromStructure($definition);
-            $eventStr .= ',';
-        }
-        
-        return $eventStr;
-    }
-
-    /**
      * this method can be implemented optionally in child classes
      *
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
      * @since 25.10.2010
      */
     protected function fillInFieldValues() {
@@ -1061,7 +634,6 @@ class CustomHtmlForm extends Form {
      * @return string
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
      * @since 20.12.2010
      */
     protected function getFormFieldValueLabel($fieldName) {
@@ -1072,8 +644,8 @@ class CustomHtmlForm extends Form {
         if (isset($formFields[$fieldName])) {
             $fieldDefinition = $formFields[$fieldName];
             
-            if ($this->isDropdownField($fieldDefinition['type']) ||
-                $this->isListboxField($fieldDefinition['type'])) {
+            if (CustomHtmlFormTools::isDropdownField($fieldDefinition['type']) ||
+                CustomHtmlFormTools::isListboxField($fieldDefinition['type'])) {
                 $valueLabel = 'selectedValue';
             }
         }
@@ -1153,7 +725,6 @@ class CustomHtmlForm extends Form {
      * @return ViewableData
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
      * @since 25.10.2010
      */
     public function submitFailure($data, $form) {
@@ -1223,7 +794,6 @@ class CustomHtmlForm extends Form {
      * @return mixed
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
      * @since 25.10.2010
      */
     protected function submitSuccess($data, $form, $formData) {
@@ -1241,7 +811,6 @@ class CustomHtmlForm extends Form {
      * @return array
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
      * @since 25.10.2010
      */
     protected function getFormData($request) {
@@ -1501,11 +1070,12 @@ class CustomHtmlForm extends Form {
      *
      * @return Field
      *
+     * @throws Exception
      * @author Sascha Koehler <skoehler@pixeltricks.de>, Sebastian Diel <sdiel@pixeltricks.de>
      * @since 22.11.2012
      */
     protected function getFormField($fieldName, $fieldDefinition) {
-        
+
         if (!isset($fieldDefinition['type'])) {
             throw new Exception(
                 'CustomHtmlForm: Field type must be specified.'
@@ -1516,7 +1086,7 @@ class CustomHtmlForm extends Form {
         if (strpos($fieldName, '//') !== false) {
             list($fieldName, $fieldLabel) = explode('//', $fieldName, 2);
         }
-            
+
         foreach ($this->fieldGroups as $groupFields) {
             if (isset($groupFields[$fieldName])) {
                 $fieldReference = &$groupFields[$fieldName];
@@ -1535,7 +1105,7 @@ class CustomHtmlForm extends Form {
             'multiple'              => null,
             'tabIndex'              => 0,
             'form'                  => $this,
-            'maxLength'             => $this->isTextField($fieldDefinition['type']) ? 255 : null,
+            'maxLength'             => CustomHtmlFormTools::isTextField($fieldDefinition['type']) ? 255 : null,
         );
         foreach ($requiredFieldParams as $param => $default) {
             if (!array_key_exists($param, $fieldDefinition)) {
@@ -1545,7 +1115,7 @@ class CustomHtmlForm extends Form {
         }
 
         // create field
-        if ($this->isListboxField($fieldDefinition['type'])) {
+        if (CustomHtmlFormTools::isListboxField($fieldDefinition['type'])) {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
@@ -1555,7 +1125,7 @@ class CustomHtmlForm extends Form {
                 $fieldDefinition['multiple'],
                 $fieldDefinition['form']
             );
-        } else if ($this->isDropdownField($fieldDefinition['type'])) {
+        } else if (CustomHtmlFormTools::isDropdownField($fieldDefinition['type'])) {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
@@ -1563,7 +1133,7 @@ class CustomHtmlForm extends Form {
                 $fieldDefinition['selectedValue'],
                 $fieldDefinition['form']
             );
-        } else if ($this->isOptionsetField($fieldDefinition['type'])) {
+        } else if (CustomHtmlFormTools::isOptionsetField($fieldDefinition['type'])) {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
@@ -1571,24 +1141,24 @@ class CustomHtmlForm extends Form {
                 $fieldDefinition['selectedValue'],
                 $fieldDefinition['form']
             );
-        } else if ($this->isSelectiongroupField($fieldDefinition['type'])) {
+        } else if (CustomHtmlFormTools::isSelectiongroupField($fieldDefinition['type'])) {
             $groupFields = array();
-            
+
             foreach ($fieldDefinition['items'] as $itemFieldName => $item) {
                 $itemObj                     = $this->getFormField($itemFieldName, $item);
                 $groupFields[$itemFieldName] = $itemObj;
             }
-            
+
             if (empty($groupFields)) {
                 return false;
             }
-            
+
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $groupFields
             );
             $field->value = $fieldDefinition['value'];
-        } else if ($this->isTextField($fieldDefinition['type'])) {
+        } else if (CustomHtmlFormTools::isTextField($fieldDefinition['type'])) {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
@@ -1631,7 +1201,7 @@ class CustomHtmlForm extends Form {
                     $field->setConfig($key, $value);
                 }
             }
-        } else if ($this->isTextareaField($fieldDefinition['type'])) {
+        } else if (CustomHtmlFormTools::isTextareaField($fieldDefinition['type'])) {
 
             if (!isset($fieldDefinition['rows'])) {
                 $fieldDefinition['rows'] = 10;
@@ -1714,7 +1284,7 @@ class CustomHtmlForm extends Form {
         if (isset($fieldDefinition['checkRequirements']) &&
             isset($fieldDefinition['checkRequirements']['isFilledIn']) &&
             $fieldDefinition['checkRequirements']['isFilledIn']) {
-            
+
             $field->isRequiredField = true;
         } else {
             $field->isRequiredField = false;
@@ -1744,7 +1314,7 @@ class CustomHtmlForm extends Form {
      * @return string
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function getCustomHtmlFormName() {
@@ -1860,7 +1430,7 @@ class CustomHtmlForm extends Form {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
+     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function addMessage($message) {
@@ -1877,7 +1447,7 @@ class CustomHtmlForm extends Form {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pxieltricks GmbH
+     * @copyright 2011 pixeltricks GmbH
      * @since 08.04.2011
      */
     public function addErrorMessage($fieldName, $message, $messageType = '') {
@@ -1889,7 +1459,7 @@ class CustomHtmlForm extends Form {
             )
         );
     }
-    
+
     /**
      * Returns the CustomHtmlForm object with the given identifier; if it's not
      * found a boolean false is returned.
@@ -1899,7 +1469,7 @@ class CustomHtmlForm extends Form {
      * @return mixed CustomHtmlForm|bool false
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pxieltricks GmbH
+     * @copyright 2011 pixeltricks GmbH
      * @since 08.04.2011
      */
     public function getRegisteredCustomHtmlForm($formIdentifier) {
@@ -1937,7 +1507,7 @@ class CustomHtmlForm extends Form {
      */
     public function getSecurityID() {
         SecurityToken::enable();
-        return SecurityToken::inst()->getValue();
+        return SecurityToken::getSecurityID();
     }
 
     /**
@@ -1963,13 +1533,12 @@ class CustomHtmlForm extends Form {
                 $metadata .= sprintf(
                     '<input type="hidden" id="%s" name="SecurityID" value="%s" />',
                     $this->FormName().'_SecurityID',
-                    SecurityToken::getSecurityID()
+                    $this->getSecurityID()
                 );
             }
         }
         
         // custom data fields
-        // Eigene Datenfelder
         if (!empty($this->customParameters)) {
             foreach ($this->customParameters as $customParameterKey => $customParameterValue) {
                 $metadata .= $this->Fields()->dataFieldByName($customParameterKey)->Field();
@@ -1987,7 +1556,6 @@ class CustomHtmlForm extends Form {
      * @return bool
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pixeltricks GmbH
      * @since 13.01.2011
      */
     public function CustomHtmlFormFieldGroupExists($groupName) {
@@ -2011,12 +1579,11 @@ class CustomHtmlForm extends Form {
      * @return string
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
      * @since 27.10.2010
      */
     public function CustomHtmlFormFieldsByGroup($groupName, $template = null, $argument1 = null) {
         $fieldGroup = new ArrayList();
-        
+
         if ($this->extend('overwriteCustomHtmlFormFieldsByGroup', $groupName, $template, $fieldGroup, $argument1)) {
             return $fieldGroup;
         }
@@ -2084,6 +1651,7 @@ class CustomHtmlForm extends Form {
      *
      * @return string
      *
+     * @throws Exception
      * @author Sascha Koehler <skoehler@pixeltricks.de>
      * @since 25.10.2010
      */
@@ -2179,12 +1747,9 @@ class CustomHtmlForm extends Form {
      * @return string
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
      * @since 25.10.2010
      */
     public function CustomHtmlFormErrorMessages($template = null) {
-        // make validation errors in the template evaluable
-        // aufgetretene Validierungsfehler in Template auswertbar machen
         $data = array(
             'errorMessages' => new ArrayList($this->errorMessages),
             'messages'      => new ArrayList($this->messages)
@@ -2208,11 +1773,11 @@ class CustomHtmlForm extends Form {
 
         $templatePathAbs    = Director::baseFolder().$templatePathRel;
         $viewableObj        = new ViewableData();
-        $output = $viewableObj->customise(
+        $output             = $viewableObj->customise(
             $data
         )->renderWith($templatePathAbs);
 
-        return $this->output;
+        return $output;
     }
     
     /**
@@ -2239,7 +1804,6 @@ class CustomHtmlForm extends Form {
      * @return string
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
      * @since 25.10.2010
      */
     public function FormName() {
@@ -2258,8 +1822,8 @@ class CustomHtmlForm extends Form {
      *
      * @return CustomHtmlForm
      *
+     * @throws Exception
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pxieltricks GmbH
      * @since 08.04.2011
      */
     public function InsertCustomHtmlForm($formIdentifier = null, $renderWithObject = null) {
@@ -2323,7 +1887,6 @@ class CustomHtmlForm extends Form {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
      * @since 08.04.2010
      */
     public function registerCustomHtmlForm($formIdentifier, CustomHtmlForm $formObj) {
@@ -2348,162 +1911,6 @@ class CustomHtmlForm extends Form {
     }
     
     /**
-     * returns the form step's title
-     *
-     * @return string
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 29.11.2010
-     */
-    public function getStepTitle() {
-        $title = '';
-
-        if (isset($this->preferences['stepTitle'])) {
-            $title = $this->preferences['stepTitle'];
-        } else {
-            $title = $this->basePreferences['stepTitle'];
-        }
-
-        return $title;
-    }
-
-    /**
-     * is the form visible?
-     *
-     * @return boolean
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 29.11.2010
-     */
-    public function getStepIsVisible() {
-        $isVisible = false;
-
-        if (isset($this->preferences['stepIsVisible'])) {
-            $isVisible = $this->preferences['stepIsVisible'];
-        } else {
-            $isVisible = $this->basePreferences['stepIsVisible'];
-        }
-
-        return $isVisible;
-    }
-
-    /**
-     * Is the defined step conditional?
-     *
-     * @return bool
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pixeltricks GmbH
-     * @since 08.04.2011
-     */
-    public function getIsConditionalStep() {
-        if (isset($this->preferences['isConditionalStep'])) {
-            $isConditionalStep = $this->preferences['isConditionalStep'];
-        } else {
-            $isConditionalStep = $this->basePreferences['isConditionalStep'];
-        }
-
-        return $isConditionalStep;
-    }
-
-    /**
-     * is the defined step the recent step?
-     *
-     * @return bool
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 23.12.2010
-     */
-    public function getIsCurrentStep() {
-        $isCurrentStep = false;
-
-        if ($this->controller->getCurrentStep() == $this->getStepNr()) {
-            $isCurrentStep = true;
-        }
-
-        return $isCurrentStep;
-    }
-
-    /**
-     * is the step completed already
-     *
-     * @return bool
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 22.12.2010
-     */
-    public function isStepCompleted() {
-        
-        $completed = false;
-        $stepIdx   = $this->getStepNr();
-
-        if (in_array($stepIdx, $this->controller->getCompletedSteps())) {
-            $completed = true;
-        }
-
-        return $completed;
-    }
-
-    /**
-     * Is the previous step completed?
-     *
-     * @return bool
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 23.12.2010
-     */
-    public function isPreviousStepCompleted() {
-        
-        $completed = false;
-        $stepIdx   = $this->getStepNr() - 1;
-
-        if (in_array($stepIdx, $this->controller->getCompletedSteps())) {
-            $completed = true;
-        }
-
-        return $completed;
-    }
-
-    /**
-     * Returns true if this is the last step.
-     *
-     * @return boolean
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pixeltricks GmbH
-     * @since 06.04.2011
-     */
-    public function isLastStep() {
-        $step = $this->controller->getStepList()->find('stepNr', $this->getStepNr());
-        
-        if ($step &&
-            $step->isLastVisibleStep) {
-            
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Returns the output of a form that was initialised by a
-     * CustomHtmlFormStepPage object.
-     *
-     * @return string
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pixeltricks GmbH
-     * @since 06.04.2011
-     */
-    public function CustomHtmlFormInitOutput() {
-        return $this->controller->getInitOutput();
-    }
-    
-    /**
      * Disable the security token.
      *
      * @return void
@@ -2516,52 +1923,6 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * returns the step number of this form
-     *
-     * @return int
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 23.12.2010
-     */
-    public function getStepNr() {
-        $stepList = $this->controller->getStepList();
-        $stepNr   = 1;
-
-        foreach ($stepList as $step) {
-            if ($step->step->class == $this->class) {
-                $stepNr = $step->stepNr;
-                break;
-            }
-        }
-
-        return $stepNr;
-    }
-
-    /**
-     * returns the visible step number of this form
-     *
-     * @return int
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 23.12.2010
-     */
-    public function getVisibleStepNr() {
-        $stepList = $this->controller->getStepList();
-        $stepNr   = 1;
-
-        foreach ($stepList as $step) {
-            if ($step->step->class == $this->class) {
-                $stepNr = $step->visibleStepNr;
-                break;
-            }
-        }
-
-        return $stepNr;
-    }
-
-    /**
      * Deactivate Validation for the given field.
      *
      * @param string $fieldName The name of the field
@@ -2569,7 +1930,6 @@ class CustomHtmlForm extends Form {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pxieltricks GmbH
      * @since 13.03.2011
      */
     protected function deactivateValidationFor($fieldName) {
@@ -2586,7 +1946,6 @@ class CustomHtmlForm extends Form {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pxieltricks GmbH
      * @since 13.03.2011
      */
     protected function activateValidationFor($fieldName) {
@@ -2602,44 +1961,48 @@ class CustomHtmlForm extends Form {
     }
 
     /**
-     * returns submit button title
+     * Returns the value for the given preference.
      *
-     * @return string
+     * @param string $preferenceName The name of the preference
+     *
+     * @return mixed
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 26.10.2010
+     * @since 2013-02-14
      */
-    protected function getSubmitButtontitle() {
-        $title = '';
-
-        if (isset($this->preferences['submitButtonTitle'])) {
-            $title = $this->preferences['submitButtonTitle'];
+    public function getPreference($preferenceName) {
+        if (isset($this->preferences[$preferenceName])) {
+            $result = $this->preferences[$preferenceName];
         } else {
-            $title = $this->basePreferences['submitButtonTitle'];
+            $result = $this->basePreferences[$preferenceName];
         }
 
-        return $title;
+        return $result;
     }
-    
+
     /**
      * returns submit button title
      *
      * @return string
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
+     * @since 26.10.2010
+     */
+    protected function getSubmitButtontitle() {
+        return $this->getPreference('submitButtonTitle');
+    }
+
+    /**
+     * returns submit button title
+     *
+     * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
      * @since 26.10.2010
      */
     protected function getSubmitButtonToolTip() {
-        $toolTip = '';
+        $toolTip = $this->getPreference('submitButtonToolTip');
 
-        if (isset($this->preferences['submitButtonToolTip'])) {
-            $toolTip = $this->preferences['submitButtonToolTip'];
-        } else {
-            $toolTip = $this->basePreferences['submitButtonToolTip'];
-        }
-        
         if (empty($toolTip)) {
             $toolTip = $this->getSubmitButtontitle();
         }
@@ -2648,45 +2011,51 @@ class CustomHtmlForm extends Form {
     }
 
     /**
+     * Indicates wether the shoppingcart modules should be loaded.
+     *
+     * @return array
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 27.04.2011
+     */
+    public function getLoadShoppingCartModules() {
+        return $this->getPreference('loadShoppingcartModules');
+    }
+
+    /**
+     * Indicates wether the shoppingcart forms should be drawn.
+     *
+     * @return array
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 27.04.2011
+     */
+    public function getCreateShoppingCartForms() {
+        return $this->getPreference('createShoppingcartForms');
+    }
+
+    /**
      * is JS validation defined?
      *
      * @return bool
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
      * @since 18.11.2010
      */
     protected function getDoJsValidation() {
-        $doJsValidation = true;
-
-        if (isset($this->preferences['doJsValidation'])) {
-            $doJsValidation = $this->preferences['doJsValidation'];
-        } else {
-            $doJsValidation = $this->basePreferences['doJsValidation'];
-        }
-
-        return $doJsValidation;
+        return $this->getPreference('doJsValidation');
     }
-    
+
     /**
      * Should the form scroll to the first field after validation?
      *
      * @return bool
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
      * @since 18.11.2010
      */
     protected function getDoJsValidationScrolling() {
-        $doJsValidationScrolling = true;
-
-        if (isset($this->preferences['doJsValidationScrolling'])) {
-            $doJsValidationScrolling = $this->preferences['doJsValidationScrolling'];
-        } else {
-            $doJsValidationScrolling = $this->basePreferences['doJsValidationScrolling'];
-        }
-
-        return $doJsValidationScrolling;
+        return $this->getPreference('doJsValidationScrolling');
     }
 
     /**
@@ -2695,19 +2064,10 @@ class CustomHtmlForm extends Form {
      * @return bool
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
      * @since 20.12.2010
      */
     protected function getFillInRequestValues() {
-        $fillInRequestValues = true;
-
-        if (isset($this->preferences['fillInRequestValues'])) {
-            $fillInRequestValues = $this->preferences['fillInRequestValues'];
-        } else {
-            $fillInRequestValues = $this->basePreferences['fillInRequestValues'];
-        }
-
-        return $fillInRequestValues;
+        return $this->getPreference('fillInRequestValues');
     }
 
     /**
@@ -2720,57 +2080,19 @@ class CustomHtmlForm extends Form {
      * @since 23.11.2010
      */
     protected function getShowJsValidationErrorMessages() {
-        $showMessages = true;
-
-        if (isset($this->preferences['showJsValidationErrorMessages'])) {
-            $showMessages = $this->preferences['showJsValidationErrorMessages'];
-        } else {
-            $showMessages = $this->basePreferences['showJsValidationErrorMessages'];
-        }
-
-        return $showMessages;
+        return $this->getPreference('showJsValidationErrorMessages');
     }
     
-    /**
-     * Should the step navigation be shown?
-     *
-     * @return bool
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pixeltricks GmbH
-     * @since 07.01.2011
-     */
-    protected function getShowCustomHtmlFormStepNavigation() {
-        $showNavigation = false;
-        
-        if (isset($this->preferences['ShowCustomHtmlFormStepNavigation'])) {
-            $showNavigation = $this->preferences['ShowCustomHtmlFormStepNavigation'];
-        } else {
-            $showNavigation = $this->basePreferences['ShowCustomHtmlFormStepNavigation'];
-        }
-        
-        return $showNavigation;
-    }
-
     /**
      * returns the submit button's title
      *
      * @return string
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
      * @since 27.10.2010
      */
     protected function getSubmitAction() {
-        $action = '';
-
-        if (isset($this->preferences['submitAction'])) {
-            $action = $this->preferences['submitAction'];
-        } else {
-            $action = $this->basePreferences['submitAction'];
-        }
-
-        return $action;
+        return $this->getPreference('submitAction');
     }
 
     /**
@@ -2782,8 +2104,8 @@ class CustomHtmlForm extends Form {
      *
      * @return void
      *
+     * @throws Exception
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
      * @since 27.10.2010
      */
     protected function addFieldToGroup($groupName, $fieldName, $fieldDefinitions) {
@@ -2815,7 +2137,6 @@ class CustomHtmlForm extends Form {
      * @return ContentController
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
      * @since 28.10.2010
      */
     protected function getFormController($controller, $preferences) {
@@ -2826,88 +2147,6 @@ class CustomHtmlForm extends Form {
         }
     }
 
-    /**
-     * accepts a array and returns a string in Json format
-     *
-     * @param array $structure array of any structure
-     *
-     * @return string
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 11.11.2010
-     */
-    protected function createJsonFromStructure($structure) {
-        $jsonStr = '';
-
-        if (is_array($structure)) {
-            $jsonStr = $this->traverseArray($structure);
-
-            if (!empty($jsonStr)) {
-                $jsonStr = substr($jsonStr, 0, -1);
-                $jsonStr = '{'.$jsonStr.'}';
-            }
-        } else {
-            $jsonStr = $structure;
-        }
-
-        return $jsonStr;
-    }
-
-    /**
-     * creartes a Json string from an array recursively
-     *
-     * @param array $structure the array to be converted to a Json string
-     * 
-     * @return string
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 11.11.2010
-     */
-    private function traverseArray($structure) {
-
-        $output = '';
-
-        if (is_array($structure)) {
-            foreach ($structure as $structureKey => $structureValue) {
-                if ($structureKey !== '') {
-                    $output .= $structureKey.': ';
-                }
-
-                if (is_array($structureValue)) {
-
-                    $section = $this->traverseArray($structureValue, $output);
-
-                    if (!empty($section)) {
-                        $section = substr($section, 0, -1);
-                    }
-
-                    $output .= "{";
-                    $output .= $section;
-                    $output .= "},";
-                } else {
-
-                    if (is_bool($structureValue)) {
-                        $structureValue = $structureValue ? 'true' : 'false';
-                    } else if (is_int($structureValue)) {
-                    } else {
-                        if (strpos($structureValue, '"') === false &&
-                            strpos($structureValue, "'") === false) {
-                            $structureValue = "'".$structureValue."'";
-                        }
-                    }
-
-                    $output .= $structureValue.",";
-                }
-            }
-        } else {
-            $output = $structure;
-        }
-
-        return $output;
-    }
-    
     /**
      * Returns whether there was an successful submission or not.
      *
@@ -2997,7 +2236,7 @@ class CustomHtmlForm extends Form {
 
         $this->cacheKey .= sha1($requestString);
         if (SecurityToken::is_enabled()) {
-            $this->cacheKey .= SecurityToken::inst()->getValue();
+            $this->cacheKey .= $this->getSecurityID();
         }
         if ($this->hasCacheKeyExtension()) {
             $this->cacheKey .= $this->getCacheKeyExtension();
