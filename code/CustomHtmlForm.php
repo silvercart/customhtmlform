@@ -1102,7 +1102,7 @@ class CustomHtmlForm extends Form {
         if (empty($this->errorMessages)) {
             $this->setSubmitSuccess(true);
             $submitSuccessResult = '';
-            // Es sind keine Fehler aufgetreten:
+            // No error occured
             $overwriteResult = $this->extend('overwriteSubmitSuccess', $data, $form, $formData);
             if (empty ($overwriteResult)) {
                 $this->extend('onBeforeSubmitSuccess', $data, $form, $formData);
@@ -1117,7 +1117,7 @@ class CustomHtmlForm extends Form {
             }
             $result = $submitSuccessResult;
         } else {
-            // Es sind Fehler aufgetreten:
+            // An error occured
             $overwriteResult = $this->extend('overwriteSubmitFailure', $data, $form);
             if (empty ($overwriteResult)) {
                 $this->extend('onBeforeSubmitFailure', $data, $form);
@@ -1285,16 +1285,15 @@ class CustomHtmlForm extends Form {
      *
      * @return void
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
-     * @since 25.10.2010
+     * @author Sascha Koehler <skoehler@pixeltricks.de>, Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 15.02.2013
      */
     protected function checkFormData($data) {
         $errorMessages  = array();
         $error          = false;
 
         if ($this->securityTokenEnabled) {
-            $securityID = Session::get('SecurityID');
+            $securityID = SecurityToken::getSecurityID();
             
             if (empty($securityID) ||
                 empty($data['SecurityID']) ||
@@ -1947,9 +1946,8 @@ class CustomHtmlForm extends Form {
      *
      * @return string
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pxieltricks GmbH
-     * @since 25.10.2010
+     * @author Sascha Koehler <skoehler@pixeltricks.de>, Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 15.02.2013
      */
     public function CustomHtmlFormMetadata() {
         $metadata = '';
@@ -1965,7 +1963,7 @@ class CustomHtmlForm extends Form {
                 $metadata .= sprintf(
                     '<input type="hidden" id="%s" name="SecurityID" value="%s" />',
                     $this->FormName().'_SecurityID',
-                    SecurityToken::inst()->getValue()
+                    SecurityToken::getSecurityID()
                 );
             }
         }
