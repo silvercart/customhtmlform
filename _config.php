@@ -59,3 +59,8 @@ if (class_exists('RequirementsEngine')) {
     RequirementsEngine::registerJsFile('customhtmlform/script/jquery.pixeltricks.forms.validator.js');
     RequirementsEngine::registerJsFile(SAPPHIRE_DIR . "/javascript/i18n.js");
 }
+if (class_exists('SilvercartPage')) {
+    Object::set_static('CustomHtmlFormAdmin', 'menuCode',       'config');
+    Object::set_static('CustomHtmlFormAdmin', 'menuSection',    'others');
+    Object::set_static('CustomHtmlFormAdmin', 'menuSortIndex',  129);
+}
