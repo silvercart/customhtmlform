@@ -270,6 +270,14 @@ class CustomHtmlForm extends Form {
      * @var bool
      */
     protected $barebone = null;
+    
+    /**
+     * Custom form action to use for this form.
+     * If set, this will be used in context of 
+     *
+     * @var string
+     */
+    protected $customHtmlFormAction = null;
 
     /**
      * creates a form object with a free configurable markup
@@ -366,7 +374,7 @@ class CustomHtmlForm extends Form {
         parent::setActions($this->SSformFields['actions']);
 
         // define form action
-        $this->setFormAction(Controller::join_links($this->getFormController($controller, $preferences)->Link(), $name));
+        $this->setFormAction($this->buildFormAction());
 
         /*
          * load and init JS validators
@@ -1306,6 +1314,29 @@ class CustomHtmlForm extends Form {
         }
 
         return $field;
+    }
+    
+    /**
+     * Builds and returns the form action to use.
+     * 
+     * @return string
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 01.03.2013
+     */
+    protected function buildFormAction() {
+        if (is_null($this->customHtmlFormAction)) {
+            $formAction = Controller::join_links(
+                    $this->getFormController(
+                            $this->controller,
+                            $this->basePreferences
+                    )->Link(),
+                    $this->getSubmitAction()
+            );
+        } else {
+            $formAction = '/customhtmlformaction/' . $this->customHtmlFormAction;
+        }
+        return $formAction;
     }
 
     /**
