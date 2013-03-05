@@ -64,3 +64,10 @@ if (class_exists('SilvercartPage')) {
     Object::set_static('CustomHtmlFormAdmin', 'menuSection',    'others');
     Object::set_static('CustomHtmlFormAdmin', 'menuSortIndex',  129);
 }
+
+Director::addRules(
+        100,
+        array(
+            'customhtmlformaction/$Action/$ID/$OtherID' => 'CustomHtmlFormActionHandler',
+        )
+);
