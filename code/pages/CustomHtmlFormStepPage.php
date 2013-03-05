@@ -335,7 +335,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
 
         $combinedData = array();
 
-        for ($idx = $this->defaultStartStep; $idx < $this->getNumberOfSteps(); $idx++) {
+        for ($idx = $this->defaultStartStep; $idx <= $this->getNumberOfSteps(); $idx++) {
             $stepData = $this->getStepData($idx);
 
             if (is_array($stepData)) {
@@ -637,14 +637,16 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
                 if (isset($this->stepMapping[$stepIdx])) {
                     $stepClassName = $this->stepMapping[$stepIdx]['class'];
 
-                    $stepList['step'.$stepIdx] = array(
-                        'title'           => $this->stepMapping[$stepIdx]['name'],
-                        'stepIsVisible'   => $this->stepMapping[$stepIdx]['visibility'],
-                        'stepIsCompleted' => $this->isStepCompleted($stepIdx),
-                        'isCurrentStep'   => $isCurrentStep,
-                        'stepNr'          => $stepIdx,
-                        'visibleStepNr'   => $nrOfVisibleSteps + 1,
-                        'step'            => new $stepClassName($this, null, null ,false)
+                    $stepList['step'.$stepIdx] = new ArrayData(
+                            array(
+                                'title'           => $this->stepMapping[$stepIdx]['name'],
+                                'stepIsVisible'   => $this->stepMapping[$stepIdx]['visibility'],
+                                'stepIsCompleted' => $this->isStepCompleted($stepIdx),
+                                'isCurrentStep'   => $isCurrentStep,
+                                'stepNr'          => $stepIdx,
+                                'visibleStepNr'   => $nrOfVisibleSteps + 1,
+                                'step'            => new $stepClassName($this, null, null ,false)
+                            )
                     );
                     
                     if ($this->stepMapping[$stepIdx]['visibility']) {
@@ -655,12 +657,12 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
             
             // Set the number of visible steps and a tag for the last visible step
             foreach ($stepList as $stepNr => $stepListEntry) {
-                if ($stepListEntry['stepIsVisible'] &&
-                    ($stepListEntry['stepNr'] - 1) == $nrOfVisibleSteps) {
+                if ($stepListEntry->stepIsVisible &&
+                    ($stepListEntry->stepNr - 1) == $nrOfVisibleSteps) {
                     
-                    $stepList[$stepNr]['isLastVisibleStep'] = true;
+                    $stepList[$stepNr]->isLastVisibleStep = true;
                 } else {
-                    $stepList[$stepNr]['isLastVisibleStep'] = false;
+                    $stepList[$stepNr]->isLastVisibleStep = false;
                 }
             }
             
