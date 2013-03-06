@@ -580,10 +580,8 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         if ($this->getNextStep() <= $this->getNumberOfSteps()) {
             $this->setCurrentStep($this->getNextStep());
         }
-        $redirected_to = Director::redirected_to();
-        if (empty($redirected_to)) {
-            Director::redirect($this->Link(), 302);
-        }
+        header('Location: '.$this->Link(), true, 302);
+        exit();
     }
 
     /**
@@ -601,7 +599,8 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
 
             $this->setCurrentStep($this->getPreviousStep());
         }
-        Director::redirect($this->Link(), 302);
+        header('Location: '.$this->Link(), true, 302);
+        exit();
     }
 
     /**
@@ -619,8 +618,8 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         if ($this->isPreviousStepCompleted($stepNr)) {
             $this->setCurrentStep($stepNr);
         }
-        
-        Director::redirect($this->Link(), 302);
+        header('Location: '.$this->Link(), true, 302);
+        exit();
     }
 
     /**
@@ -641,10 +640,8 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         } else {
             $link = $this->Link();
         }
-
-        if (!Director::redirected_to($link)) {
-            Director::redirect($link, 302);
-        }
+        header('Location: '.$link, true, 302);
+        exit();
     }
 
     /**
