@@ -1334,7 +1334,7 @@ class CustomHtmlForm extends Form {
                     $this->getSubmitAction()
             );
         } else {
-            $formAction = '/customhtmlformaction/' . $this->customHtmlFormAction;
+            $formAction = SilvercartTools::$baseURLSegment.'customhtmlformaction/' . $this->customHtmlFormAction;
         }
         return $formAction;
     }
