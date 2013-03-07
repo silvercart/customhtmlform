@@ -69,5 +69,6 @@ Director::addRules(
         100,
         array(
             'customhtmlformaction/$Action/$ID/$OtherID' => 'CustomHtmlFormActionHandler',
+            'customhtmlformimage/$Action/$ID/$OtherID'  => 'CustomHtmlFormImageHandler',
         )
 );

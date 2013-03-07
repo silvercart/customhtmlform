@@ -48,13 +48,6 @@ class PtCaptchaImageField extends TextField {
     protected $formIdentifier;
     
     /**
-     * Temporary dir
-     *
-     * @var string
-     */
-    protected $temp_dir;
-    
-    /**
      * Width of the captcha
      *
      * @var int
@@ -104,7 +97,6 @@ class PtCaptchaImageField extends TextField {
     public function __construct($name, $title = null, $value = null, $form = null, $rightTitle = null) {
         parent::__construct($name, $title, $value, $form, $rightTitle);
 
-        $this->temp_dir         = TEMP_FOLDER;
         $this->width            = CustomHtmlFormConfiguration::SpamCheck_width();
         $this->height           = CustomHtmlFormConfiguration::SpamCheck_height();
         $this->jpg_quality      = CustomHtmlFormConfiguration::SpamCheck_jpgQuality();
@@ -124,9 +116,8 @@ class PtCaptchaImageField extends TextField {
     public function Field() {
         if ($this->cachedField === null) {
             $picture            = $this->getPic($this->nr_of_chars);
-            $imagePath          = Director::makeRelative($this->temp_dir).'/'.'cap_'.$picture.'.jpg';
             $this->cachedField  = '
-                <img src="'.$imagePath.'" width="'.$this->width.'" height="'.$this->height.'" alt="" />
+                <img src="'.Director::baseURL().'/customhtmlformimage/get/cap_'.$picture.'/jpg" width="'.$this->width.'" height="'.$this->height.'" alt="" />
             ';
         }
 
@@ -163,40 +154,6 @@ class PtCaptchaImageField extends TextField {
             {$Field}{$messageBlock}
         </div>
 HTML;
-    }
-
-    /**
-     * Validate by submitting to external service
-     *
-     * @param Validator $validator Validator
-     *
-     * @return boolean
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>, Sebastian Diel <sdiel@pixeltricks.de>
-     * @since 06.02.2013
-     */
-    public function validate($validator) {
-        $checkValue     = $_REQUEST[$this->name.'Field'];
-        $temp_dir       = TEMP_FOLDER;
-
-        $fh     = fopen($temp_dir.'/'.'cap_'.$this->formIdentifier.'.txt', "r");
-        $hash   = fgets($fh);
-        $hash2  = md5(strtolower($checkValue));
-
-        if ($hash2 == $hash) {
-            return true;
-        } else {
-            $validator->validationError(
-                $this->name,
-                _t(
-                    'Form.CAPTCHAFIELDNOMATCH'
-                ),
-                "validation",
-                false
-            );
-
-            return false;
-        }
     }
 
     /**
@@ -290,7 +247,7 @@ HTML;
         $captchaIdentifier = md5(strtolower($captcha_str));
 
         // generate a picture file that displays the random string
-        if ($this->generateImage($this->temp_dir.'/'.'cap_'.$captchaIdentifier.'.jpg', $captcha_str)) {
+        if ($this->generateImage(TEMP_FOLDER.'/'.'cap_'.$captchaIdentifier.'.jpg', $captcha_str)) {
 
             if (!is_array($_SESSION)) {
                 $_SESSION = array();
