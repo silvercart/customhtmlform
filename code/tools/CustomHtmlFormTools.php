@@ -32,6 +32,13 @@
 class CustomHtmlFormTools {
 
     /**
+     * The base url segment
+     *
+     * @var string
+     */
+    public static $baseURLSegment = null;
+
+    /**
      * Returns whether the given type is a dropdown field.
      *
      * @param string $type The type to check
@@ -181,5 +188,33 @@ class CustomHtmlFormTools {
         }
 
         return $isField;
+    }
+
+    /**
+     * Returns the base URL segment that's used for inclusion of css and
+     * javascript files via Requirements.
+     *
+     * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 16.02.2012
+     */
+    public static function getBaseURLSegment() {
+        if (is_null(self::$baseURLSegment)) {
+            $baseUrl = Director::baseUrl();
+
+            if ($baseUrl === '/') {
+                $baseUrl = '';
+            }
+
+            if (!empty($baseUrl) &&
+                substr($baseUrl, -1) != '/') {
+
+                $baseUrl .= '/';
+            }
+            self::$baseURLSegment = $baseUrl;
+        }
+
+        return self::$baseURLSegment;
     }
 }

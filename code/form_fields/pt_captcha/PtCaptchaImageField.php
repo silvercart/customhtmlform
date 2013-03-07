@@ -117,7 +117,7 @@ class PtCaptchaImageField extends TextField {
         if ($this->cachedField === null) {
             $picture            = $this->getPic($this->nr_of_chars);
             $this->cachedField  = '
-                <img src="'.Director::baseURL().'/customhtmlformimage/get/cap_'.$picture.'/jpg" width="'.$this->width.'" height="'.$this->height.'" alt="" />
+                <img src="'.(CustomHtmlFormTools::getBaseURLSegment()).'customhtmlformimage/get/cap_'.$picture.'/jpg" width="'.$this->width.'" height="'.$this->height.'" alt="" />
             ';
         }
 
