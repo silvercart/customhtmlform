@@ -170,7 +170,7 @@ class CustomHtmlForm extends Form {
         'stepTitle'                         => '',
         'submitAction'                      => 'customHtmlFormSubmit',
         'submitButtonTitle'                 => 'Abschicken',
-        'submitButtonToolTip'               => 'Abschicken'
+        'submitButtonToolTip'               => ''
     );
 
     /**
