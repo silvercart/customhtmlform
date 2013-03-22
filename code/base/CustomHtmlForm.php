@@ -2354,8 +2354,11 @@ class CustomHtmlForm extends Form {
      * @return void
      */
     public function setCachedFormOutput($output) {
-        $cache = self::getCache();
-        $cache->save($output, $this->getCacheKey());
+        if (self::$cache_enabled &&
+            $this->excludeFromCache === false) {
+            $cache = self::getCache();
+            $cache->save($output, $this->getCacheKey());
+        }
     }
     
     /**
