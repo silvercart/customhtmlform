@@ -79,6 +79,13 @@ class CustomHtmlForm extends Form {
      * @var bool
      */
     protected $excludeFromCache = false;
+    
+    /**
+     * Determines whether the CustomHtmlForm file cache is enabled or not
+     *
+     * @var bool
+     */
+    public static $cache_enabled = true;
 
     /**
      * saves controller of calling class
@@ -2358,10 +2365,35 @@ class CustomHtmlForm extends Form {
      */
     public function getCachedFormOutput() {
         $cachedFormOutput = '';
-        if ($this->excludeFromCache === false) {
+        if (self::$cache_enabled &&
+            $this->excludeFromCache === false) {
             $cache = self::getCache();
             $cachedFormOutput = $cache->load($this->getCacheKey());
         }
         return $cachedFormOutput;
+    }
+    
+    /**
+     * Disables the CustomHtmlForm file cache
+     * 
+     * @return void
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 22.03.2013
+     */
+    public static function disableCache() {
+        self::$cache_enabled = false;
+    }
+    
+    /**
+     * Enables the CustomHtmlForm file cache
+     * 
+     * @return void
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 22.03.2013
+     */
+    public static function enableCache() {
+        self::$cache_enabled = true;
     }
 }
