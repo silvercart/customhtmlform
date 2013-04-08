@@ -26,9 +26,10 @@
  *
  * @package CustomHtmlForm
  * @subpackage FormFields
- * @copyright pixeltricks GmbH
- * @author Sascha Koehler <skoehler@pixeltricks.de>, Sebastian Diel <sdiel@pixeltricks.de>
- * @since 12.02.2013
+ * @author Sascha Koehler <skoehler@pixeltricks.de>,
+ *         Sebastian Diel <sdiel@pixeltricks.de>
+ * @since 08.04.2013
+ * @copyright 2013 pixeltricks GmbH
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
 class PtCaptchaImageField extends TextField {
@@ -253,14 +254,20 @@ class PtCaptchaImageField extends TextField {
                 if (!is_array($_SESSION)) {
                     $_SESSION = array();
                 }
-                if (!array_key_exists('CustomHtmlForm', $_SESSION)) {
-                    $_SESSION['CustomHtmlForm'] = array();
+                $customHtmlFormSession = Session::get('CustomHtmlForm');
+                if (is_null($customHtmlFormSession)) {
+                    Session::set('CustomHtmlForm', array());
+                    Session::save();
+                    $customHtmlFormSession = Session::get('CustomHtmlForm');
                 }
-                if (!array_key_exists('SpamCheck', $_SESSION['CustomHtmlForm'])) {
-                    $_SESSION['CustomHtmlForm']['SpamCheck'] = array();
+                if (!array_key_exists('SpamCheck', $customHtmlFormSession)) {
+                    Session::set('CustomHtmlForm.SpamCheck', array());
+                    Session::save();
                 }
-
-                $_SESSION['CustomHtmlForm']['SpamCheck'][$this->getFormIdentifier()] = $captchaIdentifier;
+                $customHtmlFormSessionSpamCheck = Session::get('CustomHtmlForm.SpamCheck');
+                $customHtmlFormSessionSpamCheck[$this->getFormIdentifier()] = $captchaIdentifier;
+                Session::set('CustomHtmlForm.SpamCheck', $customHtmlFormSessionSpamCheck);
+                Session::save();
 
                 $this->pic = $captchaIdentifier;
             }
