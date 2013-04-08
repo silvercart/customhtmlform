@@ -240,8 +240,9 @@ class PtCaptchaImageField extends TextField {
      *
      * @return boolean|string
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>, Sebastian Diel <sdiel@pixeltricks.de>
-     * @since 12.02.2013
+     * @author Sascha Koehler <skoehler@pixeltricks.de>,
+     *         Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 08.04.2013
      */
     public function getPic($charCount = 8) {
         if (is_null($this->pic)) {
