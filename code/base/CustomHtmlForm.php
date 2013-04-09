@@ -2263,7 +2263,9 @@ class CustomHtmlForm extends Form {
             }
         }
         
-        $requestString = $requestString.'_'.Translatable::get_current_locale();
+        if (class_exists('Translatable')) {
+            $requestString .= '_'.Translatable::get_current_locale();
+        }
 
         $this->cacheKey .= sha1($requestString);
         if (SecurityToken::is_enabled()) {
