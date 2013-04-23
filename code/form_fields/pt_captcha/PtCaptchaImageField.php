@@ -113,10 +113,11 @@ class PtCaptchaImageField extends TextField {
      * @param int    $maxLength Max input length
      * @param Form   $form      Form to relate field with
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>, Sebastian Diel <sdiel@pixeltricks.de>
+     * @author Sascha Koehler <skoehler@pixeltricks.de>,
+     *         Sebastian Diel <sdiel@pixeltricks.de>
      * @since 12.02.2013
      */
-    public function __construct($name, $title = null, $value = '', $maxLength = null, $form = null) {
+    public function __construct($name, $title = null, $value = null, $maxLength = null, $form = null) {
         parent::__construct($name, $title, $value, $maxLength, $form);
 
         $this->setTempDir(          ASSETS_PATH . 'pt-captcha');
@@ -126,6 +127,25 @@ class PtCaptchaImageField extends TextField {
         $this->setNrOfChars(        CustomHtmlFormConfiguration::SpamCheck_numberOfCharsInCaptcha());
         $this->setFont(             Director::baseFolder() . '/customhtmlform/fonts/Aller_Rg.ttf');
         $this->setFormIdentifier(   $form->getName() . $this->getName());
+    }
+
+    /**
+     * Creates the image and returns the image HTML tag as string.
+     *
+     * @return string HTML
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 10.12.2012
+     */
+    public function Field() {
+        if ($this->cachedField === null) {
+            $picture            = $this->getPic($this->nr_of_chars);
+            $this->cachedField  = '
+                <img src="'.(CustomHtmlFormTools::getBaseURLSegment()).'customhtmlformimage/get/cap_'.$picture.'/jpg" width="'.$this->width.'" height="'.$this->height.'" alt="" />
+            ';
+        }
+
+        return $this->cachedField;
     }
 
     /**

@@ -79,6 +79,13 @@ class CustomHtmlForm extends Form {
      * @var bool
      */
     protected $excludeFromCache = false;
+    
+    /**
+     * Determines whether the CustomHtmlForm file cache is enabled or not
+     *
+     * @var bool
+     */
+    public static $cache_enabled = true;
 
     /**
      * saves controller of calling class
@@ -170,7 +177,7 @@ class CustomHtmlForm extends Form {
         'stepTitle'                         => '',
         'submitAction'                      => 'customHtmlFormSubmit',
         'submitButtonTitle'                 => 'Abschicken',
-        'submitButtonToolTip'               => 'Abschicken'
+        'submitButtonToolTip'               => ''
     );
 
     /**
@@ -1362,7 +1369,7 @@ class CustomHtmlForm extends Form {
                     $this->getSubmitAction()
             );
         } else {
-            $formAction = '/customhtmlformaction/' . $this->customHtmlFormAction;
+            $formAction = SilvercartTools::$baseURLSegment.'customhtmlformaction/' . $this->customHtmlFormAction;
         }
         return $formAction;
     }
@@ -2310,7 +2317,9 @@ class CustomHtmlForm extends Form {
             }
         }
         
-        $requestString = $requestString.'_'.Translatable::get_current_locale();
+        if (class_exists('Translatable')) {
+            $requestString .= '_'.Translatable::get_current_locale();
+        }
 
         $this->cacheKey .= sha1($requestString);
         if (SecurityToken::is_enabled()) {
@@ -2391,8 +2400,11 @@ class CustomHtmlForm extends Form {
      * @return void
      */
     public function setCachedFormOutput($output) {
-        $cache = self::getCache();
-        $cache->save($output, $this->getCacheKey());
+        if (self::$cache_enabled &&
+            $this->excludeFromCache === false) {
+            $cache = self::getCache();
+            $cache->save($output, $this->getCacheKey());
+        }
     }
     
     /**
@@ -2402,10 +2414,35 @@ class CustomHtmlForm extends Form {
      */
     public function getCachedFormOutput() {
         $cachedFormOutput = '';
-        if ($this->excludeFromCache === false) {
+        if (self::$cache_enabled &&
+            $this->excludeFromCache === false) {
             $cache = self::getCache();
             $cachedFormOutput = $cache->load($this->getCacheKey());
         }
         return $cachedFormOutput;
+    }
+    
+    /**
+     * Disables the CustomHtmlForm file cache
+     * 
+     * @return void
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 22.03.2013
+     */
+    public static function disableCache() {
+        self::$cache_enabled = false;
+    }
+    
+    /**
+     * Enables the CustomHtmlForm file cache
+     * 
+     * @return void
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 22.03.2013
+     */
+    public static function enableCache() {
+        self::$cache_enabled = true;
     }
 }

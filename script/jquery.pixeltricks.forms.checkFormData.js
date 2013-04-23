@@ -293,9 +293,14 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
             }
 
             // Abfrage fuer Checkboxen
-            if ($('input[@name=' + [parameters[0].field] + ']:checked').val() == parameters[0].hasValue)
+            if ($('input[name=' + [parameters[0].field] + ']').is(':checked')) {
+                var checkedState = 1;
+            } else {
+                var checkedState = 0;
+            }
+            if (checkedState == parameters[0].hasValue)
             {
-                if (checkValue.length == 0)
+                if (checkValue == '' || checkValue.length == 0)
                 {
                     isFilledInCorrectly = false;
                 }

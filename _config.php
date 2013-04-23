@@ -46,7 +46,7 @@ SS_Cache::add_backend(
         'File',
         array(
             'cache_dir'                 => $cacheDir,
-            'hashed_directory_level'    => 3,
+            'hashed_directory_level'    => 1,
         )
 );
 SS_Cache::pick_backend('CustomHtmlForm', 'CustomHtmlForm');
@@ -69,5 +69,6 @@ Director::addRules(
         100,
         array(
             'customhtmlformaction/$Action/$ID/$OtherID' => 'CustomHtmlFormActionHandler',
+            'customhtmlformimage/$Action/$ID/$OtherID'  => 'CustomHtmlFormImageHandler',
         )
 );
