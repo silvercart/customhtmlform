@@ -208,6 +208,14 @@ class CustomHtmlForm extends Form {
     );
 
     /**
+     * Contains the registered themes. This list is used by all methods that
+     * fetch templates.
+     *
+     * @var array
+     */
+    public static $registeredThemes = array();
+
+    /**
      * Contains a list of registerd custom html forms
      *
      * @var array
@@ -451,6 +459,26 @@ class CustomHtmlForm extends Form {
      */
     public static function registerModule($moduleName, $priority = 51) {
         self::$registeredModules[$moduleName] = $priority;
+    }
+
+    /**
+     * Add a theme for the template pull methods.
+     *
+     * You can give a priority ranging from 1 to 100. The standard priority
+     * for the project given in "mysite/_config.php" is 50. The
+     * customhtmlform priority is 1. To override both you would give a
+     * priority of 51 or higher.
+     *
+     * @param string $themeName The name of the module
+     * @param int    $priority  The priority
+     *
+     * @return void
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 2013-04-23
+     */
+    public static function registerTheme($themeName, $priority = 51) {
+        self::$registeredThemes[$themeName] = $priority;
     }
 
     /**
@@ -1690,6 +1718,7 @@ class CustomHtmlForm extends Form {
         $fieldReference = '';
         $templatePath   = '';
         $output         = '';
+        $templateFound  = false;
 
         foreach ($this->fieldGroups as $groupName => $groupFields) {
             if (isset($groupFields[$fieldName])) {
@@ -1708,8 +1737,13 @@ class CustomHtmlForm extends Form {
             $template = 'CustomHtmlFormField';
         }
 
+        // sort the registered themes, so that the highest priority ones
+        // are searched first.
+        $registeredThemes = self::$registeredThemes;
+        arsort($registeredThemes);
+
         // sort the registered modules, so that the highest priority ones
-        // are search first.
+        // are searched first.
         $registeredModules = self::$registeredModules;
         arsort($registeredModules);
 
@@ -1721,12 +1755,25 @@ class CustomHtmlForm extends Form {
         );
 
         // search the template in a variety of possible paths
-        foreach ($registeredModules as $moduleName => $priority) {
+        foreach ($registeredThemes as $themeName => $priority) {
             foreach ($templateDirs as $templateDir) {
-                $templatePath = $moduleName.$templateDir.$template.'.ss';
+                $templatePath = 'themes/'.$themeName.$templateDir.$template.'.ss';
 
                 if (Director::fileExists($templatePath)) {
+                    $templateFound = true;
                     break(2);
+                }
+            }
+        }
+
+        if (!$templateFound) {
+            foreach ($registeredModules as $moduleName => $priority) {
+                foreach ($templateDirs as $templateDir) {
+                    $templatePath = $moduleName.$templateDir.$template.'.ss';
+
+                    if (Director::fileExists($templatePath)) {
+                        break(2);
+                    }
                 }
             }
         }
