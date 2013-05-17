@@ -1725,6 +1725,7 @@ class CustomHtmlForm extends Form {
             '/templates/',
             '/templates/Layout/',
             '/templates/forms/',
+            '/templates/form_fields/',
         );
 
         // search the template in a variety of possible paths
