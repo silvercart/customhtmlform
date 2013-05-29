@@ -131,20 +131,23 @@ class PtCaptchaImageField extends TextField {
 
     /**
      * Creates the image and returns the image HTML tag as string.
+     * Please note: The properties are currently not used.
+     *
+     * @param array $properties key value pairs for template variables
      *
      * @return string HTML
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 10.12.2012
+     * @author Sascha Koehler <skoehler@pixeltricks.de>, 
+     *         Patrick Schneider <pschneider@pixeltricks.de>
+     * @since 29.05.2013
      */
-    public function Field() {
+    public function Field($properties = array()) {
         if ($this->cachedField === null) {
-            $picture            = $this->getPic($this->nr_of_chars);
+            $picture            = $this->getPic($this->getNrOfChars());
             $this->cachedField  = '
-                <img src="'.(CustomHtmlFormTools::getBaseURLSegment()).'customhtmlformimage/get/cap_'.$picture.'/jpg" width="'.$this->width.'" height="'.$this->height.'" alt="" />
+                <img src="'.(CustomHtmlFormTools::getBaseURLSegment()).'assetspt-captcha/cap_'. $picture . '.jpg" width="'.$this->width.'" height="'.$this->height.'" alt="" />
             ';
         }
-
         return $this->cachedField;
     }
 
