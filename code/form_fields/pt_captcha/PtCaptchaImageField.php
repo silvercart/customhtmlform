@@ -120,7 +120,7 @@ class PtCaptchaImageField extends TextField {
     public function __construct($name, $title = null, $value = null, $maxLength = null, $form = null) {
         parent::__construct($name, $title, $value, $maxLength, $form);
 
-        $this->setTempDir(          ASSETS_PATH . 'pt-captcha');
+        $this->setTempDir(          ASSETS_PATH . '/pt-captcha');
         $this->setWidth(            CustomHtmlFormConfiguration::SpamCheck_width());
         $this->setHeight(           CustomHtmlFormConfiguration::SpamCheck_height());
         $this->setJpgQuality(       CustomHtmlFormConfiguration::SpamCheck_jpgQuality());
@@ -145,7 +145,7 @@ class PtCaptchaImageField extends TextField {
         if ($this->cachedField === null) {
             $picture            = $this->getPic($this->getNrOfChars());
             $this->cachedField  = '
-                <img src="'.(CustomHtmlFormTools::getBaseURLSegment()).'assetspt-captcha/cap_'. $picture . '.jpg" width="'.$this->width.'" height="'.$this->height.'" alt="" />
+                <img src="'.(CustomHtmlFormTools::getBaseURLSegment()).'customhtmlformimage/get/cap_'.$picture.'/jpg" width="'.$this->width.'" height="'.$this->height.'" alt="" />
             ';
         }
         return $this->cachedField;

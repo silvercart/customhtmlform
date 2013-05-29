@@ -80,7 +80,7 @@ class CustomHtmlFormImageHandler extends Controller {
         if ($error == 0 &&
             in_array($params['OtherID'], self::$allowed_mime_types)) {
 
-            $filePath = Director::baseFolder().'/silverstripe-cache/'.$params['ID'].'.'.$params['OtherID'];
+            $filePath = ASSETS_PATH . '/pt-captcha/' . $params['ID'] . '.' . $params['OtherID'];
 
             if ($error == 0 &&
                 file_exists($filePath) &&

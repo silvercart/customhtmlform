@@ -201,8 +201,8 @@ class CustomHtmlFormTools {
      */
     public static function getBaseURLSegment() {
         if (is_null(self::$baseURLSegment)) {
-            $baseUrl = Director::baseUrl();
-
+            $baseUrl = Director::baseURL();
+            
             if ($baseUrl === '/') {
                 $baseUrl = '';
             }
@@ -214,7 +214,6 @@ class CustomHtmlFormTools {
             }
             self::$baseURLSegment = $baseUrl;
         }
-
         return self::$baseURLSegment;
     }
 }
