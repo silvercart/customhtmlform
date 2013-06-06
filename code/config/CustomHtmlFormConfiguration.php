@@ -210,7 +210,7 @@ class CustomHtmlFormConfiguration extends DataExtension {
      */
     public static function getConfig() {
         if (is_null(self::$config)) {
-            self::$config = CustomHtmlFormConfiguration::get()->first();
+            self::$config = SiteConfig::current_site_config();
 
             if (!self::$config) {
                 if (SilvercartTools::isIsolatedEnvironment()) {
