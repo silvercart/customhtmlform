@@ -1,10 +1,6 @@
 en:
   CustomHtmlForm:
     REQUIRED_FIELD_MARKER: "<span class=\"required-field\">[ Required ]</span>"
-  CustomHtmlFormAdmin:
-    MENUTITLE: "Forms"
-    PLURALNAME: "Forms"
-    SINGULARNAME: "Form"
   CustomHtmlFormConfiguration:
     PLURALNAME: "Form configuration"
     SINGULARNAME: "Form configuration"
@@ -12,8 +8,6 @@ en:
     SpamCheck_jpgQuality: "JPG quality setting for the rendering of the captcha image (0 [worst] to 100 [best])"
     SpamCheck_numberOfCharsInCaptcha: "Number of characters in the captcha"
     SpamCheck_width: "Width in pixels"
-  CustomHtmlFormConfigurationAdmin:
-    TAB_SPAMCHECK: "Captcha"
   CustomHtmlFormErrorMessages:
     CHECK_FIELDS: "Please check your input on the following fields:"
   CustomHtmlFormField:

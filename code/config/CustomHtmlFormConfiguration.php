@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2012 pixeltricks GmbH
+ * Copyright 2013 pixeltricks GmbH
  *
  * This file is part of CustomHtmlForms.
  *
@@ -25,12 +25,12 @@
  *
  * @package CustomHtmlForm
  * @subpackage Config
- * @author Sascha Koehler <skoehler@pixeltricks.de>
- * @copyright 2012 pixeltricks GmbH
- * @since 2012-12-10
+ * @author Sascha Koehler <skoehler@pixeltricks.de>, Patrick Schneider <pschneider@pixeltricks.de>
+ * @copyright 2013 pixeltricks GmbH
+ * @since 06.06.2013
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
-class CustomHtmlFormConfiguration extends DataObject {
+class CustomHtmlFormConfiguration extends DataExtension {
 
     /**
      * Attributes.
@@ -80,33 +80,6 @@ class CustomHtmlFormConfiguration extends DataObject {
      * @var int
      */
     public static $SpamCheck_jpgQuality             = null;
-
-    /**
-     * Returns the translated singular name of the object. If no translation exists
-     * the class name will be returned.
-     *
-     * @return string The objects singular name
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 2012-12-10
-     */
-    public function singular_name() {
-        return SilvercartTools::singular_name_for($this);
-    }
-
-
-    /**
-     * Returns the translated plural name of the object. If no translation exists
-     * the class name will be returned.
-     *
-     * @return string the objects plural name
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 2012-12-10
-     */
-    public function plural_name() {
-        return SilvercartTools::plural_name_for($this);
-    }
 
     /**
      * Returns the number of chars that should be displayed in the SpamCheck captcha.
@@ -180,45 +153,52 @@ class CustomHtmlFormConfiguration extends DataObject {
         return self::$SpamCheck_jpgQuality;
     }
 
-    // -----------------------------------------------------------------------
-
     /**
-     * Returns the field labels.
+     * Updates the fields labels
      *
-     * @param boolean $includerelations a boolean value to indicate if the labels returned include relation fields
-     *
-     * @return array|string Array of all element labels if no argument given, otherwise the label of the field
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 2012-12-10
+     * @param array &$labels Labels to update
+     * 
+     * @return void
+     * 
+     * @author Patrick Schneider <pschneider@pixeltricks.de>
+     * @since 06.06.2013
      */
-    public function fieldLabels($includerelations = true) {
-        return array_merge(
-            parent::fieldLabels($includerelations),
-            array(
+    public function updateFieldLabels(&$labels) {
+        $labels = array_merge(
+                $labels,
+                array(
                 'SpamCheck_numberOfCharsInCaptcha'  => _t('CustomHtmlFormConfiguration.SpamCheck_numberOfCharsInCaptcha'),
                 'SpamCheck_width'                   => _t('CustomHtmlFormConfiguration.SpamCheck_width'),
                 'SpamCheck_height'                  => _t('CustomHtmlFormConfiguration.SpamCheck_height'),
                 'SpamCheck_jpgQuality'              => _t('CustomHtmlFormConfiguration.SpamCheck_jpgQuality'),
+                'FormConfigurationTab'              => _t('CustomHtmlFormConfiguration.SINGULARNAME')
             )
         );
     }
-
+    
     /**
-     * Create CMS fields
+     * Adds a translation section
      *
-     * @return FieldList
+     * @param FieldList $fields The FieldList
+     * 
+     * @return void
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>, Roland Lehmann
-     * @since 10.02.2013
+     * @author Patrick Schneider <pschneider@pixeltricks.de>
+     * @since 06.06.2013
      */
-    public function getCMSFields() {
-        $fields = SilvercartDataObject::getCMSFields($this);
+    public function updateCMSFields(FieldList $fields) {
+        $fields->findOrMakeTab('Root.FormConfiguration')->setTitle($this->owner->fieldLabel('FormConfigurationTab'));
+        
+        $numberOfCharsInCaptchaField = new TextField('SpamCheck_numberOfCharsInCaptcha', $this->owner->fieldLabel('SpamCheck_numberOfCharsInCaptcha'));
+        $spamCheckWidthField         = new TextField('SpamCheck_width',                  $this->owner->fieldLabel('SpamCheck_width'));
+        $spamCheckHeightField        = new TextField('SpamCheck_height',                 $this->owner->fieldLabel('SpamCheck_height'));
+        $spamCheckJpgQualityField    = new TextField('SpamCheck_jpgQuality',             $this->owner->fieldLabel('SpamCheck_jpgQuality'));
 
-        return $fields;
+        $fields->addFieldToTab('Root.FormConfiguration', $numberOfCharsInCaptchaField);
+        $fields->addFieldToTab('Root.FormConfiguration', $spamCheckWidthField);
+        $fields->addFieldToTab('Root.FormConfiguration', $spamCheckHeightField);
+        $fields->addFieldToTab('Root.FormConfiguration', $spamCheckJpgQualityField);
     }
-
-    // -----------------------------------------------------------------------
 
     /**
      * Returns the CustomHtmlFormConfig or triggers an error if not existent.
@@ -263,34 +243,15 @@ class CustomHtmlFormConfiguration extends DataObject {
      *
      * @return void
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 2012-12-10
+     * @author Patrick Schneider <pschneider@pixeltricks.de>
+     * @since 06.06.2013
      */
     public function requireDefaultRecords() {
-        if (!CustomHtmlFormConfiguration::get()->exists()) {
-            $config = new CustomHtmlFormConfiguration();
-            $config->SpamCheck_numberOfCharsInCaptcha   = 8;
-            $config->SpamCheck_width                    = 160;
-            $config->SpamCheck_height                   = 50;
-            $config->SpamCheck_jpgQuality               = 90;
-            $config->write();
-        }
+        $this->owner->SpamCheck_numberOfCharsInCaptcha   = 8;
+        $this->owner->SpamCheck_width                    = 160;
+        $this->owner->SpamCheck_height                   = 50;
+        $this->owner->SpamCheck_jpgQuality               = 90;
+        $this->owner->write();
     }
 
-    /**
-     * Checks whether there is an existing SilvercartConfig or not before writing.
-     *
-     * @return void
-     *
-     * @author Sebastian Diel <sdiel@pixeltricks.de>
-     * @since 24.02.2011
-     */
-    public function onBeforeWrite() {
-        parent::onBeforeWrite();
-        if (CustomHtmlFormConfiguration::get()->exists()) {
-            if (CustomHtmlFormConfiguration::get()->first()->ID !== $this->ID) {
-                $this->record = array();
-            }
-        }
-    }
 }

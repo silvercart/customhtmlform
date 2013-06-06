@@ -26,6 +26,7 @@ Requirements::set_write_js_to_body(false); // write javascriptcode into the html
 
 DataObject::add_extension('ContentController', 'CustomHtmlFormPage_Controller');
 DataObject::add_extension('Security',          'CustomHtmlFormPage_Controller');
+SiteConfig::add_extension('SiteConfig',        'CustomHtmlFormConfiguration');
 
 $cacheBaseDir   = getTempFolder() . DIRECTORY_SEPARATOR . 'cache';
 $cacheDir       = $cacheBaseDir . DIRECTORY_SEPARATOR . 'CustomHtmlForm';
@@ -58,11 +59,6 @@ if (class_exists('RequirementsEngine')) {
     RequirementsEngine::registerJsFile('customhtmlform/script/jquery.pixeltricks.forms.events.js');
     RequirementsEngine::registerJsFile('customhtmlform/script/jquery.pixeltricks.forms.validator.js');
     RequirementsEngine::registerJsFile(SAPPHIRE_DIR . "/javascript/i18n.js");
-}
-if (class_exists('SilvercartPage')) {
-    Object::set_static('CustomHtmlFormAdmin', 'menuCode',       'config');
-    Object::set_static('CustomHtmlFormAdmin', 'menuSection',    'others');
-    Object::set_static('CustomHtmlFormAdmin', 'menuSortIndex',  129);
 }
 
 Director::addRules(
