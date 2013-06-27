@@ -40,6 +40,9 @@ if (!is_dir($cacheDir)) {
     }
     mkdir($cacheDir);
 }
+if (class_exists('SilvercartCleanCacheTask')) {
+    SilvercartCleanCacheTask::register_cache_directory($cacheDir);
+}
 SS_Cache::set_cache_lifetime('CustomHtmlForm', $cachelifetime);
 SS_Cache::add_backend(
         'CustomHtmlForm',
