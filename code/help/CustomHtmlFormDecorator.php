@@ -42,6 +42,19 @@ interface CustomHtmlFormDecorator {
     public function extendedProcess();
     
     /**
+     * Adds some custom markup to the CustomHtmlFormSpecialFields markup on 
+     * after the default markup will be added.
+     * 
+     * @param string &$fieldsMarkup Fields markup to update
+     * 
+     * @return bool
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 02.07.2013
+     */
+    public function onAfterCustomHtmlFormSpecialFields(&$fieldsMarkup);
+    
+    /**
      * This method will be called after CustomHtmlForm's default submitFailure.
      * You can manipulate the relevant data here.
      * 
@@ -69,6 +82,19 @@ interface CustomHtmlFormDecorator {
      * @since 10.11.2011
      */
     public function onAfterSubmitSuccess(&$data, &$form, &$formData);
+    
+    /**
+     * Adds some custom markup to the CustomHtmlFormSpecialFields markup on 
+     * before the default markup will be added.
+     * 
+     * @param string &$fieldsMarkup Fields markup to update
+     * 
+     * @return bool
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 02.07.2013
+     */
+    public function onBeforeCustomHtmlFormSpecialFields(&$fieldsMarkup);
     
     /**
      * This method will be called before CustomHtmlForm's default submitFailure.
