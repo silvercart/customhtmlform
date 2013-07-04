@@ -413,6 +413,13 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
                             1
                         );
                     }
+                } else if (messages === -1) {
+                    if ($('#' + fieldBoxID).length > 0) {
+                        $('#' + fieldBoxID).removeClass('error');
+                    }
+                    if ($('#' + errorFieldID).length > 0) {
+                        $('#' + errorFieldID).remove();
+                    }
                 }
             }
         );

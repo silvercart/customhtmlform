@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2010, 2011 pixeltricks GmbH
+ * Copyright 2013 pixeltricks GmbH
  *
  * This file is part of CustomHtmlForms.
  *
@@ -24,9 +24,10 @@
  * Provide functionallity for forms with freely configurable HTML code
  *
  * @package CustomHtmlForm
- * @author Sascha Koehler <skoehler@pixeltricks.de>
- * @copyright 2010 pixeltricks GmbH
- * @since 25.10.2010
+ * @author Sascha Koehler <skoehler@pixeltricks.de>,
+ *         Sebastian Diel <sdiel@pixeltricks.de>
+ * @since 04.07.2013
+ * @copyright 2013 pixeltricks GmbH
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
 class CustomHtmlForm extends Form {
@@ -150,6 +151,13 @@ class CustomHtmlForm extends Form {
     protected $messages = array();
 
     /**
+     * contains the messages for a form to display in template
+     *
+     * @var ArrayList
+     */
+    protected $messagesForTemplate = null;
+
+    /**
      * Contains an associative array with values that are passed to the form as
      * hidden fields. These values will not be validated, they only contain data
      * for control and evaluation.
@@ -177,7 +185,9 @@ class CustomHtmlForm extends Form {
         'stepTitle'                         => '',
         'submitAction'                      => 'customHtmlFormSubmit',
         'submitButtonTitle'                 => 'Abschicken',
-        'submitButtonToolTip'               => ''
+        'submitButtonToolTip'               => '',
+        'submitButtonUseButtonTag'          => false,
+        'submitButtonExtraClasses'          => null,
     );
 
     /**
@@ -647,15 +657,25 @@ class CustomHtmlForm extends Form {
      *
      * @return void
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>, Sebastian Diel <sdiel@pixeltricks.de>
-     * @since 26.09.2012
+     * @author Sascha Koehler <skoehler@pixeltricks.de>,
+     *         Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 04.07.2013
      */
     protected function fillInRequestValues() {
         $request = $this->controller->getRequest();
 
         $formFields = $this->getFormFields();
 
-        if ($formFields) {
+        $class = get_class($this);
+        if (array_key_exists($class, self::$classInstanceCounter)) {
+            $instanceCounter = self::$classInstanceCounter[$class] + 1;
+        } else {
+            $instanceCounter = 1;
+        }
+        $customHtmlFormName = str_replace('/', '', $class . '_' . $this->getSubmitAction() . '_' . $instanceCounter);
+        
+        if ($formFields &&
+            $request['CustomHtmlFormName'] == $customHtmlFormName) {
             foreach ($formFields as $fieldName => $fieldDefinition) {
                 if (isset($request[$fieldName])) {
                     if (strtolower($fieldDefinition['type']) == 'passwordfield') {
@@ -1029,8 +1049,9 @@ class CustomHtmlForm extends Form {
      *          'actions'   => FieldList
      *      )
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>, Sebastian Diel <sdiel@pixeltricks.de>
-     * @since 22.11.2012
+     * @author Sascha Koehler <skoehler@pixeltricks.de>,
+     *         Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 04.07.2013
      */
     protected function getForm() {
         if (is_null($this->form)) {
@@ -1069,6 +1090,16 @@ class CustomHtmlForm extends Form {
                 $this
             );
             $formAction->description = $this->getSubmitButtonToolTip();
+            
+            if ($this->getPreference('submitButtonUseButtonTag')) {
+                $formAction->setUseButtonTag(true);
+            }
+            $extraClasses = $this->getPreference('submitButtonExtraClasses');
+            if (is_array($extraClasses)) {
+                foreach ($extraClasses as $extraClass) {
+                    $formAction->addExtraClass($extraClass);
+                }
+            }
 
             $actions = new FieldList(
                 $formAction
@@ -1114,8 +1145,9 @@ class CustomHtmlForm extends Form {
      * @return Field
      *
      * @throws Exception
-     * @author Sascha Koehler <skoehler@pixeltricks.de>, Sebastian Diel <sdiel@pixeltricks.de>
-     * @since 22.11.2012
+     * @author Sascha Koehler <skoehler@pixeltricks.de>,
+     *         Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 04.07.2013
      */
     protected function getFormField($fieldName, $fieldDefinition) {
 
@@ -1302,6 +1334,29 @@ class CustomHtmlForm extends Form {
 
                 $field->setValue($fieldDefinition['value']);
             }
+        } else if ($fieldDefinition['type'] == 'UploadField') {
+            $field = new $fieldDefinition['type'](
+                $fieldName,
+                $fieldDefinition['title'],
+                $fieldDefinition['value']
+            );
+
+            if (array_key_exists('configuration', $fieldDefinition) &&
+                is_array($fieldDefinition['configuration'])) {
+                foreach ($fieldDefinition['configuration'] as $key => $value) {
+                    $field->setConfig($key, $value);
+                }
+            }
+            if (array_key_exists('allowedExtensions', $fieldDefinition) &&
+                is_array($fieldDefinition['allowedExtensions'])) {
+                $field->getValidator()->setAllowedExtensions($fieldDefinition['allowedExtensions']);
+            }
+            if (array_key_exists('folderName', $fieldDefinition)) {
+                $field->setFolderName($fieldDefinition['folderName']);
+            }
+            if (array_key_exists('record', $fieldDefinition)) {
+                $field->setRecord($fieldDefinition['record']);
+            }
         } else {
             $formFieldHandler = self::getRegisteredFormFieldHandlerForType($fieldDefinition['type']);
             if ($formFieldHandler) {
@@ -1310,9 +1365,17 @@ class CustomHtmlForm extends Form {
                 $field = new $fieldDefinition['type'](
                     $fieldName,
                     $fieldDefinition['title'],
-                    $fieldDefinition['value'],
-                    $fieldDefinition['form']
+                    $fieldDefinition['value']
                 );
+                $field->setForm($fieldDefinition['form']);
+            }
+        }
+        
+        if (method_exists($field, 'addExtraClass') &&
+            array_key_exists('extraClasses', $fieldDefinition) &&
+            is_array($fieldDefinition['extraClasses'])) {
+            foreach ($fieldDefinition['extraClasses'] as $extraClass) {
+                $field->addExtraClass($extraClass);
             }
         }
 
@@ -1356,8 +1419,9 @@ class CustomHtmlForm extends Form {
      * 
      * @return string
      * 
-     * @author Sebastian Diel <sdiel@pixeltricks.de>
-     * @since 01.03.2013
+     * @author Sebastian Diel <sdiel@pixeltricks.de>,
+     *         Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 04.07.2013
      */
     protected function buildFormAction() {
         if (is_null($this->customHtmlFormAction)) {
@@ -1369,7 +1433,7 @@ class CustomHtmlForm extends Form {
                     $this->getSubmitAction()
             );
         } else {
-            $formAction = SilvercartTools::$baseURLSegment.'customhtmlformaction/' . $this->customHtmlFormAction;
+            $formAction = Director::baseUrl() . 'customhtmlformaction/' . $this->customHtmlFormAction;
         }
         return $formAction;
     }
@@ -1501,6 +1565,21 @@ class CustomHtmlForm extends Form {
      */
     public function addMessage($message) {
         $this->messages[] = array('message' => $message);
+    }
+
+    /**
+     * Returns the messages to loop in template.
+     *
+     * @return ArrayList
+     */
+    public function getMessagesForTemplate() {
+        if (is_null($this->messagesForTemplate)) {
+            $this->messagesForTemplate = new ArrayList();
+            foreach ($this->messages as $message) {
+                $this->messagesForTemplate->add(new ArrayData($message));
+            }
+        }
+        return $this->messagesForTemplate;
     }
 
     /**
@@ -1723,8 +1802,9 @@ class CustomHtmlForm extends Form {
      * @return string
      *
      * @throws Exception
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 25.10.2010
+     * @author Sascha Koehler <skoehler@pixeltricks.de>,
+     *         Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 04.07.2013
      */
     public function CustomHtmlFormFieldByName($fieldName, $template = null) {
         $fieldReference = '';
@@ -1805,6 +1885,11 @@ class CustomHtmlForm extends Form {
             }
 
             $field = $this->SSformFields['fields']->dataFieldByName($fieldName);
+            $placeholder = '';
+            if (array_key_exists('placeholder', $fieldReference)) {
+                $placeholder = $fieldReference['placeholder'];
+            }
+            $field->placeholder = $placeholder;
             $output = $viewableObj->customise(
                 array(
                     'FormName'            => $this->name,
@@ -1820,6 +1905,7 @@ class CustomHtmlForm extends Form {
                     'isRequiredField'     => $isRequiredField,
                     'RequiredFieldMarker' => $this->RequiredFieldMarker($isRequiredField),
                     'FieldDescription'    => isset($fieldReference['description']) ? $fieldReference['description'] : '',
+                    'FieldDefinition'     => new ArrayData($fieldReference),
                 )
             )->renderWith($templatePathAbs);
         } else {

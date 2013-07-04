@@ -24,9 +24,10 @@
  * Provides additional methods for Page.php used by the CustomHtmlForms module
  *
  * @package CustomHtmlForm
- * @author Sascha Koehler <skoehler@pixeltricks.de>
- * @copyright 2010 pixeltricks GmbH
- * @since 25.10.2010
+ * @author Sascha Koehler <skoehler@pixeltricks.de>,
+ *         Sebastian Diel <sdiel@pixeltricks.de>
+ * @since 04.07.2013
+ * @copyright 2013 pixeltricks GmbH
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
 class CustomHtmlFormPage_Controller extends DataExtension {
@@ -68,6 +69,13 @@ class CustomHtmlFormPage_Controller extends DataExtension {
      * @var array
      */
     protected $registeredCustomHtmlForms = array();
+    
+    /**
+     * Set this to false to not include CustomHtmlForms jQuery.
+     *
+     * @var bool
+     */
+    public static $do_use_own_jquery = true;
 
     /**
      * adds a snippet to the list of JS onload events
@@ -266,9 +274,9 @@ class CustomHtmlFormPage_Controller extends DataExtension {
      *
      * @return void
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 25.10.2010
+     * @author Sascha Koehler <skoehler@pixeltricks.de>,
+     *         Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 04.07.2013
      */
     public function onBeforeInit() {
 
@@ -277,12 +285,16 @@ class CustomHtmlFormPage_Controller extends DataExtension {
             // -------------------------------------------------------------------
             // load scripts
             // -------------------------------------------------------------------
-            Requirements::block(THIRDPARTY_DIR . '/jquery/jquery.js');
+            if (self::$do_use_own_jquery) {
+                Requirements::block(THIRDPARTY_DIR . '/jquery/jquery.js');
+            }
             Requirements::insertHeadTags('<meta http-equiv="Content-language" content="' . i18n::get_locale() . '" />', 'CustomHtmlFormContentLanguageTag');
             Requirements::add_i18n_javascript('customhtmlform/javascript/lang');
 
             if (!class_exists('RequirementsEngine')) {
-                Requirements::javascript('customhtmlform/script/jquery.js');
+                if (self::$do_use_own_jquery) {
+                    Requirements::javascript('customhtmlform/script/jquery.js');
+                }
                 Requirements::javascript('customhtmlform/script/jquery.scrollTo.min.js');
                 Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.checkFormData.js');
                 Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.events.js');
