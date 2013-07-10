@@ -1647,8 +1647,9 @@ class CustomHtmlForm extends Form {
      *
      * @return string
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 07.12.2012
+     * @author Sascha Koehler <skoehler@pixeltricks.de>,
+     *         Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 29.05.2013
      */
     public function CustomHtmlFormSpecialFields() {
         $fields = '';
@@ -1656,6 +1657,8 @@ class CustomHtmlForm extends Form {
         if (array_key_exists($this->class, self::$useSpamCheck)) {
             $fields .= $this->SpamCheckField();
         }
+        
+        $this->extend('updateCustomHtmlFormSpecialFields', $fields);
 
         return $fields;
     }
