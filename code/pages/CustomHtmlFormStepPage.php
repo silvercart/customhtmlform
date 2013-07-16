@@ -27,9 +27,10 @@
  * the form must be defined
  *
  * @package CustomHtmlForm
- * @author Sascha Koehler <skoehler@pixeltricks.de>
- * @copyright 2010 pixeltricks GmbH
- * @since 25.10.2010
+ * @author Sascha Koehler <skoehler@pixeltricks.de>,
+ *         Sebastian Diel <sdiel@pixeltricks.de>
+ * @since 16.07.2013
+ * @copyright 2013 pixeltricks GmbH
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
 class CustomHtmlFormStepPage extends Page {
@@ -569,38 +570,56 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
 
     /**
      * increments the present step and reloads page
+     * 
+     * @param bool $withExit Redirect with exit?
      *
      * @return void
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 25.10.2010
+     * @author Sascha Koehler <skoehler@pixeltricks.de>,
+     *         Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 16.07.2013
      */
-    public function NextStep() {
+    public function NextStep($withExit = true) {
         if ($this->getNextStep() <= $this->getNumberOfSteps()) {
             $this->setCurrentStep($this->getNextStep());
         }
-        header('Location: '.$this->Link(), true, 302);
-        exit();
+        if ($withExit) {
+            header('Location: ' . $this->Link(), true, 302);
+            exit();
+        } else {
+            $redirected_to = Director::redirected_to();
+            if (empty($redirected_to)) {
+                Director::redirect($this->Link(), 302);
+            }
+        }
     }
 
     /**
      * decrements the current step an reloads the page
+     * 
+     * @param bool $withExit Redirect with exit?
      *
      * @return void
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 25.10.2010
+     * @author Sascha Koehler <skoehler@pixeltricks.de>,
+     *         Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 16.07.2013
      */
-    public function PreviousStep() {
+    public function PreviousStep($withExit = true) {
         if ($this->getPreviousStep() > 0 &&
             $this->isStepCompleted($this->getPreviousStep()) ) {
 
             $this->setCurrentStep($this->getPreviousStep());
         }
-        header('Location: '.$this->Link(), true, 302);
-        exit();
+        if ($withExit) {
+            header('Location: ' . $this->Link(), true, 302);
+            exit();
+        } else {
+            $redirected_to = Director::redirected_to();
+            if (empty($redirected_to)) {
+                Director::redirect($this->Link(), 302);
+            }
+        }
     }
 
     /**
