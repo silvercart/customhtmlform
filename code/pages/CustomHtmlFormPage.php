@@ -288,7 +288,6 @@ class CustomHtmlFormPage_Controller extends DataExtension {
             if (self::$do_use_own_jquery) {
                 Requirements::block(THIRDPARTY_DIR . '/jquery/jquery.js');
             }
-            Requirements::insertHeadTags('<meta http-equiv="Content-language" content="' . i18n::get_locale() . '" />', 'CustomHtmlFormContentLanguageTag');
             Requirements::add_i18n_javascript('customhtmlform/javascript/lang');
 
             if (!class_exists('RequirementsEngine')) {

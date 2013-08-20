@@ -527,8 +527,9 @@ class CustomHtmlForm extends Form {
      *
      * @return string
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 28.02.2012
+     * @author Sascha Koehler <skoehler@pixeltricks.de>,
+     *         Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 08.07.2013
      */
     public function getJavascriptFieldInitialisations() {
         $snippet    = '';
@@ -551,13 +552,13 @@ class CustomHtmlForm extends Form {
                         if (!empty($config)) {
                             $config = substr($config, 0, -1);
                         }
+                        
+                        $snippet .= sprintf(
+                            "$('input[name=\"%s\"]').datepicker({%s});",
+                            $fieldName,
+                            $config
+                        );
                     }
-
-                    $snippet .= sprintf(
-                        "$('input[name=\"%s\"]').datepicker({%s});",
-                        $fieldName,
-                        $config
-                    );
                 }
             }
         }
@@ -1913,6 +1914,20 @@ class CustomHtmlForm extends Form {
         }
 
         return $output;
+    }
+    
+    /**
+     * Returns the custom data field with the given name.
+     * 
+     * @param string $name Name of the field to get.
+     * 
+     * @return FormField
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 08.07.2013
+     */
+    public function customDataFieldByName($name) {
+        return $this->SSformFields['fields']->dataFieldByName($name);
     }
 
     /**
