@@ -49,7 +49,7 @@ SS_Cache::add_backend(
         'File',
         array(
             'cache_dir'                 => $cacheDir,
-            'hashed_directory_level'    => 1,
+            'hashed_directory_level'    => 2,
         )
 );
 SS_Cache::pick_backend('CustomHtmlForm', 'CustomHtmlForm');
