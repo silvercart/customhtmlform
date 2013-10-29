@@ -30,6 +30,12 @@
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
 class CustomHtmlFormPage_Controller extends DataObjectDecorator {
+    
+    /**
+     *
+     * @var bool
+     */
+    public static $include_meta_content_language = true;
 
     /**
      * defines allowed methods
@@ -266,9 +272,9 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
      *
      * @return void
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 25.10.2010
+     * @author Sascha Koehler <skoehler@pixeltricks.de>,
+     *         Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 29.10.2013
      */
     public function onBeforeInit() {
         Validator::set_javascript_validation_handler('none');
@@ -279,7 +285,9 @@ class CustomHtmlFormPage_Controller extends DataObjectDecorator {
             // load scripts
             // -------------------------------------------------------------------
             Requirements::block('sapphire/thirdparty/jquery/jquery.js');
-            Requirements::insertHeadTags('<meta http-equiv="Content-language" content="' . i18n::get_locale() . '" />', 'CustomHtmlFormContentLanguageTag');
+            if (self::$include_meta_content_language) {
+                Requirements::insertHeadTags('<meta http-equiv="Content-language" content="' . i18n::get_locale() . '" />', 'CustomHtmlFormContentLanguageTag');
+            }
             Requirements::add_i18n_javascript('customhtmlform/javascript/lang');
 
             if (!class_exists('RequirementsEngine')) {
