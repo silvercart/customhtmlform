@@ -75,3 +75,6 @@ $lang['en_US']['CustomHtmlFormField']['PtCaptchaInputField_Title'] = 'Captcha co
 $lang['en_US']['CustomHtmlFormAdmin']['PLURALNAME']                             = 'Forms';
 $lang['en_US']['CustomHtmlFormAdmin']['SINGULARNAME']                           = 'Form';
 $lang['en_US']['CustomHtmlFormAdmin']['MENUTITLE']                              = 'Forms';
+
+$lang['en_US']['CustomHtmlForm']['CSRFAttack']                                  = 'CSRF Attack!';
+$lang['en_US']['CustomHtmlForm']['CSRFAttackHint']                              = 'Your Session is expired. Please reload this site and try again.';

@@ -75,3 +75,6 @@ $lang['de_DE']['CustomHtmlFormField']['PtCaptchaInputField_Title'] = 'Captcha-Co
 $lang['de_DE']['CustomHtmlFormAdmin']['PLURALNAME']                             = 'Formulare';
 $lang['de_DE']['CustomHtmlFormAdmin']['SINGULARNAME']                           = 'Formulare';
 $lang['de_DE']['CustomHtmlFormAdmin']['MENUTITLE']                              = 'Formulare';
+
+$lang['de_DE']['CustomHtmlForm']['CSRFAttack']                                  = 'CSRF Attacke!';
+$lang['de_DE']['CustomHtmlForm']['CSRFAttackHint']                              = 'Ihre Session ist abgelaufenen. Bitte laden Sie die Seite neu und füllen Sie das Formular nochmals aus.';
