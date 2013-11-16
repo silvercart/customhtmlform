@@ -68,6 +68,9 @@ $lang['de_DE']['CustomHtmlFormConfiguration']['SINGULARNAME']                   
 $lang['de_DE']['CustomHtmlFormConfigurationAdmin']['TAB_SPAMCHECK'] = 'Captcha';
 
 $lang['de_DE']['CustomHtmlFormErrorMessages']['CHECK_FIELDS'] = 'Bitte pr&uuml;fen Sie Ihre Eingaben in folgenden Feldern:';
+$lang['de_DE']['CustomHtmlFormErrorMessages']['CSRF_MESSAGE'] = 'Mögliche CSRF Attacke!';
+$lang['de_DE']['CustomHtmlFormErrorMessages']['CSRF_FIELDS']  = 'Ihre Session ist abgelaufenen. Bitte laden Sie die Seite neu und füllen Sie das Formular nochmals aus.';
+
 
 $lang['de_DE']['CustomHtmlFormField']['PtCaptchaImageField_Title'] = 'Bitte diesen Captcha-Code im folgenden Feld eingeben:';
 $lang['de_DE']['CustomHtmlFormField']['PtCaptchaInputField_Title'] = 'Captcha-Code:';

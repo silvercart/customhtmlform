@@ -885,11 +885,11 @@ class CustomHtmlForm extends Form {
 
                 $error                 = true;
                 $errorMessages['CSRF'] = array(
-                    'message'   => 'CSRF Attacke!',
-                    'fieldname' => 'Ihre Session ist abgelaufenen. Bitte laden Sie die Seite neu und füllen Sie das Formular nochmals aus.',
-                    'title'     => 'Ihre Session ist abgelaufenen. Bitte laden Sie die Seite neu und füllen Sie das Formular nochmals aus.',
+                    'message'   => _t('CustomHtmlFormErrorMessages.CSRF_MESSAGE'),
+                    'fieldname' => _t('CustomHtmlFormErrorMessages.CSRF_FIELDS'),
+                    'title'     => _t('CustomHtmlFormErrorMessages.CSRF_FIELDS'),
                     'CSRF' => array(
-                        'message' => 'CSRF Attacke!'
+                        'message' => _t('CustomHtmlFormErrorMessages.CSRF_MESSAGE')
                     )
                 );
             }
