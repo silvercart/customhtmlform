@@ -1246,6 +1246,15 @@ class CustomHtmlForm extends Form {
                 method_exists($field, 'setPlaceholder')) {
                 $field->setPlaceholder($fieldDefinition['placeholder']);
             }
+
+            if (isset($fieldDefinition['configuration']) &&
+                is_array($fieldDefinition['configuration']) &&
+                method_exists($field, 'setConfig')) {
+
+                foreach ($fieldDefinition['configuration'] as $key => $value) {
+                    $field->setConfig($key, $value);
+                }
+            }
         } else if ($fieldDefinition['type'] == 'PtCaptchaImageField') {
             $field = new $fieldDefinition['type'](
                 $fieldName,
