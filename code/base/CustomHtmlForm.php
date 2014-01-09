@@ -2501,9 +2501,13 @@ class CustomHtmlForm extends Form {
      * @return Zend_Cache_Core
      */
     public static function getCache() {
-        if (is_null(self::$cache)) {
-            self::$cache = SS_Cache::factory('CustomHtmlForm');
-        }
+        self::$cache = SS_Cache::factory(
+                'CustomHtmlForm',
+                'Output',
+                array(
+                    'automatic_serialization'   => true,
+                )
+        );
         return self::$cache;
     }
 
