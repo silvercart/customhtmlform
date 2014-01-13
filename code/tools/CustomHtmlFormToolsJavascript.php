@@ -178,19 +178,7 @@ class CustomHtmlFormToolsJavascript {
                 }
 
                 $fieldStr .= sprintf(
-                    "'%s': {
-                        type: \"%s\",
-                        %s
-                        checkRequirements: {
-                            %s
-                        },
-                        events: {
-                            %s
-                        },
-                        configuration: {
-                            %s
-                        }
-                    },",
+                    "'%s': {type: \"%s\", %s checkRequirements: {%s}, events: {%s}, configuration: {%s}},",
                     $fieldName,
                     $fieldProperties['type'],
                     $titleField,

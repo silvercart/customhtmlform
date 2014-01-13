@@ -350,14 +350,12 @@ class CustomHtmlFormPage_Controller extends DataExtension {
             !empty($onLoadSnippetStr)) {
 
             Requirements::customScript('
+'.$snippetStr.'
 
-                '.$snippetStr.'
-
-                (function($) {jQuery(document).ready(function() {
-                    '.$onLoadSnippetStr.'
-                    '.$onLoadInTheEndSnippetStr.'
-                })})(jQuery);
-            ');
+(function($) {jQuery(document).ready(function() {
+    '.$onLoadSnippetStr.'
+    '.$onLoadInTheEndSnippetStr.'
+})})(jQuery);');
         }
     }
 
@@ -479,12 +477,10 @@ class CustomHtmlFormPage_Controller extends DataExtension {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
      * @since 03.11.2010
      */
     protected function getFieldObject() {
         $formIdentifier = 'CreateAuctionFormStep5';
-        $fieldName      = 'UploadImages';
         $fieldReference = '';
 
         foreach ($this->registeredCustomHtmlForms as $registeredFormIdentifier => $registeredCustomHtmlForm) {

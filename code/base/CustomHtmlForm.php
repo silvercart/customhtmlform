@@ -570,30 +570,22 @@ class CustomHtmlForm extends Form {
      * Returns JS commands for JS validators init
      *
      * @return array
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 21.01.2011
      */
     public function getJavascriptValidatorInitialisation() {
         $validatorFields    = CustomHtmlFormToolsJavascript::generateJsValidatorFields($this->fieldGroups);
         $javascriptSnippets = '
-            var '.$this->jsName.';
-        ';
+            var ' . $this->jsName . ';';
 
         $javascriptOnloadSnippets = '
-            '.$this->jsName.' = new pixeltricks.forms.validator();
-            '.$this->jsName.'.setFormFields(
-                {
-                    '.$validatorFields.'
-                }
-            );
-            '.$this->jsName.'.setFormName(\''.$this->jsName.'\');
-            '.$this->jsName.'.setPreference(\'doJsValidationScrolling\', '.($this->getDoJsValidationScrolling() ? 'true' : 'false').');
-            '.$this->jsName.'.setPreference(\'showJsValidationErrorMessages\', '.($this->getShowJsValidationErrorMessages() ? 'true' : 'false').');
-            '.$this->jsName.'.bindEvents();';
+            ' . $this->jsName . ' = new pixeltricks.forms.validator();
+            ' . $this->jsName . '.setFormFields({' . $validatorFields . '});
+            ' . $this->jsName . '.setFormName(\'' . $this->jsName . '\');
+            ' . $this->jsName . '.setPreference(\'doJsValidationScrolling\', ' . ($this->getDoJsValidationScrolling() ? 'true' : 'false') . ');
+            ' . $this->jsName . '.setPreference(\'showJsValidationErrorMessages\', ' . ($this->getShowJsValidationErrorMessages() ? 'true' : 'false') . ');
+            ' . $this->jsName . '.bindEvents();';
         
         if ($this->getDoJsValidation()) {
-            $javascriptOnloadSnippets .= '$("#'.$this->jsName.'").bind("submit", function(e) { return '.$this->jsName.'.checkForm(e); });';
+            $javascriptOnloadSnippets .= '$("#' . $this->jsName . '").bind("submit", function(e) { return ' . $this->jsName . '.checkForm(e); });';
         }
 
         return array(
@@ -1569,12 +1561,12 @@ class CustomHtmlForm extends Form {
      *
      * @return void
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 25.10.2010
+     * @author Sebastian Diel <sdiel@pixeltricks.de>,
+     *         Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 13.01.2014
      */
     public function addMessage($message) {
-        $this->messages[] = array('message' => $message);
+        $this->messages[] = new ArrayData(array('message' => $message));
     }
 
     /**
