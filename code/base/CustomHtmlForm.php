@@ -680,10 +680,12 @@ class CustomHtmlForm extends Form {
      *
      * @return ViewableData
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>, Sebastian Diel <sdiel@pixeltricks.de>
-     * @since 06.07.2012
+     * @author Sebastian Diel <sdiel@pixeltricks.de>,
+     *         Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 24.01.2014
      */
     public function submit($data, $form) {
+        $this->extend('onBeforeSubmit', $data, $form);
         $formData = $this->getFormData($data);
         $this->checkFormData($formData);
         $result = null;
@@ -828,10 +830,11 @@ class CustomHtmlForm extends Form {
      *
      * @return array
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 25.10.2010
+     * @author Sebastian Diel <sdiel@pixeltricks.de>,
+     *         Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 24.01.2014
      */
-    protected function getFormData($request) {
+    public function getFormData($request) {
         $formData = array();
 
         if ($this->securityTokenEnabled) {
@@ -1975,10 +1978,11 @@ class CustomHtmlForm extends Form {
      *
      * @return void
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 13.03.2011
+     * @author Sebastian Diel <sdiel@pixeltricks.de>,
+     *         Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 24.01.2014
      */
-    protected function deactivateValidationFor($fieldName) {
+    public function deactivateValidationFor($fieldName) {
         if (!in_array($fieldName, $this->noValidationFields)) {
             $this->noValidationFields[] = $fieldName;
         }
@@ -1991,10 +1995,11 @@ class CustomHtmlForm extends Form {
      *
      * @return void
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 13.03.2011
+     * @author Sebastian Diel <sdiel@pixeltricks.de>,
+     *         Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 24.01.2014
      */
-    protected function activateValidationFor($fieldName) {
+    public function activateValidationFor($fieldName) {
         if (in_array($fieldName, $this->noValidationFields)) {
             for ($index = 0; $index < count($this->noValidationFields); $index++) {
                 if ($fieldName == $this->noValidationFields[$index]) {
