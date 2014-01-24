@@ -296,10 +296,12 @@ class CustomHtmlForm extends Form {
      *
      * @return CustomHtmlForm
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 25.10.2010
+     * @author Sebastian Diel <sdiel@pixeltricks.de>,
+     *         Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 24.01.2014
      */
     public function __construct($controller, $params = null, $preferences = null, $barebone = false) {
+        $this->extend('onBeforeConstruct', $controller, $params, $preferences, $barebone);
         global $project;
 
         $this->barebone   = $barebone;
@@ -407,6 +409,7 @@ class CustomHtmlForm extends Form {
 
         // Register the default module directory from mysite/_config.php
         self::registerModule($project);
+        $this->extend('onAfterConstruct', $controller, $params, $preferences, $barebone);
     }
 
     /**
