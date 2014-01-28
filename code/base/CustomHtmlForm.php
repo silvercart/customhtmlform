@@ -1578,10 +1578,22 @@ class CustomHtmlForm extends Form {
         if (is_null($this->messagesForTemplate)) {
             $this->messagesForTemplate = new ArrayList();
             foreach ($this->messages as $message) {
-                $this->messagesForTemplate->add(new ArrayData($message));
+                $this->messagesForTemplate->add($message);
             }
         }
         return $this->messagesForTemplate;
+    }
+
+    /**
+     * Returns the whether there are messages to loop in template.
+     *
+     * @return bool
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 28.01.2014
+     */
+    public function HasMessagesForTemplate() {
+        return $this->getMessagesForTemplate()->count() > 0;
     }
 
     /**
