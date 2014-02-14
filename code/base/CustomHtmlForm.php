@@ -1736,8 +1736,12 @@ class CustomHtmlForm extends Form {
         foreach ($registeredModules as $moduleName => $priority) {
             foreach ($templateDirs as $templateDir) {
                 $templatePath = $moduleName.$templateDir.$template.'.ss';
-
+                $themedPath   = 'themes/' . $templatePath;
+                
                 if (Director::fileExists($templatePath)) {
+                    break(2);
+                } elseif (Director::fileExists($themedPath)) {
+                    $templatePath = $themedPath;
                     break(2);
                 }
             }
