@@ -296,10 +296,12 @@ class CustomHtmlForm extends Form {
      *
      * @return CustomHtmlForm
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 25.10.2010
+     * @author Sebastian Diel <sdiel@pixeltricks.de>,
+     *         Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 24.01.2014
      */
     public function __construct($controller, $params = null, $preferences = null, $barebone = false) {
+        $this->extend('onBeforeConstruct', $controller, $params, $preferences, $barebone);
         global $project;
 
         $this->barebone   = $barebone;
@@ -407,6 +409,7 @@ class CustomHtmlForm extends Form {
 
         // Register the default module directory from mysite/_config.php
         self::registerModule($project);
+        $this->extend('onAfterConstruct', $controller, $params, $preferences, $barebone);
     }
 
     /**
@@ -677,10 +680,12 @@ class CustomHtmlForm extends Form {
      *
      * @return ViewableData
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>, Sebastian Diel <sdiel@pixeltricks.de>
-     * @since 06.07.2012
+     * @author Sebastian Diel <sdiel@pixeltricks.de>,
+     *         Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 24.01.2014
      */
     public function submit($data, $form) {
+        $this->extend('onBeforeSubmit', $data, $form);
         $formData = $this->getFormData($data);
         $this->checkFormData($formData);
         $result = null;
@@ -825,10 +830,11 @@ class CustomHtmlForm extends Form {
      *
      * @return array
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 25.10.2010
+     * @author Sebastian Diel <sdiel@pixeltricks.de>,
+     *         Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 24.01.2014
      */
-    protected function getFormData($request) {
+    public function getFormData($request) {
         $formData = array();
 
         if ($this->securityTokenEnabled) {
@@ -869,9 +875,8 @@ class CustomHtmlForm extends Form {
      *
      * @return void
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>,
-     *         Sebastian Diel <sdiel@pixeltricks.de>
-     * @since 05.11.2013
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 25.10.2010
      */
     protected function checkFormData($data) {
         $errorMessages  = array();
@@ -886,11 +891,11 @@ class CustomHtmlForm extends Form {
 
                 $error                 = true;
                 $errorMessages['CSRF'] = array(
-                    'message'   => _t('CustomHtmlForm.CSRFAttack'),
-                    'fieldname' => _t('CustomHtmlForm.CSRFAttackHint'),
-                    'title'     => _t('CustomHtmlForm.CSRFAttackHint'),
+                    'message'   => _t('CustomHtmlFormErrorMessages.CSRF_MESSAGE'),
+                    'fieldname' => _t('CustomHtmlFormErrorMessages.CSRF_FIELDS'),
+                    'title'     => _t('CustomHtmlFormErrorMessages.CSRF_FIELDS'),
                     'CSRF' => array(
-                        'message' => _t('CustomHtmlForm.CSRFAttack'),
+                        'message' => _t('CustomHtmlFormErrorMessages.CSRF_MESSAGE')
                     )
                 );
             }
@@ -1977,10 +1982,11 @@ class CustomHtmlForm extends Form {
      *
      * @return void
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 13.03.2011
+     * @author Sebastian Diel <sdiel@pixeltricks.de>,
+     *         Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 24.01.2014
      */
-    protected function deactivateValidationFor($fieldName) {
+    public function deactivateValidationFor($fieldName) {
         if (!in_array($fieldName, $this->noValidationFields)) {
             $this->noValidationFields[] = $fieldName;
         }
@@ -1993,10 +1999,11 @@ class CustomHtmlForm extends Form {
      *
      * @return void
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 13.03.2011
+     * @author Sebastian Diel <sdiel@pixeltricks.de>,
+     *         Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 24.01.2014
      */
-    protected function activateValidationFor($fieldName) {
+    public function activateValidationFor($fieldName) {
         if (in_array($fieldName, $this->noValidationFields)) {
             for ($index = 0; $index < count($this->noValidationFields); $index++) {
                 if ($fieldName == $this->noValidationFields[$index]) {

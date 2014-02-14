@@ -68,6 +68,8 @@ $lang['en_GB']['CustomHtmlFormConfiguration']['SINGULARNAME']                   
 $lang['en_GB']['CustomHtmlFormConfigurationAdmin']['TAB_SPAMCHECK'] = 'Captcha';
 
 $lang['en_GB']['CustomHtmlFormErrorMessages']['CHECK_FIELDS'] = 'Please check your input on the following fields:';
+$lang['en_GB']['CustomHtmlFormErrorMessages']['CSRF_MESSAGE'] = 'Possible CSRF attack!';
+$lang['en_GB']['CustomHtmlFormErrorMessages']['CSRF_FIELDS']  = 'Your session has expired. Please reload this page and fill in the form again.';
 
 $lang['en_GB']['CustomHtmlFormField']['PtCaptchaImageField_Title'] = 'Enter this captcha code in the following field please:';
 $lang['en_GB']['CustomHtmlFormField']['PtCaptchaInputField_Title'] = 'Captcha code:';
@@ -75,6 +77,3 @@ $lang['en_GB']['CustomHtmlFormField']['PtCaptchaInputField_Title'] = 'Captcha co
 $lang['en_GB']['CustomHtmlFormAdmin']['PLURALNAME']                             = 'Forms';
 $lang['en_GB']['CustomHtmlFormAdmin']['SINGULARNAME']                           = 'Form';
 $lang['en_GB']['CustomHtmlFormAdmin']['MENUTITLE']                              = 'Forms';
-
-$lang['en_GB']['CustomHtmlForm']['CSRFAttack']                                  = 'CSRF Attack!';
-$lang['en_GB']['CustomHtmlForm']['CSRFAttackHint']                              = 'Your Session is expired. Please reload this site and try again.';

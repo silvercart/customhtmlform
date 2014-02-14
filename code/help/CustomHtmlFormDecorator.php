@@ -42,6 +42,21 @@ interface CustomHtmlFormDecorator {
     public function extendedProcess();
     
     /**
+     * This method will be called after CustomHtmlForm's __construct().
+     * 
+     * @param ContentController $controller  the calling controller instance
+     * @param array             $params      optional parameters
+     * @param array             $preferences optional preferences
+     * @param bool              $barebone    defines if a form should only be instanciated or be used too
+     * 
+     * @return bool
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 24.01.2014
+     */
+    public function onAfterConstruct($controller, $params, $preferences, $barebone);
+    
+    /**
      * This method will be called after CustomHtmlForm's default submitFailure.
      * You can manipulate the relevant data here.
      * 
@@ -69,6 +84,35 @@ interface CustomHtmlFormDecorator {
      * @since 10.11.2011
      */
     public function onAfterSubmitSuccess(&$data, &$form, &$formData);
+    
+    /**
+     * This method will be called before CustomHtmlForm's __construct().
+     * 
+     * @param ContentController $controller  the calling controller instance
+     * @param array             $params      optional parameters
+     * @param array             $preferences optional preferences
+     * @param bool              $barebone    defines if a form should only be instanciated or be used too
+     * 
+     * @return bool
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 24.01.2014
+     */
+    public function onBeforeConstruct($controller, $params, $preferences, $barebone);
+    
+    /**
+     * This method will be called before CustomHtmlForm's default submit.
+     * You can manipulate the relevant data here.
+     * 
+     * @param SS_HTTPRequest &$data submit data
+     * @param Form           &$form form object
+     * 
+     * @return bool
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 24.01.2014
+     */
+    public function onBeforeSubmit(&$data, &$form);
     
     /**
      * This method will be called before CustomHtmlForm's default submitFailure.
