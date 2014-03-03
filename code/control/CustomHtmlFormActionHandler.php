@@ -48,23 +48,4 @@ class CustomHtmlFormActionHandler extends Controller {
         Object::add_extension('CustomHtmlFormActionHandler', $classname);
     }
     
-    /**
-     * Simple workarround to re-enable simple action handling.
-     * 
-     * @param SS_HTTPRequest $request Request
-     * @param string         $action  Action
-     * 
-     * @return void
-     *
-     * @author Sebastian Diel <sdiel@pixeltricks.de>
-     * @since 15.01.2014
-     */
-    protected function handleAction($request, $action) {
-        $action = $this->getRequest()->param('Action');
-        $result = $this->{$action}($request);
-        if (is_string($result)) {
-            print $result;
-        }
-    }
-    
 }

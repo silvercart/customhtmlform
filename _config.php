@@ -60,11 +60,3 @@ if (class_exists('RequirementsEngine')) {
     RequirementsEngine::registerJsFile('customhtmlform/script/jquery.pixeltricks.forms.validator.js');
     RequirementsEngine::registerJsFile(SAPPHIRE_DIR . "/javascript/i18n.js");
 }
-
-Director::addRules(
-        100,
-        array(
-            'customhtmlformaction/$Action/$ID/$OtherID' => 'CustomHtmlFormActionHandler',
-            'customhtmlformimage/$Action/$ID/$OtherID'  => 'CustomHtmlFormImageHandler',
-        )
-);

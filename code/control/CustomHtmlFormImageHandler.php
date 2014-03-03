@@ -43,7 +43,7 @@ class CustomHtmlFormImageHandler extends Controller {
     *
     * @var array
     */
-    public static $allowed_actions = array(
+    private static $allowed_actions = array(
         'get'
     );
 
@@ -52,7 +52,7 @@ class CustomHtmlFormImageHandler extends Controller {
     *
     * @var array
     */
-    public static $allowed_mime_types = array(
+    private static $allowed_mime_types = array(
         'png',
         'jpg',
         'jpeg',
@@ -60,15 +60,15 @@ class CustomHtmlFormImageHandler extends Controller {
     );
     
     /**
-    * Returns the image for the given name
-    *
-    * @param SS_HTTPREQUEST $request The request object
-    *
-    * @return string
-    *
-    * @author Sascha Koehler <skoehler@pixeltricks.de>
-    * @since 2013-03-07
-    */
+     * Returns the image for the given name
+     *
+     * @param SS_HTTPREQUEST $request The request object
+     *
+     * @return string
+     *
+     * @author Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 2013-03-07
+     */
     public function get($request) {
         $error      = 0;
         $errorText  = '';

@@ -1,0 +1,10 @@
+---
+Name: customhtmlformroutes
+After:
+  - '#rootroutes'
+  - '#coreroutes'
+---
+Director:
+  rules:
+    'customhtmlformaction//$Action/$ID/$OtherID': 'CustomHtmlFormActionHandler'
+    'customhtmlformimage//$Action/$ID/$OtherID': 'CustomHtmlFormImageHandler'
