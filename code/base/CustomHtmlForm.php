@@ -1127,6 +1127,38 @@ class CustomHtmlForm extends Form {
         
         return false;
     }
+    
+    /**
+     * fill required fields with standard values if they where not specified
+     * 
+     * @param array &$fieldDefinition Field definition
+     * @param array &$fieldReference  Field reference
+     * 
+     * @return void
+     *
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 04.03.2014
+     */
+    protected function addRequiredFieldParams(&$fieldDefinition, &$fieldReference) {
+        $requiredFieldParams = array(
+            'isRequired'            => false,
+            'checkRequirements'     => array(),
+            'title'                 => '',
+            'value'                 => '',
+            'selectedValue'         => '',
+            'size'                  => null,
+            'multiple'              => null,
+            'tabIndex'              => 0,
+            'form'                  => $this,
+            'maxLength'             => CustomHtmlFormTools::isTextField($fieldDefinition['type']) ? 255 : null,
+        );
+        foreach ($requiredFieldParams as $param => $default) {
+            if (!array_key_exists($param, $fieldDefinition)) {
+                $fieldDefinition[$param] = $default;
+                $fieldReference[$param]  = $default;
+            }
+        }
+    }
 
     /**
      * creates a form field from the definition; sets standard values if they
@@ -1140,7 +1172,7 @@ class CustomHtmlForm extends Form {
      * @throws Exception
      * @author Sascha Koehler <skoehler@pixeltricks.de>,
      *         Sebastian Diel <sdiel@pixeltricks.de>
-     * @since 04.07.2013
+     * @since 04.03.2014
      */
     protected function getFormField($fieldName, $fieldDefinition) {
 
@@ -1162,25 +1194,7 @@ class CustomHtmlForm extends Form {
             }
         }
 
-        // fill required field with standard values if they where not specified
-        $requiredFieldParams = array(
-            'isRequired'            => false,
-            'checkRequirements'     => array(),
-            'title'                 => '',
-            'value'                 => '',
-            'selectedValue'         => '',
-            'size'                  => null,
-            'multiple'              => null,
-            'tabIndex'              => 0,
-            'form'                  => $this,
-            'maxLength'             => CustomHtmlFormTools::isTextField($fieldDefinition['type']) ? 255 : null,
-        );
-        foreach ($requiredFieldParams as $param => $default) {
-            if (!array_key_exists($param, $fieldDefinition)) {
-                $fieldDefinition[$param] = $default;
-                $fieldReference[$param] = $fieldDefinition[$param];
-            }
-        }
+        $this->addRequiredFieldParams($fieldDefinition, $fieldReference);
 
         // create field
         if (CustomHtmlFormTools::isListboxField($fieldDefinition['type'])) {
@@ -2414,7 +2428,7 @@ class CustomHtmlForm extends Form {
      * @return void
      * 
      * @author Sebastian Diel <sdiel@pixeltricks.de>
-     * @since 23.01.2014
+     * @since 04.03.2014
      */
     public function buildCacheKey() {
         $customParameters       = $this->getCustomParameters();
@@ -2430,9 +2444,10 @@ class CustomHtmlForm extends Form {
             }
             $this->cacheKey .= sha1($customParameterString);
         }
-
+        
         if (!is_null($request)) {
             foreach ($formFields as $fieldName => $fieldDefinition) {
+                $this->addRequiredFieldParams($fieldDefinition, $fieldDefinition);
                 $requestString   .= $fieldName . ':' . $request[$fieldName] . ';';
                 $formFieldString .= $fieldName . ':' . $fieldDefinition['value'] . ';';
             }
