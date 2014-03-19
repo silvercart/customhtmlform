@@ -80,6 +80,18 @@ class CustomHtmlFormStepPage extends Page {
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
 class CustomHtmlFormStepPage_Controller extends Page_Controller {
+    
+    /**
+     * Allowed URL actions
+     *
+     * @var array
+     */
+    private static $allowed_actions = array(
+        'Cancel',
+        'GotoStep',
+        'NextStep',
+        'PreviousStep',
+    );
 
     /**
      * number of form objects; set by init()
