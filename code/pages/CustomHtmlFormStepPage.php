@@ -159,8 +159,9 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      *
      * @return void
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>, Sebastian Diel <sdiel@pixeltricks.de>
-     * @since 06.12.2012
+     * @author Sascha Koehler <skoehler@pixeltricks.de>,
+     *         Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 16.04.2014
      */
     public function init() {
         $this->initialiseSessionData();
@@ -169,9 +170,12 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         $this->nrOfSteps            = $this->getNumberOfSteps();
         $this->currentFormInstance  = $this->registerCurrentFormStep();
         $this->initOutput           = $this->callMethodOnCurrentFormStep($this->currentFormInstance, 'init');
-        $extended = $this->callMethodOnCurrentFormStep($this->currentFormInstance, 'extendedProcess');
-        if (!$extended) {
-            $this->callMethodOnCurrentFormStep($this->currentFormInstance, 'process');
+        $action = $this->getRequest()->param('Action');
+        if (!in_array($action, self::$allowed_actions)) {
+            $extended = $this->callMethodOnCurrentFormStep($this->currentFormInstance, 'extendedProcess');
+            if (!$extended) {
+                $this->callMethodOnCurrentFormStep($this->currentFormInstance, 'process');
+            }
         }
         
         parent::init();
