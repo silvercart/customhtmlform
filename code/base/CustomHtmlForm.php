@@ -1373,6 +1373,18 @@ class CustomHtmlForm extends Form {
             if (array_key_exists('record', $fieldDefinition)) {
                 $field->setRecord($fieldDefinition['record']);
             }
+        } else if ($fieldDefinition['type'] == 'TreeMultiselectField') {
+            if (!array_key_exists('keyField', $fieldDefinition)) {
+                $fieldDefinition['keyField'] = 'ID';
+            }
+            $field = new $fieldDefinition['type'](
+                $fieldName,
+                $fieldDefinition['title'],
+                $fieldDefinition['sourceObject'],
+                $fieldDefinition['keyField']
+            );
+            
+            $field->setValue($fieldDefinition['value']);
         } else {
             $formFieldHandler = self::getRegisteredFormFieldHandlerForType($fieldDefinition['type']);
             if ($formFieldHandler) {
