@@ -285,6 +285,29 @@ class CustomHtmlForm extends Form {
      * @var string
      */
     protected $customHtmlFormAction = null;
+    
+    /**
+     * Custom CSS class to use for JS error messages.
+     *
+     * @var string
+     */
+    public static $custom_error_box_css_class = '';
+    
+    /**
+     * CSS selector (child of #FieldID) to place the error messages box.
+     *
+     * @var string
+     */
+    public static $custom_error_box_sub_selector = '';
+    
+    /**
+     * Allowed values:
+     * append
+     * prepend
+     *
+     * @var string
+     */
+    public static $custom_error_box_selection_method = '';
 
     /**
      * creates a form object with a free configurable markup
@@ -556,6 +579,15 @@ class CustomHtmlForm extends Form {
             '.$this->jsName.'.setPreference(\'showJsValidationErrorMessages\', '.($this->getShowJsValidationErrorMessages() ? 'true' : 'false').');
             '.$this->jsName.'.bindEvents();';
         
+        if (!empty(self::$custom_error_box_css_class)) {
+            $javascriptOnloadSnippets .= $this->jsName . ".setErrorBoxCssClass('" . self::$custom_error_box_css_class . "');";
+        }
+        if (!empty(self::$custom_error_box_sub_selector)) {
+            $javascriptOnloadSnippets .= $this->jsName . ".setErrorBoxSubSelector('" . self::$custom_error_box_sub_selector . "');";
+        }
+        if (!empty(self::$custom_error_box_selection_method)) {
+            $javascriptOnloadSnippets .= $this->jsName . ".setErrorBoxSelectionMethod('" . self::$custom_error_box_selection_method . "');";
+        }
         if ($this->getDoJsValidation()) {
             $javascriptOnloadSnippets .= '$("#'.$this->jsName.'").bind("submit", function(e) { return '.$this->jsName.'.checkForm(e); });';
         }
