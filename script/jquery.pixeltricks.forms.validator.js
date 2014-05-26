@@ -347,6 +347,7 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
      */
     this.toggleErrorFields = function(errorMessages)
     {
+        var scrollOffset = 1000000;
         $.each(
             errorMessages,
             function (fieldName, messages)
@@ -439,12 +440,17 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
                         );
                     }
                 }
+                if ($('#' + fieldBoxID).length > 0) {
+                    if (scrollOffset > $('#' + fieldBoxID).offset().top) {
+                        scrollOffset = $('#' + fieldBoxID).offset().top;
+                    }
+                }
             }
         );
         
         if (that.preferences.doJsValidationScrolling) {
             $('html, body').animate({
-                scrollTop: $('#' + that.formName).offset().top
+                scrollTop: scrollOffset
             }, 400);
         }
     }
