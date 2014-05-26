@@ -1273,6 +1273,10 @@ class CustomHtmlForm extends Form {
                 $fieldDefinition['value'],
                 $fieldDefinition['form']
             );
+            if (isset($fieldDefinition['placeholder']) &&
+                method_exists($field, 'setPlaceholder')) {
+                $field->setPlaceholder($fieldDefinition['placeholder']);
+            }
         } else if ($fieldDefinition['type'] == 'MultipleImageUploadField' ||
                    $fieldDefinition['type'] == 'MultipleFileUploadField') {
 
