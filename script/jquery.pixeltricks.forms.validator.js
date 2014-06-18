@@ -233,6 +233,7 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
 
         if (errors)
         {
+            $('#' + this.formName).data('submitted', false);
             event.preventDefault();
             this.validationResult = 'FAILURE';
             this.toggleErrorFields(errorMessages);
