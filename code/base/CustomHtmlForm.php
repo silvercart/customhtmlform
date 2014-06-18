@@ -798,6 +798,13 @@ class CustomHtmlForm extends Form {
         if (empty($form)) {
             $form = $this->class;
         }
+        
+        if (class_exists('CommunityPage') &&
+            method_exists('CommunityPage', 'addErrorMessage')) {
+            foreach ($this->errorMessages as $fieldName => $errorMessage) {
+                CommunityPage::addErrorMessage($errorMessage['message'], $errorMessage['fieldname']);
+            }
+        }
 
         // prepare validation errors for template
         $data = array(
