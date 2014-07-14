@@ -917,8 +917,9 @@ class CustomHtmlForm extends Form {
      *
      * @return void
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>, Sebastian Diel <sdiel@pixeltricks.de>
-     * @since 15.02.2013
+     * @author Sebastian Diel <sdiel@pixeltricks.de>,
+     *         Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 14.07.2014
      */
     protected function checkFormData($data) {
         $errorMessages  = array();
@@ -931,13 +932,14 @@ class CustomHtmlForm extends Form {
                 empty($data['SecurityID']) ||
                 $data['SecurityID'] != $securityID) {
 
+                // Possible CSRF attack
                 $error                 = true;
                 $errorMessages['CSRF'] = array(
-                    'message'   => 'CSRF Attacke!',
+                    'message'   => '',
                     'fieldname' => 'Ihre Session ist abgelaufenen. Bitte laden Sie die Seite neu und füllen Sie das Formular nochmals aus.',
                     'title'     => 'Ihre Session ist abgelaufenen. Bitte laden Sie die Seite neu und füllen Sie das Formular nochmals aus.',
                     'CSRF' => array(
-                        'message' => 'CSRF Attacke!'
+                        'message' => ''
                     )
                 );
             }
