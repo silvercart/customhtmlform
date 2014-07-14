@@ -175,17 +175,21 @@ class CheckFormData {
      * Checks if a field is empty and if this result is expected
      *
      * @param boolean $expectedResult the expected result
+     * @param string  $checkValue     Optional static value to check.
      *
      * @return array
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 25.10.2010
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>,
+     *         Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 14.07.2014
      */
-    public function isFilledIn($expectedResult) {
+    public function isFilledIn($expectedResult, $checkValue = null) {
         $isFilledIn     = true;
         $success        = false;
         $errorMessage   = '';
-        $checkValue     = $this -> getValueWithoutWhitespace($this -> value);
+        if (is_null($checkValue)) {
+            $checkValue = $this->getValueWithoutWhitespace($this->value);
+        }
 
         if ($checkValue === '') {
             $isFilledIn = false;
@@ -240,6 +244,10 @@ class CheckFormData {
 
         if (is_array($parameters)) {
 
+            if (array_key_exists('requirement', $parameters[0])) {
+                return $this->isValidDependantOn($parameters, 'isFilledIn');
+            }
+            
             if (!isset($parameters[0]['field']) ||
                 !isset($parameters[0]['hasValue'])) {
 
@@ -394,6 +402,106 @@ class CheckFormData {
             'success'       => $isNotEqual,
             'errorMessage'  => sprintf(_t('Form.REQUIRES_OTHER_VALUE_AS_IN_FIELD', 'This field may not have the same value as field "%s".'), $refererField)
         );
+    }
+
+    /**
+     * Checks the equality of two fields dependant of another field.
+     *
+     * @param array $parameters fields to be checked
+     *      array(
+     *          array(
+     *              'field'     => string,
+     *              'hasValue'  => mixed
+     *          ),
+     *          array(
+     *              'field'     => mixed
+     *          )
+     *      )
+     *
+     * @throws Exception
+     *
+     * @return array(
+     *      'success'       => bool,
+     *      'errorMessage'  => string
+     * )
+     *
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 14.07.2014
+     */
+    public function mustEqualDependantOn($parameters) {
+        return $this->isValidDependantOn($parameters, 'mustEqual');
+    }
+
+    /**
+     * Checks the equality of two fields dependant of another field.
+     *
+     * @param array $parameters fields to be checked
+     *
+     * @throws Exception
+     *
+     * @return array(
+     *      'success'       => bool,
+     *      'errorMessage'  => string
+     * )
+     *
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 14.07.2014
+     */
+    public function mustNotEqualDependantOn($parameters) {
+        return $this->isValidDependantOn($parameters, 'mustNotEqual');
+    }
+
+    /**
+     * Checks the validity of the field dependant of another field and a generic
+     * validation method.
+     *
+     * @param array  $parameters fields to be checked
+     * @param string $method     Method to call
+     *
+     * @throws Exception
+     *
+     * @return array(
+     *      'success'       => bool,
+     *      'errorMessage'  => string
+     * )
+     *
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 14.07.2014
+     */
+    public function isValidDependantOn($parameters, $method) {
+        $isValidDependantOn = array(
+            'success'       => true,
+            'errorMessage'  => '',
+        );
+
+        if (is_array($parameters)) {
+
+            if (!isset($parameters[0]['field']) ||
+                !isset($parameters[0]['requirement'])) {
+
+                throw new Exception(
+                    'Field is misconfigured for "CheckFormData->mustNotEqualDependantOn".'
+                );
+            }
+
+            $requirement    = $parameters[0]['requirement'];
+            $dependantValue = $parameters[1][$parameters[0]['field']];
+            switch ($requirement) {
+                case 'isFilledIn':
+                default:
+                    $result = $this->isFilledIn(true,$dependantValue);
+                    break;
+            }
+            if ($result['success']) {
+                $isValidDependantOn = $this->$method($parameters[2]);
+            }
+        } else {
+            throw new Exception(
+                'Field is misconfigured for "CheckFormData->mustNotEqualDependantOn".'
+            );
+        }
+
+        return $isValidDependantOn;
     }
 
     /**

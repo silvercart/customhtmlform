@@ -973,12 +973,40 @@ class CustomHtmlForm extends Form {
 
                         // Kriterium bezieht sich auf ein anderes Feld
                         if ($requirement == 'mustEqual' ||
-                            $requirement == 'mustNotEqual') {
+                            $requirement == 'mustNotEqual' ||
+                            strpos($requirement, 'mustEqual__') === 0 ||
+                            strpos($requirement, 'mustNotEqual__') === 0) {
+                            
+                            if (strpos($requirement, 'mustEqual__') === 0 ||
+                                strpos($requirement, 'mustNotEqual__') === 0) {
+                                $requirement = substr($requirement, 0, strpos($requirement, '_'));
+                            }
 
                             $requiredValue = array(
                                 'fieldName'  => $requiredValue,
                                 'fieldTitle' => $groupFields[$requiredValue]['title'] ? $groupFields[$requiredValue]['title'] : $requiredValue,
                                 'value'      => $data[$requiredValue]
+                            );
+                        }
+                        if ($requirement == 'mustEqualDependantOn' ||
+                            $requirement == 'mustNotEqualDependantOn' ||
+                            strpos($requirement, 'mustEqualDependantOn__') === 0 ||
+                            strpos($requirement, 'mustNotEqualDependantOn__') === 0) {
+                            
+                            if (strpos($requirement, 'mustEqualDependantOn__') === 0 ||
+                                strpos($requirement, 'mustNotEqualDependantOn__') === 0) {
+                                $requirement = substr($requirement, 0, strpos($requirement, '_'));
+                            }
+
+                            $targetField   = $requiredValue['targetField'];
+                            $requiredValue = array(
+                                $requiredValue,
+                                $data,
+                                array(
+                                    'fieldName'  => $targetField,
+                                    'fieldTitle' => $groupFields[$targetField]['title'] ? $groupFields[$targetField]['title'] : $targetField,
+                                    'value'      => $data[$targetField]
+                                )
                             );
                         }
 
@@ -987,7 +1015,8 @@ class CustomHtmlForm extends Form {
                         if ($requirement == 'isFilledInDependantOn') {
                             $requiredValue = array(
                                 $requiredValue,
-                                $data
+                                $data,
+                                true
                             );
                         }
 
@@ -1639,15 +1668,20 @@ class CustomHtmlForm extends Form {
      * @param string $messageType The message type (not used)
      *
      * @return void
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pixeltricks GmbH
-     * @since 08.04.2011
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     *         Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 14.07.2014
      */
     public function addErrorMessage($fieldName, $message, $messageType = '') {
+        $definition = $this->getFormFieldDefinition($fieldName);
+        $fieldTitle = $fieldName;
+        if ($definition !== false) {
+            $fieldTitle = $definition['title'];
+        }
         $this->errorMessages[$fieldName] = array(
             'message'   => $message,
-            'fieldname' => $fieldName,
+            'fieldname' => $fieldTitle,
             $fieldName  => array(
                 'message' => $message
             )

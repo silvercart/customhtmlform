@@ -448,6 +448,34 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
     }
 
     /**
+     * Dummy for server side validation.
+     *
+     * @param array parameters parameters
+     * 
+     * @return array
+     */
+    this.mustEqualDependantOn = function(parameters) {
+        return {
+            success:      true,
+            errorMessage: ''
+        };
+    }
+
+    /**
+     * Dummy for server side validation.
+     *
+     * @param array parameters parameters
+     * 
+     * @return array
+     */
+    this.mustNotEqualDependantOn = function(parameters) {
+        return {
+            success:      true,
+            errorMessage: ''
+        };
+    }
+
+    /**
      * Prueft, ob ein Feld ausschliesslich aus Zahlen besteht.
      *
      * @param boolean
