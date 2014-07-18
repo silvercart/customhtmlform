@@ -1388,7 +1388,8 @@ class CustomHtmlForm extends Form {
 
                 $field->setValue($fieldDefinition['value']);
             }
-        } else if ($fieldDefinition['type'] == 'UploadField') {
+        } else if ($fieldDefinition['type'] == 'UploadField' ||
+                   $fieldDefinition['type'] == 'CommunityImageUploadField') {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
@@ -1410,6 +1411,9 @@ class CustomHtmlForm extends Form {
             }
             if (array_key_exists('record', $fieldDefinition)) {
                 $field->setRecord($fieldDefinition['record']);
+            }
+            if (array_key_exists('alternativeLink', $fieldDefinition)) {
+                $field->setAlternativeLink($fieldDefinition['alternativeLink']);
             }
         } else if ($fieldDefinition['type'] == 'TreeMultiselectField') {
             if (!array_key_exists('keyField', $fieldDefinition)) {
