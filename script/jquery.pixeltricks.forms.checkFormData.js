@@ -221,7 +221,8 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
         else if (this.fieldType == 'OptionsetField' ||
                  this.fieldType == 'SilvercartCheckoutOptionsetField' ||
                  this.fieldType == 'SilvercartShippingOptionsetField' ||
-                 this.fieldType == 'SilvercartAddressOptionsetField')
+                 this.fieldType == 'SilvercartAddressOptionsetField' ||
+                 this.fieldType == 'SilvercartDistributorPackageField')
         {
             if (this.fieldValue == undefined ||
                 this.fieldValue.length == 0) {

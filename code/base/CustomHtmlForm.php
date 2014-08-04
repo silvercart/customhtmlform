@@ -2646,4 +2646,108 @@ class CustomHtmlForm extends Form {
     public static function enableCache() {
         self::$cache_enabled = true;
     }
+    
+    /**
+     * Creates and returns a field definition.
+     * 
+     * @param string $type                   Type
+     * @param string $title                  Title
+     * @param mixed  $value                  Value
+     * @param bool   $isFilledIn             Field needs to be filled in?
+     * @param array  $additionalRequirements Additional requirements
+     * @param string $selectedValue          Selected value
+     * @param array  $additionalDefinitions  Additional definitions
+     * 
+     * @return array
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 31.07.2014
+     */
+    public function createFieldDefinition ($type, $title, $value, $isFilledIn = false, $additionalRequirements = array(), $selectedValue = null, $additionalDefinitions = array()) {
+        $definition = array(
+            'type'         => $type,
+            'title'        => $title,
+            'value'        => $value,
+            'requirements' => array(),
+        );
+        if ($isFilledIn) {
+            $definition['requirements']['isFilledIn'] = true;
+        }
+        if (!is_null($selectedValue)) {
+            $definition['selectedValue'] = $selectedValue;
+        }
+        foreach ($additionalRequirements as $requirement => $requirementDefinition) {
+            $definition['requirements'][$requirement] = $requirementDefinition;
+        }
+        foreach ($additionalDefinitions as $additionalDefinitionKey => $additionalDefinitionValue) {
+            $definition[$additionalDefinitionKey] = $additionalDefinitionValue;
+        }
+        
+        return $definition;
+    }
+    
+    /**
+     * Creates and returns a TextField definition.
+     * 
+     * @param string $title                  Title
+     * @param mixed  $value                  Value
+     * @param bool   $isFilledIn             Field needs to be filled in?
+     * @param array  $additionalRequirements Additional requirements
+     * @param string $selectedValue          Selected value
+     * @param array  $additionalDefinitions  Additional definitions
+     * 
+     * @return array
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 31.07.2014
+     */
+    public function createTextFieldDefinition ($title, $value, $isFilledIn = false, $additionalRequirements = array(), $selectedValue = null, $additionalDefinitions = array()) {
+        return $this->createFieldDefinition('TextField', $title, $value, $isFilledIn, $additionalRequirements, $selectedValue, $additionalDefinitions);
+    }
+    
+    /**
+     * Creates and returns a TextareaField definition.
+     * 
+     * @param string $title                  Title
+     * @param mixed  $value                  Value
+     * @param bool   $isFilledIn             Field needs to be filled in?
+     * @param int    $rows                   Row count
+     * @param int    $cols                   Column count
+     * @param array  $additionalRequirements Additional requirements
+     * @param string $selectedValue          Selected value
+     * @param array  $additionalDefinitions  Additional definitions
+     * 
+     * @return array
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 31.07.2014
+     */
+    public function createTextareaFieldDefinition ($title, $value, $isFilledIn = false, $rows = null, $cols = null, $additionalRequirements = array(), $selectedValue = null, $additionalDefinitions = array()) {
+        if (!is_null($rows)) {
+            $additionalDefinitions['rows'] = $rows;
+        }
+        if (!is_null($cols)) {
+            $additionalDefinitions['cols'] = $cols;
+        }
+        return $this->createFieldDefinition('TextareaField', $title, $value, $isFilledIn, $additionalRequirements, $selectedValue, $additionalDefinitions);
+    }
+    
+    /**
+     * Creates and returns a CheckboxField definition.
+     * 
+     * @param string $title                  Title
+     * @param mixed  $value                  Value
+     * @param bool   $isFilledIn             Field needs to be filled in?
+     * @param array  $additionalRequirements Additional requirements
+     * @param string $selectedValue          Selected value
+     * @param array  $additionalDefinitions  Additional definitions
+     * 
+     * @return array
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 31.07.2014
+     */
+    public function createCheckboxFieldDefinition ($title, $value, $isFilledIn = false, $additionalRequirements = array(), $selectedValue = null, $additionalDefinitions = array()) {
+        return $this->createFieldDefinition('CheckboxField', $title, $value, $isFilledIn, $additionalRequirements, $selectedValue, $additionalDefinitions);
+    }
 }
