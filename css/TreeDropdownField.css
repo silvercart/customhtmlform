@@ -1,0 +1,101 @@
+
+.jstree-pageicon {
+    -webkit-background-clip: border-box;
+    -webkit-background-origin: padding-box;
+    -webkit-background-size: auto;
+    background-attachment: scroll;
+    background-clip: border-box;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: url(http://webshop.globalcaddy.vds1/silvercart/images/page_icons/product_group-file.gif);
+    background-origin: padding-box;
+    background-size: auto;
+    border-bottom-color: rgb(0, 0, 0);
+    border-bottom-style: none;
+    border-bottom-width: 0px;
+    border-left-color: rgb(0, 0, 0);
+    border-left-style: none;
+    border-left-width: 0px;
+    border-right-color: rgb(0, 0, 0);
+    border-right-style: none;
+    border-right-width: 0px;
+    border-top-color: rgb(0, 0, 0);
+    border-top-style: none;
+    border-top-width: 0px;
+    color: rgb(0, 0, 0);
+    cursor: default;
+    display: block;
+    float: left;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: normal;
+    height: 16px;
+    line-height: 16px;
+    list-style-image: none;
+    list-style-position: outside;
+    list-style-type: none;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 4px;
+    margin-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 0px;
+    text-decoration: none;
+    text-shadow: rgb(255, 255, 255) 1px 1px 1px;
+    vertical-align: baseline;
+    white-space: nowrap;
+    width: 16px;
+}
+.jstree ul {
+    list-style-type: none !important;
+}
+.TreeDropdownField .treedropdownfield-panel .jstree a {
+    text-decoration: none;
+    cursor: pointer;
+    display: inline-block;
+    line-height: 16px;
+    height: 16px;
+    color: black;
+    white-space: nowrap;
+    text-decoration: none;
+    padding: 1px 2px;
+    margin: 0;
+    border: 1px solid #fff;
+}
+.TreeDropdownField .treedropdownfield-panel a > .jstree-icon {
+    display: none !important;
+}
+.TreeDropdownField .treedropdownfield-panel .jstree ins {
+    display: inline-block;
+    text-decoration: none;
+    width: 18px;
+    height: 18px;
+    margin: 0 0 0 0;
+    padding: 0;
+    float: left;
+}
+.jstree-apple .jstree-leaf > ins {
+    background-position: -36px 0;
+}
+.tree-holder.jstree-apple ins {
+    background-color: transparent;
+    background-image: url("http://webshop.globalcaddy.vds1/framework/admin/images/sitetree_ss_default_icons.png");
+}
+.tree-holder.jstree-apple .jstree-closed > ins {
+    background-position: 0 0;
+}
+div.TreeDropdownField .treedropdownfield-panel ul .jstree-open > ins {
+    background-position: -18px 0;
+}
+.TreeDropdownField .treedropdownfield-panel .jstree li.jstree-open > ul {
+    display: block;
+}
+.TreeDropdownField .treedropdownfield-panel .jstree li.jstree-closed > ul {
+    display: none;
+}
+.TreeDropdownField .treedropdownfield-panel .jstree li > .jstree-icon {
+    cursor: pointer;
+}

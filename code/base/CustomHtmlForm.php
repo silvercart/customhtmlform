@@ -1212,7 +1212,7 @@ class CustomHtmlForm extends Form {
      *         Sebastian Diel <sdiel@pixeltricks.de>
      * @since 04.03.2014
      */
-    protected function getFormField($fieldName, $fieldDefinition) {
+    public function getFormField($fieldName, $fieldDefinition) {
 
         if (!isset($fieldDefinition['type'])) {
             throw new Exception(
@@ -1246,13 +1246,32 @@ class CustomHtmlForm extends Form {
                 $fieldDefinition['form']
             );
         } else if (CustomHtmlFormTools::isDropdownField($fieldDefinition['type'])) {
-            $field = new $fieldDefinition['type'](
-                $fieldName,
-                $fieldDefinition['title'],
-                $fieldDefinition['value'],
-                $fieldDefinition['selectedValue'],
-                $fieldDefinition['form']
-            );
+            if ($fieldDefinition['type'] == 'TreeDropdownField') {
+                Requirements::css(FRAMEWORK_DIR . '/css/TreeDropdownField.css');
+                Requirements::css('customhtmlform/css/TreeDropdownField.css');
+                $field = new $fieldDefinition['type'](
+                    $fieldName,
+                    $fieldDefinition['title'],
+                    $fieldDefinition['sourceObject'],
+                    $fieldDefinition['selectedValue'],
+                    $fieldDefinition['labelField'],
+                    $fieldDefinition['showSearch']
+                );
+                if (array_key_exists('treeBaseID', $fieldDefinition)) {
+                    $field->setTreeBaseID($fieldDefinition['treeBaseID']);
+                }
+                if (array_key_exists('value', $fieldDefinition)) {
+                    $field->setValue($fieldDefinition['value']);
+                }
+            } else {
+                $field = new $fieldDefinition['type'](
+                    $fieldName,
+                    $fieldDefinition['title'],
+                    $fieldDefinition['value'],
+                    $fieldDefinition['selectedValue'],
+                    $fieldDefinition['form']
+                );
+            }
         } else if (CustomHtmlFormTools::isOptionsetField($fieldDefinition['type'])) {
             $field = new $fieldDefinition['type'](
                 $fieldName,
@@ -2752,5 +2771,51 @@ class CustomHtmlForm extends Form {
      */
     public function createCheckboxFieldDefinition ($title, $value, $isFilledIn = false, $additionalRequirements = array(), $selectedValue = null, $additionalDefinitions = array()) {
         return $this->createFieldDefinition('CheckboxField', $title, $value, $isFilledIn, $additionalRequirements, $selectedValue, $additionalDefinitions);
+    }
+    
+    /**
+     * Creates and returns a DropdownField definition.
+     * 
+     * @param string $title                  Title
+     * @param mixed  $value                  Value
+     * @param string $selectedValue          Selected value
+     * @param bool   $isFilledIn             Field needs to be filled in?
+     * @param array  $additionalRequirements Additional requirements
+     * @param array  $additionalDefinitions  Additional definitions
+     * 
+     * @return array
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 31.07.2014
+     */
+    public function createDropdownFieldDefinition ($title, $value, $selectedValue = null, $isFilledIn = false, $additionalRequirements = array(), $additionalDefinitions = array()) {
+        return $this->createFieldDefinition('DropdownField', $title, $value, $isFilledIn, $additionalRequirements, $selectedValue, $additionalDefinitions);
+    }
+    
+    /**
+     * Creates and returns a TreeDropdownField definition.
+     * 
+     * @param string $title                  Title
+     * @param string $sourceObject           Name of the source object
+     * @param int    $treeBaseID             ID of the trees root object
+     * @param array  $value                  Selected value(s)
+     * @param string $keyField               Key field
+     * @param string $labelField             Label field
+     * @param bool   $showSearch             Show search?
+     * @param bool   $isFilledIn             Field needs to be filled in?
+     * @param array  $additionalRequirements Additional requirements
+     * @param array  $additionalDefinitions  Additional definitions
+     * 
+     * @return array
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 31.07.2014
+     */
+    public function createTreeDropdownFieldDefinition ($title, $sourceObject, $treeBaseID = 0, $value = null, $keyField = 'ID', $labelField = 'TreeTitle', $showSearch = true, $isFilledIn = false, $additionalRequirements = array(), $additionalDefinitions = array()) {
+        $additionalDefinitions['sourceObject'] = $sourceObject;
+        $additionalDefinitions['labelField']   = $labelField;
+        $additionalDefinitions['showSearch']   = $showSearch;
+        $additionalDefinitions['treeBaseID']   = $treeBaseID;
+        return $this->createFieldDefinition('TreeDropdownField', $title, $value, $isFilledIn, $additionalRequirements, $keyField, $additionalDefinitions);
     }
 }
