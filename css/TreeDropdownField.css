@@ -82,13 +82,25 @@
 }
 .tree-holder.jstree-apple ins {
     background-color: transparent;
-    background-image: url("http://webshop.globalcaddy.vds1/framework/admin/images/sitetree_ss_default_icons.png");
+    background-image: url("/framework/admin/images/sitetree_ss_default_icons.png");
 }
 .tree-holder.jstree-apple .jstree-closed > ins {
     background-position: 0 0;
 }
-div.TreeDropdownField .treedropdownfield-panel ul .jstree-open > ins {
+div.TreeDropdownField .treedropdownfield-panel ul .jstree-open > ins.jstree-icon {
     background-position: -18px 0;
+}
+.tree-holder.jstree-apple ins.jstree-checkbox {
+    background-position:-2px -19px; 
+}
+.tree-holder.jstree-apple ins.jstree-checkbox:hover {
+    background-position:-2px -37px;
+}
+.tree-holder.jstree-apple .jstree-checked ins.jstree-checkbox {
+    background-position:-38px -19px; 
+}
+.tree-holder.jstree-apple .jstree-checked ins.jstree-checkbox:hover {
+    background-position:-38px -19px; 
 }
 .TreeDropdownField .treedropdownfield-panel .jstree li.jstree-open > ul {
     display: block;

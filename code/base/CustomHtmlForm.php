@@ -1438,17 +1438,25 @@ class CustomHtmlForm extends Form {
                 $field->setShowDescriptionField($fieldDefinition['showDescriptionField']);
             }
         } else if ($fieldDefinition['type'] == 'TreeMultiselectField') {
-            if (!array_key_exists('keyField', $fieldDefinition)) {
-                $fieldDefinition['keyField'] = 'ID';
+            Requirements::css(FRAMEWORK_DIR . '/css/TreeDropdownField.css');
+            Requirements::css('customhtmlform/css/TreeDropdownField.css');
+            if (array_key_exists('keyField', $fieldDefinition)) {
+                $fieldDefinition['selectedValue'] = $fieldDefinition['keyField'];
             }
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
                 $fieldDefinition['sourceObject'],
-                $fieldDefinition['keyField']
+                $fieldDefinition['selectedValue'],
+                $fieldDefinition['labelField'],
+                $fieldDefinition['showSearch']
             );
-            
-            $field->setValue($fieldDefinition['value']);
+            if (array_key_exists('treeBaseID', $fieldDefinition)) {
+                $field->setTreeBaseID($fieldDefinition['treeBaseID']);
+            }
+            if (array_key_exists('value', $fieldDefinition)) {
+                $field->setValue($fieldDefinition['value']);
+            }
         } else {
             $formFieldHandler = self::getRegisteredFormFieldHandlerForType($fieldDefinition['type']);
             if ($formFieldHandler) {
@@ -2817,5 +2825,32 @@ class CustomHtmlForm extends Form {
         $additionalDefinitions['showSearch']   = $showSearch;
         $additionalDefinitions['treeBaseID']   = $treeBaseID;
         return $this->createFieldDefinition('TreeDropdownField', $title, $value, $isFilledIn, $additionalRequirements, $keyField, $additionalDefinitions);
+    }
+    
+    /**
+     * Creates and returns a TreeMultiselectField definition.
+     * 
+     * @param string $title                  Title
+     * @param string $sourceObject           Name of the source object
+     * @param int    $treeBaseID             ID of the trees root object
+     * @param array  $value                  Selected value(s)
+     * @param string $keyField               Key field
+     * @param string $labelField             Label field
+     * @param bool   $showSearch             Show search?
+     * @param bool   $isFilledIn             Field needs to be filled in?
+     * @param array  $additionalRequirements Additional requirements
+     * @param array  $additionalDefinitions  Additional definitions
+     * 
+     * @return array
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 31.07.2014
+     */
+    public function createTreeMultiselectFieldDefinition ($title, $sourceObject, $treeBaseID = 0, $value = null, $keyField = 'ID', $labelField = 'TreeTitle', $showSearch = true, $isFilledIn = false, $additionalRequirements = array(), $additionalDefinitions = array()) {
+        $additionalDefinitions['sourceObject'] = $sourceObject;
+        $additionalDefinitions['labelField']   = $labelField;
+        $additionalDefinitions['showSearch']   = $showSearch;
+        $additionalDefinitions['treeBaseID']   = $treeBaseID;
+        return $this->createFieldDefinition('TreeMultiselectField', $title, $value, $isFilledIn, $additionalRequirements, $keyField, $additionalDefinitions);
     }
 }
