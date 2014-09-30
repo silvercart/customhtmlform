@@ -2853,4 +2853,27 @@ class CustomHtmlForm extends Form {
         $additionalDefinitions['treeBaseID']   = $treeBaseID;
         return $this->createFieldDefinition('TreeMultiselectField', $title, $value, $isFilledIn, $additionalRequirements, $keyField, $additionalDefinitions);
     }
+    
+    /**
+     * Creates and returns a MoneyField definition.
+     * 
+     * @param string $title                  Title
+     * @param mixed  $value                  Value
+     * @param bool   $isFilledIn             Field needs to be filled in?
+     * @param array  $additionalRequirements Additional requirements
+     * @param string $selectedValue          Selected value
+     * @param array  $additionalDefinitions  Additional definitions
+     * 
+     * @return array
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 31.07.2014
+     */
+    public function createMoneyFieldDefinition($title, $value, $isFilledIn = false, $additionalRequirements = array(), $selectedValue = null, $additionalDefinitions = array()) {
+        $fieldClass = 'MoneyField';
+        if (class_exists('SilvercartMoneyField')) {
+            $fieldClass = 'SilvercartMoneyField';
+        }
+        return $this->createFieldDefinition($fieldClass, $title, $value, $isFilledIn, $additionalRequirements, $selectedValue, $additionalDefinitions);
+    }
 }
