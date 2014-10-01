@@ -2876,4 +2876,23 @@ class CustomHtmlForm extends Form {
         }
         return $this->createFieldDefinition($fieldClass, $title, $value, $isFilledIn, $additionalRequirements, $selectedValue, $additionalDefinitions);
     }
+    
+    /**
+     * Creates and returns a CheckboxSetField definition.
+     * 
+     * @param string $title                  Title
+     * @param mixed  $value                  Value
+     * @param bool   $isFilledIn             Field needs to be filled in?
+     * @param array  $additionalRequirements Additional requirements
+     * @param string $selectedValue          Selected value
+     * @param array  $additionalDefinitions  Additional definitions
+     * 
+     * @return array
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 01.10.2014
+     */
+    public function createCheckboxSetFieldDefinition($title, $value, $isFilledIn = false, $additionalRequirements = array(), $selectedValue = null, $additionalDefinitions = array()) {
+        return $this->createFieldDefinition('CheckboxSetField', $title, $value, $isFilledIn, $additionalRequirements, $selectedValue, $additionalDefinitions);
+    }
 }
