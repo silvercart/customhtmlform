@@ -16,6 +16,8 @@ en_GB:
     TAB_SPAMCHECK: "Captcha"
   CustomHtmlFormErrorMessages:
     CHECK_FIELDS: "Please check your input on the following fields:"
+    CSRF_FIELDS: "Your session has expired. Please reload this page and fill in the form again."
+    CSRF_MESSAGE: "Possible CSRF attack!"
   CustomHtmlFormField:
     PtCaptchaImageField_Title: "Enter this captcha code in the following field please:"
     PtCaptchaInputField_Title: "Captcha code:"

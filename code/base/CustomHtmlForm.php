@@ -303,6 +303,29 @@ class CustomHtmlForm extends Form {
      * @var string
      */
     protected $customHtmlFormAction = null;
+    
+    /**
+     * Custom CSS class to use for JS error messages.
+     *
+     * @var string
+     */
+    public static $custom_error_box_css_class = '';
+    
+    /**
+     * CSS selector (child of #FieldID) to place the error messages box.
+     *
+     * @var string
+     */
+    public static $custom_error_box_sub_selector = '';
+    
+    /**
+     * Allowed values:
+     * append
+     * prepend
+     *
+     * @var string
+     */
+    public static $custom_error_box_selection_method = '';
 
     /**
      * creates a form object with a free configurable markup
@@ -314,10 +337,12 @@ class CustomHtmlForm extends Form {
      *
      * @return CustomHtmlForm
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 25.10.2010
+     * @author Sebastian Diel <sdiel@pixeltricks.de>,
+     *         Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 24.01.2014
      */
     public function __construct($controller, $params = null, $preferences = null, $barebone = false) {
+        $this->extend('onBeforeConstruct', $controller, $params, $preferences, $barebone);
         global $project;
 
         $this->barebone   = $barebone;
@@ -425,6 +450,7 @@ class CustomHtmlForm extends Form {
 
         // Register the default module directory from mysite/_config.php
         self::registerModule($project);
+        $this->extend('onAfterConstruct', $controller, $params, $preferences, $barebone);
     }
 
     /**
@@ -584,6 +610,15 @@ class CustomHtmlForm extends Form {
             ' . $this->jsName . '.setPreference(\'showJsValidationErrorMessages\', ' . ($this->getShowJsValidationErrorMessages() ? 'true' : 'false') . ');
             ' . $this->jsName . '.bindEvents();';
         
+        if (!empty(self::$custom_error_box_css_class)) {
+            $javascriptOnloadSnippets .= $this->jsName . ".setErrorBoxCssClass('" . self::$custom_error_box_css_class . "');";
+        }
+        if (!empty(self::$custom_error_box_sub_selector)) {
+            $javascriptOnloadSnippets .= $this->jsName . ".setErrorBoxSubSelector('" . self::$custom_error_box_sub_selector . "');";
+        }
+        if (!empty(self::$custom_error_box_selection_method)) {
+            $javascriptOnloadSnippets .= $this->jsName . ".setErrorBoxSelectionMethod('" . self::$custom_error_box_selection_method . "');";
+        }
         if ($this->getDoJsValidation()) {
             $javascriptOnloadSnippets .= '$("#' . $this->jsName . '").bind("submit", function(e) { return ' . $this->jsName . '.checkForm(e); });';
         }
@@ -718,10 +753,12 @@ class CustomHtmlForm extends Form {
      *
      * @return ViewableData
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>, Sebastian Diel <sdiel@pixeltricks.de>
-     * @since 06.07.2012
+     * @author Sebastian Diel <sdiel@pixeltricks.de>,
+     *         Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 24.01.2014
      */
     public function submit($data, $form) {
+        $this->extend('onBeforeSubmit', $data, $form);
         $formData = $this->getFormData($data);
         $this->checkFormData($formData);
         $result = null;
@@ -873,10 +910,11 @@ class CustomHtmlForm extends Form {
      *
      * @return array
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 25.10.2010
+     * @author Sebastian Diel <sdiel@pixeltricks.de>,
+     *         Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 24.01.2014
      */
-    protected function getFormData($request) {
+    public function getFormData($request) {
         $formData = array();
 
         if ($this->securityTokenEnabled) {
@@ -935,11 +973,11 @@ class CustomHtmlForm extends Form {
                 // Possible CSRF attack
                 $error                 = true;
                 $errorMessages['CSRF'] = array(
-                    'message'   => '',
-                    'fieldname' => 'Ihre Session ist abgelaufenen. Bitte laden Sie die Seite neu und füllen Sie das Formular nochmals aus.',
-                    'title'     => 'Ihre Session ist abgelaufenen. Bitte laden Sie die Seite neu und füllen Sie das Formular nochmals aus.',
+                    'message'   => _t('CustomHtmlFormErrorMessages.CSRF_MESSAGE'),
+                    'fieldname' => _t('CustomHtmlFormErrorMessages.CSRF_FIELDS'),
+                    'title'     => _t('CustomHtmlFormErrorMessages.CSRF_FIELDS'),
                     'CSRF' => array(
-                        'message' => ''
+                        'message' => _t('CustomHtmlFormErrorMessages.CSRF_MESSAGE')
                     )
                 );
             }
@@ -1368,6 +1406,10 @@ class CustomHtmlForm extends Form {
             $field->setColumns($fieldDefinition['cols']);
             $field->setRows($fieldDefinition['rows']);
             $field->setForm($fieldDefinition['form']);
+            if (isset($fieldDefinition['placeholder']) &&
+                method_exists($field, 'setPlaceholder')) {
+                $field->setPlaceholder($fieldDefinition['placeholder']);
+            }
         } else if ($fieldDefinition['type'] == 'MultipleImageUploadField' ||
                    $fieldDefinition['type'] == 'MultipleFileUploadField') {
 
@@ -1884,6 +1926,8 @@ class CustomHtmlForm extends Form {
         if (array_key_exists($this->class, self::$useSpamCheck)) {
             $fields .= $this->SpamCheckField();
         }
+        
+        $this->extend('updateCustomHtmlFormSpecialFields', $fields);
 
         $this->extend('onAfterCustomHtmlFormSpecialFields', $fields);
         
@@ -1961,6 +2005,7 @@ class CustomHtmlForm extends Form {
             '/templates/',
             '/templates/Layout/',
             '/templates/forms/',
+            '/templates/form_fields/',
         );
 
         // search the template in a variety of possible paths
@@ -1979,8 +2024,12 @@ class CustomHtmlForm extends Form {
             foreach ($registeredModules as $moduleName => $priority) {
                 foreach ($templateDirs as $templateDir) {
                     $templatePath = $moduleName.$templateDir.$template.'.ss';
+                    $themedPath   = 'themes/' . $templatePath;
 
                     if (Director::fileExists($templatePath)) {
+                        break(2);
+                    } elseif (Director::fileExists($themedPath)) {
+                        $templatePath = $themedPath;
                         break(2);
                     }
                 }
@@ -2236,10 +2285,11 @@ class CustomHtmlForm extends Form {
      *
      * @return void
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 13.03.2011
+     * @author Sebastian Diel <sdiel@pixeltricks.de>,
+     *         Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 24.01.2014
      */
-    protected function deactivateValidationFor($fieldName) {
+    public function deactivateValidationFor($fieldName) {
         if (!in_array($fieldName, $this->noValidationFields)) {
             $this->noValidationFields[] = $fieldName;
         }
@@ -2252,10 +2302,11 @@ class CustomHtmlForm extends Form {
      *
      * @return void
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 13.03.2011
+     * @author Sebastian Diel <sdiel@pixeltricks.de>,
+     *         Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 24.01.2014
      */
-    protected function activateValidationFor($fieldName) {
+    public function activateValidationFor($fieldName) {
         if (in_array($fieldName, $this->noValidationFields)) {
             for ($index = 0; $index < count($this->noValidationFields); $index++) {
                 if ($fieldName == $this->noValidationFields[$index]) {

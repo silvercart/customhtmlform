@@ -42,6 +42,21 @@ interface CustomHtmlFormDecorator {
     public function extendedProcess();
     
     /**
+     * This method will be called after CustomHtmlForm's __construct().
+     * 
+     * @param ContentController $controller  the calling controller instance
+     * @param array             $params      optional parameters
+     * @param array             $preferences optional preferences
+     * @param bool              $barebone    defines if a form should only be instanciated or be used too
+     * 
+     * @return bool
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 24.01.2014
+     */
+    public function onAfterConstruct($controller, $params, $preferences, $barebone);
+    
+    /**
      * Adds some custom markup to the CustomHtmlFormSpecialFields markup on 
      * after the default markup will be added.
      * 
@@ -84,6 +99,21 @@ interface CustomHtmlFormDecorator {
     public function onAfterSubmitSuccess(&$data, &$form, &$formData);
     
     /**
+     * This method will be called before CustomHtmlForm's __construct().
+     * 
+     * @param ContentController $controller  the calling controller instance
+     * @param array             $params      optional parameters
+     * @param array             $preferences optional preferences
+     * @param bool              $barebone    defines if a form should only be instanciated or be used too
+     * 
+     * @return bool
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 24.01.2014
+     */
+    public function onBeforeConstruct($controller, $params, $preferences, $barebone);
+    
+    /**
      * Adds some custom markup to the CustomHtmlFormSpecialFields markup on 
      * before the default markup will be added.
      * 
@@ -95,6 +125,20 @@ interface CustomHtmlFormDecorator {
      * @since 02.07.2013
      */
     public function onBeforeCustomHtmlFormSpecialFields(&$fieldsMarkup);
+    
+    /**
+     * This method will be called before CustomHtmlForm's default submit.
+     * You can manipulate the relevant data here.
+     * 
+     * @param SS_HTTPRequest &$data submit data
+     * @param Form           &$form form object
+     * 
+     * @return bool
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 24.01.2014
+     */
+    public function onBeforeSubmit(&$data, &$form);
     
     /**
      * This method will be called before CustomHtmlForm's default submitFailure.

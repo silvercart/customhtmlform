@@ -24,9 +24,9 @@
 
 Requirements::set_write_js_to_body(false); // write javascriptcode into the html head section
 
-DataObject::add_extension('ContentController', 'CustomHtmlFormPage_Controller');
-DataObject::add_extension('Security',          'CustomHtmlFormPage_Controller');
-SiteConfig::add_extension('SiteConfig',        'CustomHtmlFormConfiguration');
+ContentController::add_extension('CustomHtmlFormPage_Controller');
+Security::add_extension('CustomHtmlFormPage_Controller');
+SiteConfig::add_extension('CustomHtmlFormConfiguration');
 
 $cacheBaseDir   = getTempFolder() . DIRECTORY_SEPARATOR . 'cache';
 $cacheDir       = $cacheBaseDir . DIRECTORY_SEPARATOR . 'CustomHtmlForm';
@@ -41,13 +41,16 @@ if (!is_dir($cacheDir)) {
     }
     mkdir($cacheDir);
 }
+if (class_exists('SilvercartCleanCacheTask')) {
+    SilvercartCleanCacheTask::register_cache_directory($cacheDir);
+}
 SS_Cache::set_cache_lifetime('CustomHtmlForm', $cachelifetime);
 SS_Cache::add_backend(
         'CustomHtmlForm',
         'File',
         array(
             'cache_dir'                 => $cacheDir,
-            'hashed_directory_level'    => 1,
+            'hashed_directory_level'    => 2,
         )
 );
 SS_Cache::pick_backend('CustomHtmlForm', 'CustomHtmlForm');

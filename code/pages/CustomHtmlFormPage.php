@@ -31,6 +31,12 @@
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
 class CustomHtmlFormPage_Controller extends DataExtension {
+    
+    /**
+     *
+     * @var bool
+     */
+    public static $include_meta_content_language = true;
 
     /**
      * defines allowed methods
@@ -276,7 +282,7 @@ class CustomHtmlFormPage_Controller extends DataExtension {
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>,
      *         Sebastian Diel <sdiel@pixeltricks.de>
-     * @since 04.07.2013
+     * @since 29.10.2013
      */
     public function onBeforeInit() {
 
@@ -285,8 +291,9 @@ class CustomHtmlFormPage_Controller extends DataExtension {
             // -------------------------------------------------------------------
             // load scripts
             // -------------------------------------------------------------------
-            if (self::$do_use_own_jquery) {
-                Requirements::block(THIRDPARTY_DIR . '/jquery/jquery.js');
+            Requirements::block('sapphire/thirdparty/jquery/jquery.js');
+            if (self::$include_meta_content_language) {
+                Requirements::insertHeadTags('<meta http-equiv="Content-language" content="' . i18n::get_locale() . '" />', 'CustomHtmlFormContentLanguageTag');
             }
             Requirements::add_i18n_javascript('customhtmlform/javascript/lang');
 

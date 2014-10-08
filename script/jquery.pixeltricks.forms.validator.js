@@ -45,6 +45,26 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
      * @var array
      */
     this.noValidationFields = [];
+    /**
+     * CSS class to use for error messages (outer box)
+     *
+     * @var string
+     */
+    this.errorBoxCssClass = 'errorList';
+    /**
+     * CSS selector (child of #FieldID) to place the error messages box.
+     *
+     * @var string
+     */
+    this.errorBoxSubSelector = '';
+    /**
+     * Allowed values:
+     * append
+     * prepend
+     *
+     * @var string
+     */
+    this.errorBoxSelectionMethod = 'prepend';
     
     /**
      * Enthaelt die Voreinstellungen.
@@ -329,6 +349,7 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
      */
     this.toggleErrorFields = function(errorMessages)
     {
+        var scrollOffset = 1000000;
         $.each(
             errorMessages,
             function (fieldName, messages)
@@ -343,7 +364,7 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
                 for (messageIdx = 0; messageIdx < messages.length; messageIdx++) {
                     messageStr += '<strong class="message">';
                     messageStr += messages[messageIdx];
-                    messageStr += '</strong>';
+                    messageStr += '</strong> ';
                 }
 
                 if (errorField.length == 0 &&
@@ -353,12 +374,17 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
                     // Fehlerbox und Meldungstext neu erzeugen
                     // --------------------------------------------------------
                     
-                    messageStr = '<div class="errorList" id="' + errorFieldID + '" style="display: none;">' + messageStr + '</div>';
+                    messageStr = '<div class=" ' + that.errorBoxCssClass + ' " id="' + errorFieldID + '" style="display: none;">' + messageStr + '</div>';
+                    var errorBoxSelector = '#' + fieldBoxID + that.errorBoxSubSelector;
 
-                    if ($('#' + fieldBoxID))
+                    if ($(errorBoxSelector))
                     {
-                        $('#' + fieldBoxID).prepend(messageStr);
-                        $('#' + fieldBoxID).addClass('error');
+                        if (that.errorBoxSelectionMethod === 'prepend') {
+                            $(errorBoxSelector).prepend(messageStr);
+                        } else {
+                            $(errorBoxSelector).append(messageStr);
+                        }
+                        $(errorBoxSelector).addClass('error');
                     }
                     else
                     {
@@ -423,11 +449,18 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
                         $('#' + errorFieldID).remove();
                     }
                 }
+                if ($('#' + fieldBoxID).length > 0) {
+                    if (scrollOffset > $('#' + fieldBoxID).offset().top) {
+                        scrollOffset = $('#' + fieldBoxID).offset().top;
+                    }
+                }
             }
         );
         
         if (that.preferences.doJsValidationScrolling) {
-            $.scrollTo($('#' + that.formName), 400);
+            $('html, body').animate({
+                scrollTop: scrollOffset
+            }, 400);
         }
     }
 
@@ -479,6 +512,33 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
     {
         this.formName = formName;
     }
+    
+    /**
+     * Sets the error box css class
+     * 
+     * @param errorBoxCssClass string
+     */
+    this.setErrorBoxCssClass = function(errorBoxCssClass) {
+        this.errorBoxCssClass = errorBoxCssClass;
+    };
+    
+    /**
+     * Sets the error box sub selector
+     * 
+     * @param errorBoxSubSelector string
+     */
+    this.setErrorBoxSubSelector = function(errorBoxSubSelector) {
+        this.errorBoxSubSelector = errorBoxSubSelector;
+    };
+    
+    /**
+     * Sets the error box selection method
+     * 
+     * @param errorBoxSelectionMethod string
+     */
+    this.setErrorBoxSelectionMethod = function(errorBoxSelectionMethod) {
+        this.errorBoxSelectionMethod = errorBoxSelectionMethod;
+    };
 
     /**
      * Installiert Eventhandler fuer Buttons, bei denen keine
