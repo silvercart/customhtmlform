@@ -2007,29 +2007,39 @@ class CustomHtmlForm extends Form {
             '/templates/form_fields/',
         );
         
-        // search the template in a variety of possible paths
-        foreach ($registeredThemes as $themeName => $priority) {
-            foreach ($templateDirs as $templateDir) {
-                $templatePath = 'themes/'.$themeName.$templateDir.$template.'.ss';
-
-                if (Director::fileExists($templatePath)) {
-                    $templateFound = true;
-                    break(2);
-                }
+        global $project;
+        foreach ($templateDirs as $templateDir) {
+            $templatePath = $project . $templateDir . $template . '.ss';
+            if (Director::fileExists($templatePath)) {
+                $templateFound = true;
+                break;
             }
         }
-
         if (!$templateFound) {
-            foreach ($registeredModules as $moduleName => $priority) {
+            // search the template in a variety of possible paths
+            foreach ($registeredThemes as $themeName => $priority) {
                 foreach ($templateDirs as $templateDir) {
-                    $templatePath = $moduleName.$templateDir.$template.'.ss';
-                    $themedPath   = 'themes/' . $templatePath;
+                    $templatePath = 'themes/'.$themeName.$templateDir.$template.'.ss';
 
                     if (Director::fileExists($templatePath)) {
+                        $templateFound = true;
                         break(2);
-                    } elseif (Director::fileExists($themedPath)) {
-                        $templatePath = $themedPath;
-                        break(2);
+                    }
+                }
+            }
+
+            if (!$templateFound) {
+                foreach ($registeredModules as $moduleName => $priority) {
+                    foreach ($templateDirs as $templateDir) {
+                        $templatePath = $moduleName.$templateDir.$template.'.ss';
+                        $themedPath   = 'themes/' . $templatePath;
+
+                        if (Director::fileExists($templatePath)) {
+                            break(2);
+                        } elseif (Director::fileExists($themedPath)) {
+                            $templatePath = $themedPath;
+                            break(2);
+                        }
                     }
                 }
             }
