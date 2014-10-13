@@ -369,6 +369,12 @@ class CustomHtmlForm extends Form {
             $this->getFormFields();
             $this->fillInFieldValues();
         }
+        
+        if ($this->securityTokenEnabled) {
+            SecurityToken::enable();
+        } else {
+            SecurityToken::disable();
+        }
 
         parent::__construct(
             $this->getFormController($controller, $preferences),
@@ -388,12 +394,6 @@ class CustomHtmlForm extends Form {
                     $this->basePreferences[$title] = $setting;
                 }
             }
-        }
-        
-        if ($this->securityTokenEnabled) {
-            $this->getSecurityToken()->enable();
-        } else {
-            $this->getSecurityToken()->disable();
         }
 
         // Counter for the form class, init or increment
@@ -964,7 +964,7 @@ class CustomHtmlForm extends Form {
         $error          = false;
 
         if ($this->securityTokenEnabled) {
-            $securityID = SecurityToken::getSecurityID();
+            $securityID = $this->getSecurityID();
             
             if (empty($securityID) ||
                 empty($data['SecurityID']) ||
@@ -1810,8 +1810,7 @@ class CustomHtmlForm extends Form {
      * @return string
      */
     public function getSecurityID() {
-        SecurityToken::enable();
-        return SecurityToken::getSecurityID();
+        return $this->getSecurityToken()->getValue();
     }
 
     /**
@@ -2007,7 +2006,7 @@ class CustomHtmlForm extends Form {
             '/templates/forms/',
             '/templates/form_fields/',
         );
-
+        
         // search the template in a variety of possible paths
         foreach ($registeredThemes as $themeName => $priority) {
             foreach ($templateDirs as $templateDir) {
