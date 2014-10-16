@@ -540,9 +540,9 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
             header('Location: ' . $this->Link(), true, 302);
             exit();
         } else {
-            $redirected_to = Director::redirected_to();
+            $redirected_to = $this->Controller()->redirectedTo();
             if (empty($redirected_to)) {
-                Director::redirect($this->Link(), 302);
+                $this->Controller()->redirect($this->Link(), 302);
             }
         }
     }
@@ -568,9 +568,9 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
             header('Location: ' . $this->Link(), true, 302);
             exit();
         } else {
-            $redirected_to = Director::redirected_to();
+            $redirected_to = $this->Controller()->redirectedTo();
             if (empty($redirected_to)) {
-                Director::redirect($this->Link(), 302);
+                $this->Controller()->redirect($this->Link(), 302);
             }
         }
     }
