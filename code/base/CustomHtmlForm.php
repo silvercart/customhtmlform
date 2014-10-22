@@ -598,28 +598,30 @@ class CustomHtmlForm extends Form {
      * @return array
      */
     public function getJavascriptValidatorInitialisation() {
-        $validatorFields    = CustomHtmlFormToolsJavascript::generateJsValidatorFields($this->fieldGroups);
-        $javascriptSnippets = '
-            var ' . $this->jsName . ';';
-
-        $javascriptOnloadSnippets = '
-            ' . $this->jsName . ' = new pixeltricks.forms.validator();
-            ' . $this->jsName . '.setFormFields({' . $validatorFields . '});
-            ' . $this->jsName . '.setFormName(\'' . $this->jsName . '\');
-            ' . $this->jsName . '.setPreference(\'doJsValidationScrolling\', ' . ($this->getDoJsValidationScrolling() ? 'true' : 'false') . ');
-            ' . $this->jsName . '.setPreference(\'showJsValidationErrorMessages\', ' . ($this->getShowJsValidationErrorMessages() ? 'true' : 'false') . ');
-            ' . $this->jsName . '.bindEvents();';
-        
-        if (!empty(self::$custom_error_box_css_class)) {
-            $javascriptOnloadSnippets .= $this->jsName . ".setErrorBoxCssClass('" . self::$custom_error_box_css_class . "');";
-        }
-        if (!empty(self::$custom_error_box_sub_selector)) {
-            $javascriptOnloadSnippets .= $this->jsName . ".setErrorBoxSubSelector('" . self::$custom_error_box_sub_selector . "');";
-        }
-        if (!empty(self::$custom_error_box_selection_method)) {
-            $javascriptOnloadSnippets .= $this->jsName . ".setErrorBoxSelectionMethod('" . self::$custom_error_box_selection_method . "');";
-        }
+        $javascriptSnippets = '';
+        $javascriptOnloadSnippets = '';
         if ($this->getDoJsValidation()) {
+            $validatorFields    = CustomHtmlFormToolsJavascript::generateJsValidatorFields($this->fieldGroups);
+            $javascriptSnippets = '
+                var ' . $this->jsName . ';';
+
+            $javascriptOnloadSnippets = '
+                ' . $this->jsName . ' = new pixeltricks.forms.validator();
+                ' . $this->jsName . '.setFormFields({' . $validatorFields . '});
+                ' . $this->jsName . '.setFormName(\'' . $this->jsName . '\');
+                ' . $this->jsName . '.setPreference(\'doJsValidationScrolling\', ' . ($this->getDoJsValidationScrolling() ? 'true' : 'false') . ');
+                ' . $this->jsName . '.setPreference(\'showJsValidationErrorMessages\', ' . ($this->getShowJsValidationErrorMessages() ? 'true' : 'false') . ');
+                ' . $this->jsName . '.bindEvents();';
+
+            if (!empty(self::$custom_error_box_css_class)) {
+                $javascriptOnloadSnippets .= $this->jsName . ".setErrorBoxCssClass('" . self::$custom_error_box_css_class . "');";
+            }
+            if (!empty(self::$custom_error_box_sub_selector)) {
+                $javascriptOnloadSnippets .= $this->jsName . ".setErrorBoxSubSelector('" . self::$custom_error_box_sub_selector . "');";
+            }
+            if (!empty(self::$custom_error_box_selection_method)) {
+                $javascriptOnloadSnippets .= $this->jsName . ".setErrorBoxSelectionMethod('" . self::$custom_error_box_selection_method . "');";
+            }
             $javascriptOnloadSnippets .= '$("#' . $this->jsName . '").bind("submit", function(e) { return ' . $this->jsName . '.checkForm(e); });';
         }
 
