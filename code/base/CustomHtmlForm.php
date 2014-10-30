@@ -1554,6 +1554,12 @@ class CustomHtmlForm extends Form {
             }
             $field->setTabIndex($tabIndex);
         }
+        
+        if (array_key_exists('isReadonly', $fieldDefinition) &&
+            $fieldDefinition['isReadonly'] == true &&
+            method_exists($field, 'setReadonly')) {
+            $field->setReadonly(true);
+        }
 
         return $field;
     }
