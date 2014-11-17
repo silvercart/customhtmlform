@@ -2759,23 +2759,23 @@ class CustomHtmlForm extends Form {
      * @return array
      * 
      * @author Sebastian Diel <sdiel@pixeltricks.de>
-     * @since 31.07.2014
+     * @since 17.11.2014
      */
-    public function createFieldDefinition ($type, $title, $value, $isFilledIn = false, $additionalRequirements = array(), $selectedValue = null, $additionalDefinitions = array()) {
+    public function createFieldDefinition($type, $title, $value, $isFilledIn = false, $additionalRequirements = array(), $selectedValue = null, $additionalDefinitions = array()) {
         $definition = array(
-            'type'         => $type,
-            'title'        => $title,
-            'value'        => $value,
-            'requirements' => array(),
+            'type'              => $type,
+            'title'             => $title,
+            'value'             => $value,
+            'checkRequirements' => array(),
         );
         if ($isFilledIn) {
-            $definition['requirements']['isFilledIn'] = true;
+            $definition['checkRequirements']['isFilledIn'] = true;
         }
         if (!is_null($selectedValue)) {
             $definition['selectedValue'] = $selectedValue;
         }
         foreach ($additionalRequirements as $requirement => $requirementDefinition) {
-            $definition['requirements'][$requirement] = $requirementDefinition;
+            $definition['checkRequirements'][$requirement] = $requirementDefinition;
         }
         foreach ($additionalDefinitions as $additionalDefinitionKey => $additionalDefinitionValue) {
             $definition[$additionalDefinitionKey] = $additionalDefinitionValue;
