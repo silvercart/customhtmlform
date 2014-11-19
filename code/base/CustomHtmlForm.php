@@ -2785,6 +2785,23 @@ class CustomHtmlForm extends Form {
     }
     
     /**
+     * Creates and returns a HiddenField definition.
+     * 
+     * @param mixed $value                  Value
+     * @param bool  $isFilledIn             Field needs to be filled in?
+     * @param array $additionalRequirements Additional requirements
+     * @param array $additionalDefinitions  Additional definitions
+     * 
+     * @return array
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 19.11.2014
+     */
+    public function createHiddenFieldDefinition($value, $isFilledIn = false, $additionalRequirements = array(), $additionalDefinitions = array()) {
+        return $this->createFieldDefinition('HiddenField', '', $value, $isFilledIn, $additionalRequirements, null, $additionalDefinitions);
+    }
+    
+    /**
      * Creates and returns a TextField definition.
      * 
      * @param string $title                  Title
@@ -2799,7 +2816,7 @@ class CustomHtmlForm extends Form {
      * @author Sebastian Diel <sdiel@pixeltricks.de>
      * @since 31.07.2014
      */
-    public function createTextFieldDefinition ($title, $value, $isFilledIn = false, $additionalRequirements = array(), $selectedValue = null, $additionalDefinitions = array()) {
+    public function createTextFieldDefinition($title, $value, $isFilledIn = false, $additionalRequirements = array(), $selectedValue = null, $additionalDefinitions = array()) {
         return $this->createFieldDefinition('TextField', $title, $value, $isFilledIn, $additionalRequirements, $selectedValue, $additionalDefinitions);
     }
     
@@ -2820,7 +2837,7 @@ class CustomHtmlForm extends Form {
      * @author Sebastian Diel <sdiel@pixeltricks.de>
      * @since 31.07.2014
      */
-    public function createTextareaFieldDefinition ($title, $value, $isFilledIn = false, $rows = null, $cols = null, $additionalRequirements = array(), $selectedValue = null, $additionalDefinitions = array()) {
+    public function createTextareaFieldDefinition($title, $value, $isFilledIn = false, $rows = null, $cols = null, $additionalRequirements = array(), $selectedValue = null, $additionalDefinitions = array()) {
         if (!is_null($rows)) {
             $additionalDefinitions['rows'] = $rows;
         }
@@ -2845,7 +2862,7 @@ class CustomHtmlForm extends Form {
      * @author Sebastian Diel <sdiel@pixeltricks.de>
      * @since 31.07.2014
      */
-    public function createCheckboxFieldDefinition ($title, $value, $isFilledIn = false, $additionalRequirements = array(), $selectedValue = null, $additionalDefinitions = array()) {
+    public function createCheckboxFieldDefinition($title, $value, $isFilledIn = false, $additionalRequirements = array(), $selectedValue = null, $additionalDefinitions = array()) {
         return $this->createFieldDefinition('CheckboxField', $title, $value, $isFilledIn, $additionalRequirements, $selectedValue, $additionalDefinitions);
     }
     
@@ -2864,7 +2881,7 @@ class CustomHtmlForm extends Form {
      * @author Sebastian Diel <sdiel@pixeltricks.de>
      * @since 31.07.2014
      */
-    public function createDropdownFieldDefinition ($title, $value, $selectedValue = null, $isFilledIn = false, $additionalRequirements = array(), $additionalDefinitions = array()) {
+    public function createDropdownFieldDefinition($title, $value, $selectedValue = null, $isFilledIn = false, $additionalRequirements = array(), $additionalDefinitions = array()) {
         return $this->createFieldDefinition('DropdownField', $title, $value, $isFilledIn, $additionalRequirements, $selectedValue, $additionalDefinitions);
     }
     
@@ -2887,7 +2904,7 @@ class CustomHtmlForm extends Form {
      * @author Sebastian Diel <sdiel@pixeltricks.de>
      * @since 31.07.2014
      */
-    public function createTreeDropdownFieldDefinition ($title, $sourceObject, $treeBaseID = 0, $value = null, $keyField = 'ID', $labelField = 'TreeTitle', $showSearch = true, $isFilledIn = false, $additionalRequirements = array(), $additionalDefinitions = array()) {
+    public function createTreeDropdownFieldDefinition($title, $sourceObject, $treeBaseID = 0, $value = null, $keyField = 'ID', $labelField = 'TreeTitle', $showSearch = true, $isFilledIn = false, $additionalRequirements = array(), $additionalDefinitions = array()) {
         $additionalDefinitions['sourceObject'] = $sourceObject;
         $additionalDefinitions['labelField']   = $labelField;
         $additionalDefinitions['showSearch']   = $showSearch;
@@ -2914,7 +2931,7 @@ class CustomHtmlForm extends Form {
      * @author Sebastian Diel <sdiel@pixeltricks.de>
      * @since 31.07.2014
      */
-    public function createTreeMultiselectFieldDefinition ($title, $sourceObject, $treeBaseID = 0, $value = null, $keyField = 'ID', $labelField = 'TreeTitle', $showSearch = true, $isFilledIn = false, $additionalRequirements = array(), $additionalDefinitions = array()) {
+    public function createTreeMultiselectFieldDefinition($title, $sourceObject, $treeBaseID = 0, $value = null, $keyField = 'ID', $labelField = 'TreeTitle', $showSearch = true, $isFilledIn = false, $additionalRequirements = array(), $additionalDefinitions = array()) {
         $additionalDefinitions['sourceObject'] = $sourceObject;
         $additionalDefinitions['labelField']   = $labelField;
         $additionalDefinitions['showSearch']   = $showSearch;
