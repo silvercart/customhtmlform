@@ -2585,7 +2585,7 @@ class CustomHtmlForm extends Form {
      * @return void
      * 
      * @author Sebastian Diel <sdiel@pixeltricks.de>
-     * @since 04.03.2014
+     * @since 26.11.2014
      */
     public function buildCacheKey() {
         $customParameters       = $this->getCustomParameters();
@@ -2606,7 +2606,12 @@ class CustomHtmlForm extends Form {
             foreach ($formFields as $fieldName => $fieldDefinition) {
                 $this->addRequiredFieldParams($fieldDefinition, $fieldDefinition);
                 $requestString   .= $fieldName . ':' . $request[$fieldName] . ';';
-                $formFieldString .= $fieldName . ':' . $fieldDefinition['value'] . ';';
+                $fieldDefinitionValue = $fieldDefinition['value'];
+                if (is_string($fieldDefinitionValue)) {
+                    $formFieldString .= $fieldName . ':' . $fieldDefinitionValue . ';';
+                } elseif (is_array($fieldDefinitionValue)) {
+                    $formFieldString .= $fieldName . ':' . implode('-', $fieldDefinitionValue) . ';';
+                }
             }
         }
         
