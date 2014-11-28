@@ -35,10 +35,6 @@ class CustomHtmlFormStep extends CustomHtmlForm {
      * returns the form step's title
      *
      * @return string
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 29.11.2010
      */
     public function getStepTitle() {
         if (isset($this->preferences['stepTitle'])) {
@@ -54,10 +50,6 @@ class CustomHtmlFormStep extends CustomHtmlForm {
      * is the form visible?
      *
      * @return boolean
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 29.11.2010
      */
     public function getStepIsVisible() {
         if (isset($this->preferences['stepIsVisible'])) {
@@ -73,10 +65,6 @@ class CustomHtmlFormStep extends CustomHtmlForm {
      * Is the defined step conditional?
      *
      * @return bool
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pixeltricks GmbH
-     * @since 08.04.2011
      */
     public function getIsConditionalStep() {
         if (isset($this->preferences['isConditionalStep'])) {
@@ -92,10 +80,6 @@ class CustomHtmlFormStep extends CustomHtmlForm {
      * is the defined step the recent step?
      *
      * @return bool
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 23.12.2010
      */
     public function getIsCurrentStep() {
         $isCurrentStep = false;
@@ -185,10 +169,6 @@ class CustomHtmlFormStep extends CustomHtmlForm {
      * returns the step number of this form
      *
      * @return int
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 23.12.2010
      */
     public function getStepNr() {
         $stepList = $this->controller->getStepList();
@@ -208,10 +188,6 @@ class CustomHtmlFormStep extends CustomHtmlForm {
      * returns the visible step number of this form
      *
      * @return int
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 23.12.2010
      */
     public function getVisibleStepNr() {
         $stepList = $this->controller->getStepList();
@@ -231,9 +207,6 @@ class CustomHtmlFormStep extends CustomHtmlForm {
      * Should the step navigation be shown?
      *
      * @return bool
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 07.01.2011
      */
     protected function getShowCustomHtmlFormStepNavigation() {
         return $this->getPreference('ShowCustomHtmlFormStepNavigation');

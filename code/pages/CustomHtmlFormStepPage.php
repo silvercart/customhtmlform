@@ -47,6 +47,14 @@ class CustomHtmlFormStepPage extends Page {
     );
     
     /**
+     * The defined value will be added to the step number to show in frontend
+     * checkout navigation.
+     *
+     * @var int
+     */
+    public static $add_to_visible_step_nr = 0;
+    
+    /**
      * defines the CMS interface for $this
      * 
      * @return FieldList
@@ -679,7 +687,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
                                 'stepIsCompleted' => $this->isStepCompleted($stepIdx),
                                 'isCurrentStep'   => $isCurrentStep,
                                 'stepNr'          => $stepIdx,
-                                'visibleStepNr'   => $nrOfVisibleSteps + 1,
+                                'visibleStepNr'   => $nrOfVisibleSteps + 1 + CustomHtmlFormStepPage::$add_to_visible_step_nr,
                                 'step'            => new $stepClassName($this, null, null ,false)
                             )
                     );
