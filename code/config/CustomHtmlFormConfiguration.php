@@ -47,6 +47,18 @@ class CustomHtmlFormConfiguration extends DataExtension {
     );
 
     /**
+     * Defaults for DB Attributes.
+     *
+     * @var array
+     */
+    public static $defaults = array(
+        'SpamCheck_numberOfCharsInCaptcha' => 8,
+        'SpamCheck_width'                  => 160,
+        'SpamCheck_height'                 => 50,
+        'SpamCheck_jpgQuality'             => 90,
+    );
+
+    /**
      * CustomHtmlFormConfiguration object
      *
      * @var CustomHtmlFormConfiguration 
@@ -236,22 +248,6 @@ class CustomHtmlFormConfiguration extends DataExtension {
     public static function triggerError($errorMessage) {
         trigger_error($errorMessage);
         exit();
-    }
-
-    /**
-     * Creates a config if none exists.
-     *
-     * @return void
-     *
-     * @author Patrick Schneider <pschneider@pixeltricks.de>
-     * @since 06.06.2013
-     */
-    public function requireDefaultRecords() {
-        $this->owner->SpamCheck_numberOfCharsInCaptcha   = 8;
-        $this->owner->SpamCheck_width                    = 160;
-        $this->owner->SpamCheck_height                   = 50;
-        $this->owner->SpamCheck_jpgQuality               = 90;
-        $this->owner->write();
     }
 
 }
