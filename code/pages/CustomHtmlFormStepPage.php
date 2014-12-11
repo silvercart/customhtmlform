@@ -714,6 +714,24 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         
         return $this->stepList;
     }
+    
+    /**
+     * Returnst whether the given step is visible.
+     * 
+     * @param int $stepIdx Step number
+     * 
+     * @return type
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 11.12.2014
+     */
+    public function isStepVisible($stepIdx) {
+        $isStepVisible = false;
+        if (array_key_exists($stepIdx, $this->stepMapping)) {
+            $isStepVisible = $this->stepMapping[$stepIdx]['visibility'];
+        }
+        return $isStepVisible;
+    }
 
     /**
      * Is the current or defined step completed?
