@@ -876,6 +876,21 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
     }
 
     /**
+     * returns the number of visible form steps
+     * 
+     * @param int $add Add
+     *
+     * @return integer
+     */
+    protected function getNumberOfVisibleSteps($add = 0) {
+        $count = 0;
+        foreach ($this->stepMapping as $mapping) {
+            $count = $mapping['visibility'] == true ? $count + 1 : $count;
+        }
+        return $count + $add;
+    }
+
+    /**
      * Generates a map of all steps with links, names, etc.
      *
      * @return void
