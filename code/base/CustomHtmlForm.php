@@ -762,6 +762,7 @@ class CustomHtmlForm extends Form {
     public function submit($data, $form) {
         $this->extend('onBeforeSubmit', $data, $form);
         $formData = $this->getFormData($data);
+        $this->extend('updateSubmittedFormData', $formData, $data);
         $this->checkFormData($formData);
         $result = null;
 
