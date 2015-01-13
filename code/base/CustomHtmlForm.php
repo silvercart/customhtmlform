@@ -2124,34 +2124,37 @@ class CustomHtmlForm extends Form {
      *
      * @return string
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 25.10.2010
+     * @author Sebastian Diel <sdiel@pixeltricks.de>,
+     *         Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 13.01.2015
      */
-    public function CustomHtmlFormErrorMessages($template = null) {
+    public function CustomHtmlFormErrorMessages($template = 'CustomHtmlFormErrorMessages') {
+        global $project;
+        
         $data = array(
             'errorMessages' => new ArrayList($this->errorMessages),
             'messages'      => new ArrayList($this->messages)
         );
 
-        $defaultTemplatePath = '/customhtmlform/templates/forms/CustomHtmlFormErrorMessages.ss';
-
-        if (!empty($template)) {
-
-            $template = THEMES_DIR.'/'.SSViewer::current_theme().'/templates/Layout/'.$template.'.ss';
-
-            if (Director::fileExists($template)) {
-                $templatePathRel = '/'.$template;
-            } else {
-                $templatePathRel = $defaultTemplatePath;
+        $templates = array(
+            $project . '/templates/forms/' . $template . '.ss',
+            $project . '/templates/Layout/' . $template . '.ss',
+            THEMES_DIR . '/' . SSViewer::current_theme() . '_customhtmlform/templates/forms/' . $template . '.ss',
+            THEMES_DIR . '/' . SSViewer::current_theme() . '_customhtmlform/templates/Layout/' . $template . '.ss',
+            THEMES_DIR . '/' . SSViewer::current_theme() . '/templates/forms/' . $template . '.ss',
+            THEMES_DIR . '/' . SSViewer::current_theme() . '/templates/Layout/' . $template . '.ss',
+            'customhtmlform/templates/forms/' . $template . '.ss',
+        );
+        foreach ($templates as $templatePath) {
+            if (Director::fileExists($templatePath)) {
+                $templatePathRel = '/' . $templatePath;
+                break;
             }
-
-        } else {
-            $templatePathRel = $defaultTemplatePath;
         }
 
-        $templatePathAbs    = Director::baseFolder().$templatePathRel;
-        $viewableObj        = new ViewableData();
-        $output             = $viewableObj->customise(
+        $templatePathAbs = Director::baseFolder() . $templatePathRel;
+        $viewableObj     = new ViewableData();
+        $output          = $viewableObj->customise(
             $data
         )->renderWith($templatePathAbs);
 
