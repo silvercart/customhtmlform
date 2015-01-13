@@ -339,7 +339,7 @@ class CustomHtmlForm extends Form {
      *
      * @author Sebastian Diel <sdiel@pixeltricks.de>,
      *         Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 24.01.2014
+     * @since 13.01.2015
      */
     public function __construct($controller, $params = null, $preferences = null, $barebone = false) {
         $this->extend('onBeforeConstruct', $controller, $params, $preferences, $barebone);
@@ -367,7 +367,6 @@ class CustomHtmlForm extends Form {
 
         if (!$barebone) {
             $this->getFormFields();
-            $this->fillInFieldValues();
         }
         
         if ($this->securityTokenEnabled) {
@@ -382,6 +381,11 @@ class CustomHtmlForm extends Form {
             new FieldList(),
             new FieldList()
         );
+        
+        if (!$barebone) {
+            $this->getFormFields();
+            $this->fillInFieldValues();
+        }
         
         // Hook for setting preferences via a method call; we need to do this
         // a second time so that the standard Silverstripe mechanism can take
