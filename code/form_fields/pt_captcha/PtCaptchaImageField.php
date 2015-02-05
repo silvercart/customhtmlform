@@ -139,13 +139,14 @@ class PtCaptchaImageField extends TextField {
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>, 
      *         Patrick Schneider <pschneider@pixeltricks.de>
-     * @since 29.05.2013
+     *         Ramon Kupper <rkupper@pixeltricks.de>
+     * @since 05.02.2015
      */
     public function Field($properties = array()) {
         if ($this->cachedField === null) {
             $picture            = $this->getPic($this->getNrOfChars());
             $this->cachedField  = '
-                <img src="'.(CustomHtmlFormTools::getBaseURLSegment()).'customhtmlformimage/get/cap_'.$picture.'/jpg" width="'.$this->width.'" height="'.$this->height.'" alt="" />
+                <img src="'.(CustomHtmlFormTools::getBaseURLSegment()).'customhtmlformimage/get/cap_'.$picture.'/jpg" width="'.$this->width.'" height="'.$this->height.'" alt="Captcha" />
             ';
         }
         return $this->cachedField;
