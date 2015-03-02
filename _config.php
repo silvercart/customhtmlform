@@ -22,8 +22,6 @@
  * @ignore
  */
 
-Requirements::set_write_js_to_body(false); // write javascriptcode into the html head section
-
 ContentController::add_extension('CustomHtmlFormPage_Controller');
 Security::add_extension('CustomHtmlFormPage_Controller');
 SiteConfig::add_extension('CustomHtmlFormConfiguration');
