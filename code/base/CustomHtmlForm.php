@@ -1457,7 +1457,8 @@ class CustomHtmlForm extends Form {
                 $field->setValue($fieldDefinition['value']);
             }
         } else if ($fieldDefinition['type'] == 'UploadField' ||
-                   $fieldDefinition['type'] == 'CommunityImageUploadField') {
+                   $fieldDefinition['type'] == 'CommunityImageUploadField' ||
+                   $fieldDefinition['type'] == 'CommunityImageUploadField_Readonly') {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
