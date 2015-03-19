@@ -5,8 +5,7 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
 /**
  * Methoden zur Feldpruefung.
  */
-(function($) {pixeltricks.forms.checkFormData = function()
-{
+(function($) {pixeltricks.forms.checkFormData = function() {
     /**
      * Workaround fuer Selbstreferenzierung in Closures.
      */
@@ -200,14 +199,12 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
      * @param boolean expectedResult
      * @return array
      */
-    this.isFilledIn = function(expectedResult)
-    {
+    this.isFilledIn = function(expectedResult) {
         var errorMessage    = '';
         var isFilledIn      = true;
         var success         = false;
 
-        if (this.fieldType == 'CheckboxField')
-        {
+        if (this.fieldType == 'CheckboxField') {
             isFilledIn = this.fieldValue;
             
             if (isFilledIn == 'checked' ||
@@ -217,47 +214,37 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
             } else {
                 isFilledIn = false;
             }
-        }
-        else if (this.fieldType == 'OptionsetField' ||
+        } else if (this.fieldType == 'OptionsetField' ||
                  this.fieldType == 'SilvercartCheckoutOptionsetField' ||
                  this.fieldType == 'SilvercartShippingOptionsetField' ||
                  this.fieldType == 'SilvercartAddressOptionsetField' ||
-                 this.fieldType == 'SilvercartDistributorPackageField')
-        {
+                 this.fieldType == 'SilvercartDistributorPackageField') {
             if (this.fieldValue == undefined ||
                 this.fieldValue.length == 0) {
                 isFilledIn = false;
             } else {
                 isFilledIn = true;
             }
-        }
-        else
-        {
+        } else {
             var checkValue = this.getValueWithoutWhitespace(this.fieldValue);
 
-            if (checkValue === '')
-            {
+            if (checkValue === '') {
                 isFilledIn = false;
             }
         }
 
-        if (isFilledIn === expectedResult)
-        {
+        if (isFilledIn === expectedResult) {
             success = true;
         }
 
-        if (!success)
-        {
-            if (isFilledIn)
-            {
+        if (!success) {
+            if (isFilledIn) {
                 if(typeof(ss) == 'undefined' || typeof(ss.i18n) == 'undefined') {
                     errorMessage = 'Dieses Feld muss leer sein.';
                 } else {
                     errorMessage = ss.i18n._t('Form.FIELD_MUST_BE_EMPTY', 'Dieses Feld muss leer sein.');
                 }
-            }
-            else
-            {
+            } else {
                 if(typeof(ss) == 'undefined' || typeof(ss.i18n) == 'undefined') {
                     errorMessage = 'Dieses Feld darf nicht leer sein.';
                 } else {
@@ -279,31 +266,40 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
      *
      * @param array parameters
      */
-    this.isFilledInDependantOn = function(parameters)
-    {
+    this.isFilledInDependantOn = function(parameters) {
         var errorMessage        = '';
         var isFilledInCorrectly = true;
         var checkValue          = this.getValueWithoutWhitespace(this.fieldValue);
 
-        if (typeof parameters == 'object')
-        {
+        if (typeof parameters == 'object') {
             if (!parameters[0].field ||
-                !parameters[0].hasValue)
-            {
+                !parameters[0].hasValue) {
                 // Fehlerbehandlung noch offen: serverseitig pruefen lassen
             }
 
-            // Abfrage fuer Checkboxen
-            if ($('input[name=' + [parameters[0].field] + ']').is(':checked')) {
-                var checkedState = 1;
-            } else {
+            var dependentField = $('input[name=' + [parameters[0].field] + ']');
+            if (dependentField.attr('type') === 'checkbox') {
+                // dependent field ist checkbox
                 var checkedState = 0;
-            }
-            if (checkedState == parameters[0].hasValue)
-            {
-                if (checkValue == '' || checkValue.length == 0)
-                {
-                    isFilledInCorrectly = false;
+                if (dependentField.is(':checked')) {
+                    checkedState = 1;
+                }
+                if (checkedState == parameters[0].hasValue) {
+                    if (checkValue == '' || checkValue.length == 0) {
+                        isFilledInCorrectly = false;
+                    }
+                }
+            } else {
+                // dependent field is default text based field
+                if (parameters[0].requirement == 'isFilledIn') {
+                    var DependantCheckFormData = new pixeltricks.forms.checkFormData();
+                    DependantCheckFormData.setFieldValue(
+                        dependentField.val()
+                    );
+                    if (DependantCheckFormData.isFilledIn(true).success &&
+                        !this.isFilledIn(true).success) {
+                        isFilledInCorrectly = false;
+                    }
                 }
             }
         }
@@ -328,15 +324,13 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
      * @param int minLength
      * @return array
      */
-    this.hasMinLength = function(minLength)
-    {
+    this.hasMinLength = function(minLength) {
         var errorMessage    = '';
         var hasMinLength    = true;
         var checkValue      = this.getValueWithoutWhitespace(this.fieldValue);
 
         if (checkValue.length > 0 &&
-            checkValue.length < minLength)
-        {
+            checkValue.length < minLength) {
             hasMinLength = false;
         }
 
@@ -360,15 +354,13 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
      * @param int length
      * @return array
      */
-    this.hasLength = function(length)
-    {
+    this.hasLength = function(length) {
         var errorMessage    = '';
         var hasLength       = true;
         var checkValue      = jQuery.trim(this.fieldValue);
 
         if (checkValue.length > 0 &&
-            checkValue.length != length)
-        {
+            checkValue.length != length) {
             hasLength = false;
         }
 
@@ -394,13 +386,11 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
      * )
      * @return array
      */
-    this.mustEqual = function(parameters)
-    {
+    this.mustEqual = function(parameters) {
         var errorMessage    = '';
         var isEqual         = true;
 
-        if (this.fieldValue != parameters.value)
-        {
+        if (this.fieldValue != parameters.value) {
             isEqual = false;
         }
 
@@ -426,13 +416,11 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
      * )
      * @return array
      */
-    this.mustNotEqual = function(parameters)
-    {
+    this.mustNotEqual = function(parameters) {
         var errorMessage    = '';
         var isNotEqual      = true;
 
-        if (this.fieldValue == parameters.value)
-        {
+        if (this.fieldValue == parameters.value) {
             isNotEqual = false;
         }
 
@@ -482,20 +470,17 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
      * @param boolean
      * @return array
      */
-    this.isNumbersOnly = function(expectedResult)
-    {
+    this.isNumbersOnly = function(expectedResult) {
         var errorMessage            = '';
         var consistsOfNumbersOnly   = true;
         var success                 = false;
         var checkValue              = that.fieldValue.replace(/[0-9]*/g, '');
 
-        if (checkValue.length > 0)
-        {
+        if (checkValue.length > 0) {
             consistsOfNumbersOnly = false;
         }
 
-        if (consistsOfNumbersOnly == expectedResult)
-        {
+        if (consistsOfNumbersOnly == expectedResult) {
             success = true;
         }
 
@@ -568,19 +553,16 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
      * @param mixed expectedResult
      * @return array
      */
-    this.isCurrency = function(expectedResult)
-    {
+    this.isCurrency = function(expectedResult) {
         var errorMessage    = '';
         var success         = expectedResult;
 
-        if (that.fieldValue.length > 0)
-        {
+        if (that.fieldValue.length > 0) {
             var nrOfMatches = that.fieldValue.search(
                 /^[\d]{1,}[,]?[\d]{0,2}$/
             );
 
-            if (nrOfMatches === -1)
-            {
+            if (nrOfMatches === -1) {
                 success = false;
             }
         }
@@ -603,19 +585,16 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
      * @param mixed expectedResult
      * @return array
      */
-    this.isDate = function(expectedResult)
-    {
+    this.isDate = function(expectedResult) {
         var errorMessage    = '';
         var success         = expectedResult;
 
-        if (that.fieldValue.length > 0)
-        {
+        if (that.fieldValue.length > 0) {
             var nrOfMatches = that.fieldValue.search(
                 /^[\d]{2}[\.]{1}[\d]{2}[\.]{1}[\d]{4}$/
             );
 
-            if (nrOfMatches === -1)
-            {
+            if (nrOfMatches === -1) {
                 success = false;
             }
         }
@@ -639,14 +618,11 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
      * @param string value
      * @return string
      */
-    this.getValueWithoutWhitespace = function(value)
-    {
-        if (value)
-        {
+    this.getValueWithoutWhitespace = function(value) {
+        if (value &&
+            typeof value.replace !== 'undefined') {
             return value.replace(/[\s]*/g, '');
-        }
-        else
-        {
+        } else {
             return '';
         }
     }
@@ -656,8 +632,7 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
      *
      * @param Mixed fieldValue
      */
-    this.setFieldValue = function(fieldValue)
-    {
+    this.setFieldValue = function(fieldValue) {
         this.fieldValue = fieldValue;
     }
 
@@ -666,8 +641,7 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
      *
      * @param string fieldType
      */
-    this.setFieldType = function(fieldType)
-    {
+    this.setFieldType = function(fieldType) {
         this.fieldType = fieldType;
     }
 }})(jQuery);
