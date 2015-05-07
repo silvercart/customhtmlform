@@ -222,18 +222,22 @@ class CustomHtmlFormPage_Controller extends DataExtension {
      *
      * @return CustomHtmlForm
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>, Sebastian Diel <sdiel@pixeltricks.de>
-     * @since 22.11.2012
+     * @author Sebastian Diel <sdiel@pixeltricks.de>,
+     *         Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 07.05.2015
      * 
      */
     public function InsertCustomHtmlForm($formIdentifier, $renderWithObject = null) {
         if (!isset($this->registeredCustomHtmlForms[$formIdentifier])) {
-            throw new Exception(
-                sprintf(
-                    'The requested CustomHtmlForm "%s" is not registered.',
-                    $formIdentifier
-                )
-            );
+            if (Director::isDev()) {
+                throw new Exception(
+                    sprintf(
+                        'The requested CustomHtmlForm "%s" is not registered.',
+                        $formIdentifier
+                    )
+                );
+            }
+            return;
         }
         $outputForm = $this->registeredCustomHtmlForms[$formIdentifier]->getCachedFormOutput();
         if (empty($outputForm)) {
