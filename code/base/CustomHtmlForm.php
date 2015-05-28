@@ -1484,6 +1484,9 @@ class CustomHtmlForm extends Form {
             if (array_key_exists('alternativeLink', $fieldDefinition)) {
                 $field->setAlternativeLink($fieldDefinition['alternativeLink']);
             }
+            if (array_key_exists('showTitleField', $fieldDefinition)) {
+                $field->setShowTitleField($fieldDefinition['showTitleField']);
+            }
             if (array_key_exists('showDescriptionField', $fieldDefinition)) {
                 $field->setShowDescriptionField($fieldDefinition['showDescriptionField']);
             }
