@@ -489,7 +489,17 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
      */
     this.getFormFieldValue = function(fieldName)
     {
-        return $('#' + fieldName).val();
+        var formFieldValue = $('#' + fieldName).val();
+        if (typeof formFieldValue === 'undefined') {
+            var fieldBaseName       = fieldName.replace(that.formName + that.nameSeparator, ''),
+                fieldBaseSelector   = fieldName + that.nameSeparator + 'Box',
+                amountFieldSelector = fieldBaseSelector + ' #' + fieldBaseName + '-Amount';
+            if ($('#' + amountFieldSelector).length > 0) {
+                // Money field. Check for filled in amount.
+                formFieldValue = $('#' + amountFieldSelector).val();
+            }
+        }
+        return formFieldValue;
     }
 
     /**
