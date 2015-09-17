@@ -1570,6 +1570,13 @@ class CustomHtmlForm extends Form {
             $field->setReadonly(true);
         }
 
+        if (array_key_exists('data', $fieldDefinition) &&
+            $field instanceof FormField) {
+            foreach ($fieldDefinition['data'] as $key => $value) {
+                $field->setAttribute('data-' . $key, $value);
+            }
+        }
+        
         return $field;
     }
     
