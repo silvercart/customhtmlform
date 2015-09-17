@@ -82,7 +82,7 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
         if (this.fieldValue == '') {
             success = true;
         } else {
-            var valueMatch = this.isRFC822Email(this.fieldValue);
+            var valueMatch = this.isRFC822Email(this.fieldValue.trim());
 
             if (valueMatch == expectedResult) {
                 success = true;
