@@ -449,7 +449,8 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
                         $('#' + errorFieldID).remove();
                     }
                 }
-                if ($('#' + fieldBoxID).length > 0) {
+                if ($('#' + fieldBoxID).length > 0 &&
+                    messages !== -1) {
                     if (scrollOffset > $('#' + fieldBoxID).offset().top) {
                         scrollOffset = $('#' + fieldBoxID).offset().top;
                     }
@@ -459,7 +460,7 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
         
         if (that.preferences.doJsValidationScrolling) {
             $('html, body').animate({
-                scrollTop: scrollOffset
+                scrollTop: scrollOffset - 60
             }, 400);
         }
     }
