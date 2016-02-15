@@ -429,6 +429,7 @@ class CustomHtmlForm extends Form {
 
         // define form action
         $this->setFormAction($this->buildFormAction());
+        $this->setHTMLID($this->getName());
 
         /*
          * load and init JS validators
