@@ -1773,7 +1773,7 @@ class CustomHtmlForm extends Form {
      *         Sascha Koehler <skoehler@pixeltricks.de>
      * @since 14.07.2014
      */
-    public function addErrorMessage($fieldName, $message, $messageType = '') {
+    public function addErrorMessage($fieldName, $message, $messageType = '', $escapeHtml = true) {
         $definition = $this->getFormFieldDefinition($fieldName);
         $fieldTitle = $fieldName;
         if ($definition !== false) {
