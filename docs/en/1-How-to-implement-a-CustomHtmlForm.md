@@ -252,3 +252,14 @@ Now, the ContactForm will be extended with a captcha input field.
 **To use this feature for one of your forms it's important to add the $CustomHtmlFormSpecialFields to your forms template. We did that above in our ContactForm.ss example.**
 
 ![Contact Form](_images/contact_form.png)
+
+## Custom validation classes
+Depending on the framework you use for HTML and CSS, you might want to change the classes used for the error hints.
+
+You can change them by adding the following lines to your project's _config.php and changing them according to your needs:
+    :::php
+    CustomHtmlForm::$custom_error_box_css_class = 'help-inline';
+    CustomHtmlForm::$custom_error_box_selection_method = 'append';
+    CustomHtmlForm::$custom_error_box_sub_selector = ' .controls';
+
+Do not forget to change the corresponding templates.

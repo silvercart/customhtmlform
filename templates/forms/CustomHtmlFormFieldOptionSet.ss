@@ -1,9 +1,10 @@
 <div id="{$FormName}_{$FieldName}_Box" class="control-group<% if errorMessage %> error<% end_if %>">
-    <label class="control-label" for="{$FieldID}">{$Label}
+    <label class="control-label">{$Label}
        <% if isRequiredField %>
-       <span class=" <% if errorMessage %>text-error<% end_if %>">{$RequiredFieldMarker}</span>
+       <span class="<% if errorMessage %>text-error<% end_if %>">{$RequiredFieldMarker}</span>
        <% end_if %>
     </label>
+    
     <div class="controls">
         {$FieldTag}
         <% if errorMessage %>
