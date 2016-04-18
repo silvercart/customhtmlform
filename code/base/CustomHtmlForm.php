@@ -1570,6 +1570,11 @@ class CustomHtmlForm extends Form {
             method_exists($field, 'setReadonly')) {
             $field->setReadonly(true);
         }
+        if (array_key_exists('isDisabled', $fieldDefinition) &&
+            $fieldDefinition['isDisabled'] == true &&
+            method_exists($field, 'setDisabled')) {
+            $field->setDisabled(true);
+        }
 
         if (array_key_exists('data', $fieldDefinition) &&
             $field instanceof FormField) {
