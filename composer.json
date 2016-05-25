@@ -1,0 +1,23 @@
+{
+	"name": "silvercart/customhtmlform",
+	"type": "silverstripe-module",
+	"description": "Easily create customizable Forms for SilverStripe",
+	"homepage": "http://www.silvercart.org",
+	"license": "LGPL-3.0",
+	"keywords": ["silverstripe", "silvercart", "ecommerce", "shop","webshop","online shop"],
+	"authors": [
+		{
+			"name": "SilverCart",
+			"homepage": "http://www.silvercart.org"
+		},
+		{
+			"name": "pixeltricks",
+			"homepage": "http://www.pixeltricks.de"
+		}
+	],
+	"require": {
+		"php": ">=5.3.3",
+		"composer/installers": "*",
+		"silvercart/silvercart": "~3.3"
+	}
+}
