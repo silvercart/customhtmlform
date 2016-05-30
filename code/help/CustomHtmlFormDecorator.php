@@ -21,15 +21,15 @@
  */
 
 /**
- * Interface for a DataObjectDecorator to decorate a CustomHtmlForm
+ * Interface for a DataExtension to decorate a CustomHtmlForm
  *
  * @package CustomHtmlForm
  * @author Sebastian Diel <sdiel@pixeltricks.de>
- * @copyright 2011 pixeltricks GmbH
- * @since 10.11.2011
+ * @copyright 2016 pixeltricks GmbH
+ * @since 30.05.2016
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
-interface CustomHtmlFormDecorator {
+interface CustomHtmlFormExtension {
     
     /**
      * This method will be called instead of a CustomHtmlForms process method
