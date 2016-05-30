@@ -160,7 +160,9 @@ The markup you see is required if you use the CSS framework YAML which does all 
 		</div>
 	</form>
 
-Call a previously defined field with $CustomHtmlFormFieldByName() with the name, as we defined in $formFields, as a parameter. With an iteration “control Actions” the forms action fields (eg submit, cancel) are called. Quiet easy, isn't it? Injection
+Call a previously defined field with $CustomHtmlFormFieldByName() with the name, as we defined in $formFields, as a parameter. With an iteration “control Actions” the forms action fields (eg submit, cancel) are called. Quiet easy, isn't it? 
+
+## Injection
 
 A controller decides what to show on a site. Our form is not bind to any controller yet. We just add one line of code to the controllers init() method and we're done:
 
@@ -186,7 +188,9 @@ Now the form is up and running.
 ## Custom Form Field Requirements
 - - -
 
-In the example above I didn't mention some features to keep it simple. Some form may require a more profound input validation. You even might want to change the markup of a field type. Callbacks
+In the example above I didn't mention some features to keep it simple. Some form may require a more profound input validation. You even might want to change the markup of a field type. 
+
+## Callbacks
 
 Callbacks augment the input validation by an interference with the database. The user input is not only checked against some character combination rules but also by comparing the input with existing data. A registration form is a good example. If email addresses should be unique inside your database you must check an email address input against all existing email addresses.
 At checkRequirements a function “doesEmailExistAlready” is defined as a callback. A callback must return a boolean value plus an error message.

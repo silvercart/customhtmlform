@@ -40,7 +40,7 @@ class CustomHtmlForm extends Form {
     protected $injectedSpecialFormFields = false;
 
     /**
-     * Indicator to check whether the form fields are already updated by decorators
+     * Indicator to check whether the form fields are already updated by extensions
      *
      * @var bool
      */
@@ -472,7 +472,7 @@ class CustomHtmlForm extends Form {
     }
     
     /**
-     * Used to overwrite a CustomHtmlForms process by a decorator
+     * Used to overwrite a CustomHtmlForms process with an extension
      * 
      * @return void
      *
@@ -1626,7 +1626,7 @@ class CustomHtmlForm extends Form {
     /**
      * Returns the forms fields.
      * 
-     * @param bool $withUpdate Call the method with decorator updates or not?
+     * @param bool $withUpdate Call the method with extension updates or not?
      *
      * @return array
      */

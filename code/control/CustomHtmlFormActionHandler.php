@@ -23,7 +23,7 @@
 
 /**
  * Central handler for form actions.
- * You can add foreign actions by decorator.
+ * You can add foreign actions with an extension.
  *
  * @package CustomHtmlForm
  * @subpackage Controller
