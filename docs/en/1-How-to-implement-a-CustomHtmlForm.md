@@ -1,20 +1,44 @@
 # How to implement a CustomHtmlForm
 
-SilverCart depends on CustomHtmlForm, a module we designed for working with SilverStripe. It gives you full control over your forms markup, validation and javascripting. Simply define a form via a multidimensional array, define an action method, create a unique template and inject the form in any controller. Custom markup for form field types is optional.
+With ourCustomHtmlForm module you finally have full control over your forms markup, validation and javascripting. 
+
+All it takes are 4 simple steps:
+ - define a form via a multidimensional array, 
+ - define an action method
+ - create a unique template 
+ - inject the form in any controller
+
+Custom HTML-markup for form field types is optional.
+
 ## Simple Example: A Contact Form
 - - -
 
-### Installation Of CustomHtmlForm
+### Installation of CustomHtmlForm
 
-Download the module from our BitBucket repository. You can check it out with mercurial:
+#### GitHub
+Download the module from our GitHub repository. You can check it out with git:
 
-	hg clone ssh://hg@bitbucket.org/silvercart/customhtmlform
+    git clone git@github.com:silvercart/customhtmlform.git
 
-Or you can easily download it as a zip-file.
+If you do not want to clone the git-repository you can just [download the CustomHtmlForm module as a zip-file.](https://github.com/silvercart/customhtmlform)
+
+#### Composer
+You can also install CustomHtmlForm with composer.
+    composer require "silvercart/customhtmlform"
+
+If you are not familiar with Composer this tutorial will bring you up to speed in no time: [Installing and Upgrading SilverStripe with Composer](https://docs.silverstripe.org/en/3.3/getting_started/composer/) 
 
 ### Form Definition
 
-Our contact form will have three fields: Name, email address and a message. All the fields are required and and the email address will be validated. Further the name and the message have a minimum length of 3 characters. The class ContactForm resides in a file named mysite/code/ContactForm.php.
+Our contact form will have three distinct fields: 
+* Name
+* email address
+* message
+
+All the fields are required fields and the email address will be validated. Additionally, the name and the message have a minimum length of 3 characters. 
+
+The class ContactForm resides in a file named 
+    mysite/code/ContactForm.php.
 
 ###### ContactForm.php
 	:::php
@@ -102,13 +126,14 @@ Our contact form will have three fields: Name, email address and a message. All 
 	
 	}
 
-The method fillInFieldValues() takes a way some work from logged in clients by filling in the values for the fields name and email address. With the array $preferences a form can be customized. In this case the submit button title is redefined.
+The method fillInFieldValues() makes it easier for logged in clients by filling in the values for the known fields name and email address. 
+With the array $preferences the form can be customized. In this we are redifining the submit button's title.
 
 With 'type' ⇒ 'TextField' the Sapphire form field type will be defined.
 
 ### Form Validation
 
-There are a whole bunch of input validation function configurable via “checkRequirements”:
+You can configure several input validation functions via “checkRequirements”:
 
 * **hasSpecialSigns:** Define an amount of input characters to match.	
 * **hasMinLength:** Define a minimum character length. Maybe you do not want to allow usernames with only 2 characters on a registration form.
@@ -124,11 +149,12 @@ There are a whole bunch of input validation function configurable via “checkRe
 
 ### Form Action
 
-The method submitSuccess() is the forms action method. It is called only on a successful form validation. Otherwise, a user gets per field error messages with JavaScript or a server sided validation if JavaScript is deactivated. (Only neurotic windows users deactivate JS these days, but they are still around.) The Template
+The method submitSuccess() is the forms action method. It is called only on a successful form validation. 
+If validation fails, a user gets JavaScript error messages per field. If JavaScript is disabled, validation will be done server-side. 
 
-The form template must be saved in a file templates/Layout/ContactForm.ss.
+### The Template
 
-The markup you see is required if you use the CSS framework YAML which does all the fighting with browser bugs.
+Save the form template in the file templates/Layout/ContactForm.ss.
 
 ###### ContactForm.ss
 	:::php
@@ -160,11 +186,13 @@ The markup you see is required if you use the CSS framework YAML which does all 
 		</div>
 	</form>
 
-Call a previously defined field with $CustomHtmlFormFieldByName() with the name, as we defined in $formFields, as a parameter. With an iteration “control Actions” the forms action fields (eg submit, cancel) are called. Quiet easy, isn't it? 
+In this markup we call the fields we defined previously in $formFields by passing the field name as a parameter to  $CustomHtmlFormFieldByName(). 
+With an iteration over “control Actions” the forms action fields (eg submit, cancel) are being called. It's easy, isn't it? 
 
 ## Injection
 
-A controller decides what to show on a site. Our form is not bind to any controller yet. We just add one line of code to the controllers init() method and we're done:
+A controller determines what will be shown on a website. But since our form is not bound to a controller it will not be displayed.
+To register the form we add one line of code to the controllers init() method:
 
 	:::php
 	/**
@@ -178,7 +206,7 @@ A controller decides what to show on a site. Our form is not bind to any control
 	    $this->registerCustomHtmlForm('OurContactForm', new ContactForm($this));
 	}
 
-And last but not least the form must be called in the controller's template:
+Last but not least, the form must be called in the controller's template:
 
 	:::php
 	$InsertCustomHtmlForm(OurContactForm)
@@ -188,12 +216,16 @@ Now the form is up and running.
 ## Custom Form Field Requirements
 - - -
 
-In the example above I didn't mention some features to keep it simple. Some form may require a more profound input validation. You even might want to change the markup of a field type. 
+The example above intentionally left out some advanced features to keep it short and simple. 
+But some forms may require a more profound input validation and you even might want to change the markup of a field type. 
+You can use callbacks to adapt the form to your needs.
 
 ## Callbacks
 
-Callbacks augment the input validation by an interference with the database. The user input is not only checked against some character combination rules but also by comparing the input with existing data. A registration form is a good example. If email addresses should be unique inside your database you must check an email address input against all existing email addresses.
-At checkRequirements a function “doesEmailExistAlready” is defined as a callback. A callback must return a boolean value plus an error message.
+Callbacks augment the input validation by an interference with the database. The user input is not only checked against some character combination rules but also by comparing the input with existing data. 
+A registration form is a good example. If email addresses should be unique inside your database, you must check any email address input against all existing email addresses.
+
+Within checkRequirements a function “doesEmailExistAlready” is defined as a callback. A callback must return a boolean value plus an error message.
 
 	:::php
 	<?php

@@ -1,15 +1,13 @@
 # How to extend a CustomHtmlForm
 
-SilverCart depends on CustomHtmlForm, a module we designed for working with SilverStripe. It gives you full control over your forms markup, validation and javascripting. Simply define a form via a multidimensional array, define an action method, create a unique template and inject the form in any controller. Custom markup for form field types is optional.
+In this chapter you will learn how to extend an existing CustomHtmlForm using the [SilverStripe extension pattern](https://docs.silverstripe.org/en/3.3/developer_guides/extending/extensions/). 
 
-This documentation describes the possibilities to extend an existing CustomHtmlForm using the [SilverStripe extension pattern](https://docs.silverstripe.org/en/3.3/developer_guides/extending/extensions/). Also a short tutorial describes how to extend an existing CustomHtmlForm by adding new form fields to SilverCart's SilvercartAddAddressForm.
-
-If you are new to this topic you should also have a look to the documentation “How to implement a CustomHtmlForm”.
+As an example, we will describe how to extend an existing CustomHtmlForm by adding new form fields to SilverCart's SilvercartAddAddressForm.
 
 ## Special Methods to extend CustomHtmlForm
 - - -
 
-There are a few methods that can be used by a DataObjectDecorator to extend a CustomHtmlForm.
+There are a few methods that can be used by a DataExtension to extend a CustomHtmlForm.
  
 These methods are: 
 
@@ -38,11 +36,11 @@ This method is called before CustomHtmlForm requires the form fields. You can ma
 ## Tutorial: Extend an existing CustomHtmlForm
 - - -
 
-This tutorial describes the way to add custom form fields to SilverCart's form to add new addresses, SilvercartAddAddressForm.
+This tutorial shows how you can add custom form fields to SilverCart's new addresses form (SilvercartAddAddressForm).
 
-### What do I need to do that?
+### What do you need to do that?
 
-Well, we use SilverStripe extensions to extend the forms, so you need a extension first. ![;-)](_images/icon_wink.gif)
+Well, we use SilverStripe extensions to extend the forms, so you need an extension first.
 
 In fact, you need two extensions. One to extend the form itself and one to extend the SilvercartAddress object, to reflect the additional fields to the data model.
 
@@ -52,7 +50,7 @@ You will also need a new form template that includes the markup and template eng
 
 Therefor copy SilverCart's default template “SilvercartAddAddressForm.ss” out of ”/silvercart/templates/Layout” into your projects template directory.
 
-Your silverstripe directory structure should look like this now:
+Your silverstripe directory structure should look like this:
 
 	+ assets
 	+ cms
@@ -76,9 +74,11 @@ Your silverstripe directory structure should look like this now:
 
 ### Add the extension
 
-So, we created the files, now let's fill them. First, let's touch MySilvercartAddressExtension.php to add the custom fields to the data model. Let's add a mobile phone number and its area code.
+So, we created the files, now let's fill them. First, let's touch MySilvercartAddressExtension.php to add the custom fields to the data model. 
+Let's add a mobile phone number and its area code.
 
-What we need to do that is an extension of DataExtension which provides the method extraStatics(). extraStatics() will return an array which consists of additional static values to add to the decorated object. In our case we add the properties “MobilePhone” and “MobilePhoneAreaCode” as text attributes to SilvercartAddess.
+What we need to do that is an extension of DataExtension which provides the method extraStatics(). extraStatics() will return an array which consists of additional static values to add to the decorated object. 
+In our case we add the properties “MobilePhone” and “MobilePhoneAreaCode” as text attributes to SilvercartAddess.
 
 Finally, the extension in /mysite/code/MySilvercartAddressExtension.php should look like that:
 
