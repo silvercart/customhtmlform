@@ -186,8 +186,8 @@ class CustomHtmlForm extends Form {
         'submitAction'                      => 'customHtmlFormSubmit',
         'submitButtonTitle'                 => 'Abschicken',
         'submitButtonToolTip'               => '',
-        'submitButtonUseButtonTag'          => false,
-        'submitButtonExtraClasses'          => null,
+        'submitButtonUseButtonTag'          => true,
+        'submitButtonExtraClasses'          => array('btn'),
     );
 
     /**
