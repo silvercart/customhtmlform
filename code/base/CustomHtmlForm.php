@@ -1769,9 +1769,10 @@ class CustomHtmlForm extends Form {
     /**
      * Defines a new message for a form field
      *
-     * @param string $fieldName   The name of the field
-     * @param string $message     The message's text
-     * @param string $messageType The message type (not used)
+     * @param string  $fieldName   The name of the field
+     * @param string  $message     The message's text
+     * @param string  $messageType The message type (not used)
+     * @param boolean $escapeHtml  Escape HTML (not used)
      *
      * @return void
      * 
