@@ -33,8 +33,9 @@
 class CustomHtmlFormPage_Controller extends DataExtension {
     
     /**
-     *
-     * @var bool
+     * Set this to false if you do not want to include the meta-content-language-tag
+     * 
+     * @var bool 
      */
     public static $include_meta_content_language = true;
 
