@@ -810,16 +810,23 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      *
      * @return void
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 16.11.2010
+     * @author Sebastian Diel <sdiel@pixeltricks.de>,
+     *         Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 29.07.2016
      */
     protected function callMethodOnCurrentFormStep($formInstance, $methodName) {
         $formClassName  = $this->stepMapping[$this->getCurrentStep()]['class'];
         $checkClass     = new ReflectionClass($formClassName);
         $output         = '';
         
+        if ($checkClass->hasMethod('onBefore' . ucfirst($methodName))) {
+            $output = $formInstance->$methodName();
+        }
         if ($checkClass->hasMethod($methodName)) {
             $output = $formInstance->$methodName();
+        }
+        if ($checkClass->hasMethod('onAfter' . ucfirst($methodName))) {
+            $formInstance->$methodName();
         }
         
         return $output;
