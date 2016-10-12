@@ -920,21 +920,22 @@ class CustomHtmlForm extends Form {
      *
      * @author Sebastian Diel <sdiel@pixeltricks.de>,
      *         Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 24.01.2014
+     * @since 11.10.2016
      */
     public function getFormData($request) {
         $formData = array();
+        $postVars = $request->postVars();
 
         if ($this->securityTokenEnabled) {
-            $formData['SecurityID'] = Convert::raw2sql($request['SecurityID']);
+            $formData['SecurityID'] = Convert::raw2sql($postVars['SecurityID']);
         }
 
         // read defined form fields
         // Definierte Formularfelder auslesen
         foreach ($this->fieldGroups as $groupName => $groupFields) {
             foreach ($groupFields as $fieldName => $fieldDefinition) {
-                if (isset($request[$fieldName])) {
-                    $formData[$fieldName] = Convert::raw2sql($request[$fieldName]);
+                if (array_key_exists($fieldName, $postVars)) {
+                    $formData[$fieldName] = Convert::raw2sql($postVars[$fieldName]);
                 } else {
                     $formData[$fieldName] = false;
                 }
