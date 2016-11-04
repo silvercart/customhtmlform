@@ -2036,6 +2036,7 @@ class CustomHtmlForm extends Form {
             '/templates/',
             '/templates/Layout/',
             '/templates/forms/',
+            '/templates/Forms/',
             '/templates/form_fields/',
         );
         
