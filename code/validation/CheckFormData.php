@@ -145,14 +145,17 @@ class CheckFormData {
      * @since 25.10.2010
      */
     public function PtCaptchaInput($parameters) {
-        if (!array_key_exists('CustomHtmlForm', $_SESSION)) {
-            $_SESSION['CustomHtmlForm'] = array();
+        $customHtmlForm = Session::get('CustomHtmlForm');
+        $spamCheck      = Session::get('CustomHtmlForm.SpamCheck');
+        if (is_null($customHtmlForm)) {
+            Session::set('CustomHtmlForm', array());
         }
-        if (!array_key_exists('SpamCheck', $_SESSION['CustomHtmlForm'])) {
-            $_SESSION['CustomHtmlForm']['SpamCheck'] = array();
+        if (is_null($spamCheck)) {
+            Session::set('CustomHtmlForm.SpamCheck', array());
         }
+        Session::save();
 
-        $codeToMatch = $_SESSION['CustomHtmlForm']['SpamCheck'][$parameters['fieldName']];
+        $codeToMatch = Session::get('CustomHtmlForm.SpamCheck.' . $parameters['fieldName']);
 
         $success        = false;
         $errorMessage   = '';

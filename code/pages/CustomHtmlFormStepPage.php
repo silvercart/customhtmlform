@@ -215,7 +215,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return int
      */
     public function getCurrentStep() {
-        return $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['currentStep'];
+        return Session::get('CustomHtmlFormStep.' . $this->ClassName . $this->ID . '.currentStep');
     }
 
     /**
@@ -224,7 +224,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return array
      */
     public function getCompletedSteps() {
-        return $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['completedSteps'];
+        return Session::get('CustomHtmlFormStep.' . $this->ClassName . $this->ID . '.completedSteps');
     }
 
     /**
@@ -245,7 +245,10 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         }
         
         if (!$this->isStepCompleted($stepNr)) {
-            $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['completedSteps'][] = $stepNr;
+            $completedSteps = Session::get('CustomHtmlFormStep.' . $this->ClassName . $this->ID . '.completedSteps');
+            $completedSteps[] = $stepNr;
+            Session::set('CustomHtmlFormStep.' . $this->ClassName . $this->ID . '.completedSteps', $completedSteps);
+            Session::save();
         }
     }
     
@@ -273,7 +276,7 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
                 if ($value == $stepNr ||
                     ($includeHigherSteps
                      && $value > $stepNr)) {
-                    unset ($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['completedSteps'][$key]);
+                    Session::clear('CustomHtmlFormStep.' . $this->ClassName . $this->ID . '.completedSteps.' . $key);
                     if (!$includeHigherSteps) {
                         break;
                     }
@@ -298,7 +301,10 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         global $project;
 
         if ($formIdentifier === null) {
-            $formIdentifier = $this->stepMapping[$this->getCurrentStep()]['class'];
+            $formIdentifier = '';
+            if (array_key_exists($this->getCurrentStep(), $this->stepMapping)) {
+                $formIdentifier = $this->stepMapping[$this->getCurrentStep()]['class'];
+            }
         }
 
         $projectPrefix          = ucfirst($project);
@@ -326,7 +332,8 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
             $stepNr = $this->getCurrentStep();
         }
 
-        $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['steps'][$stepNr] = $formData;
+        Session::set('CustomHtmlFormStep.' . $this->ClassName . $this->ID . '.steps.' . $stepNr, $formData);
+        Session::save();
     }
 
     /**
@@ -344,10 +351,11 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
             $stepNr = $this->getCurrentStep();
         }
 
-        if (isset($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['steps'][$stepNr])) {
-            return $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['steps'][$stepNr];
-        } else {
+        $steps = Session::get('CustomHtmlFormStep.' . $this->ClassName . $this->ID . '.steps.' . $stepNr);
+        if (is_null($steps)) {
             return false;
+        } else {
+            return $steps;
         }
     }
 
@@ -389,15 +397,17 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
             $stepNr = $this->getCurrentStep();
         }
         if (!empty ($fieldName)) {
-            if (array_key_exists($stepNr,    $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['steps']) &&
-                array_key_exists($fieldName, $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['steps'][$stepNr])) {
-                if ($formData[$fieldName] != $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['steps'][$stepNr][$fieldName]) {
+            
+            $steps = Session::get('CustomHtmlFormStep.' . $this->ClassName . $this->ID . '.steps');
+            if (array_key_exists($stepNr,    $steps) &&
+                array_key_exists($fieldName, $steps[$stepNr])) {
+                if ($formData[$fieldName] != $steps[$stepNr][$fieldName]) {
                     $changed = true;
                 }
             }
         } else {
             foreach ($formData as $formFieldName => $formFieldValue) {
-                if ($formFieldValue != $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['steps'][$stepNr][$formFieldName]) {
+                if ($formFieldValue != Session::get('CustomHtmlFormStep.' . $this->ClassName . $this->ID . '.steps.' . $stepNr . '.' . $formFieldName)) {
                     $changed = true;
                     break;
                 }
@@ -468,7 +478,8 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @return void
      */
     public function setCurrentStep($stepNr) {
-        $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['currentStep'] = $stepNr;
+        Session::set('CustomHtmlFormStep.' . $this->ClassName . $this->ID . '.currentStep', $stepNr);
+        Session::save();
     }
 
     /**
@@ -631,11 +642,12 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @since 25.10.2010
      */
     public function deleteSessionData() {
-        if (isset($_SESSION['CustomHtmlFormStep']) &&
-            is_array($_SESSION['CustomHtmlFormStep'])) {
+        $customHtmlFormStep = Session::get('CustomHtmlFormStep');
+        if (!is_null($customHtmlFormStep) &&
+            is_array($customHtmlFormStep)) {
 
-            if (isset($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID])) {
-                unset($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]);
+            if (array_key_exists($this->ClassName . $this->ID, $customHtmlFormStep)) {
+                Session::clear('CustomHtmlFormStep.' . $this->ClassName . $this->ID);
             }
         }
     }
@@ -795,6 +807,9 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @since 25.10.2010
      */
     protected function registerCurrentFormStep() {
+        if (!array_key_exists($this->getCurrentStep(), $this->stepMapping)) {
+            $this->generateStepMapping();
+        }
         $formClassName = $this->stepMapping[$this->getCurrentStep()]['class'];
         $formInstance  = new $formClassName($this);
         $this->registerCustomHtmlForm($formClassName, $formInstance);
@@ -815,6 +830,9 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @since 29.07.2016
      */
     protected function callMethodOnCurrentFormStep($formInstance, $methodName) {
+        if (!array_key_exists($this->getCurrentStep(), $this->stepMapping)) {
+            $this->generateStepMapping();
+        }
         $formClassName  = $this->stepMapping[$this->getCurrentStep()]['class'];
         $checkClass     = new ReflectionClass($formClassName);
         $output         = '';
@@ -844,28 +862,38 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      *
      * @return void
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 25.10.2010
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 15.12.2016
      */
     protected function initialiseSessionData() {
-        if (!isset($_SESSION['CustomHtmlFormStep'])) {
-            $_SESSION['CustomHtmlFormStep'] = array();
+        Session::start();
+        $customHtmlFormStep = Session::get('CustomHtmlFormStep');
+        if (is_null($customHtmlFormStep)) {
+            $customHtmlFormStep = array();
+            Session::set('CustomHtmlFormStep', $customHtmlFormStep);
         }
-        if (!isset($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID])) {
-            $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID] = array();
+        if (!array_key_exists($this->ClassName . $this->ID, $customHtmlFormStep) ||
+            is_null($customHtmlFormStep[$this->ClassName . $this->ID])) {
+            $customHtmlFormStep[$this->ClassName . $this->ID] = array();
+            Session::set('CustomHtmlFormStep.' . $this->ClassName . $this->ID, array());
         }
-        if (!isset($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['currentStep'])) {
-            $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['currentStep'] = $this->defaultStartStep;
+        if (!array_key_exists('currentStep', $customHtmlFormStep[$this->ClassName . $this->ID]) ||
+            is_null($customHtmlFormStep[$this->ClassName . $this->ID]['currentStep'])) {
+            $this->setCurrentStep($this->defaultStartStep);
         }
-        if (!isset($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['completedSteps'])) {
-            $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['completedSteps'] = array();
+        if (!array_key_exists('completedSteps', $customHtmlFormStep[$this->ClassName . $this->ID]) ||
+            is_null($customHtmlFormStep[$this->ClassName . $this->ID]['completedSteps'])) {
+            Session::set('CustomHtmlFormStep.' . $this->ClassName . $this->ID . '.completedSteps', array());
         }
-        if (!isset($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['steps'])) {
-            $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['steps'] = array();
+        if (!array_key_exists('steps', $customHtmlFormStep[$this->ClassName . $this->ID]) ||
+            is_null($customHtmlFormStep[$this->ClassName . $this->ID]['steps'])) {
+            Session::set('CustomHtmlFormStep.' . $this->ClassName . $this->ID . '.steps', array());
         }
-        if (!isset($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['stepDirectories'])) {
-            $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['stepDirectories'] = array();
+        if (!array_key_exists('stepDirectories', $customHtmlFormStep[$this->ClassName . $this->ID]) ||
+            is_null($customHtmlFormStep[$this->ClassName . $this->ID]['stepDirectories'])) {
+            Session::set('CustomHtmlFormStep.' . $this->ClassName . $this->ID . '.stepDirectories', array());
         }
+        Session::save();
     }
 
     /**
@@ -923,7 +951,8 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      */
     public function resetStepMapping() {
         $this->stepMapping = array();
-        $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['stepDirectories'] = array();
+        Session::set('CustomHtmlFormStep.' . $this->ClassName . $this->ID . '.stepDirectories', array());
+        Session::save();
     }
 
     /**
@@ -998,11 +1027,12 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
         $stepIdx            = $mappingIdx + 1;
         $includedStepIdx    = $stepIdx;
         
-        if (!isset($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['stepDirectories'])) {
+        $stepDirectories = Session::get('CustomHtmlFormStep.' . $this->ClassName . $this->ID . '.stepDirectories');
+        if (is_null($stepDirectories)) {
             return false;
         }
 
-        foreach ($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['stepDirectories'] as $directory) {
+        foreach ($stepDirectories as $directory) {
             $prefix = $this->basename;
             
             if (is_array($directory)) {
@@ -1063,11 +1093,14 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      * @since 04.04.2011
      */
     public function registerStepDirectory($templateDirectory) {
-        if (!isset($_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['stepDirectories'])) {
-            $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['stepDirectories'] = array();
+        $stepDirectories = Session::get('CustomHtmlFormStep.' . $this->ClassName . $this->ID . '.stepDirectories');
+        if (is_null($stepDirectories)) {
+            $stepDirectories = array();
         }
 
-        $_SESSION['CustomHtmlFormStep'][$this->ClassName.$this->ID]['stepDirectories'][] = $templateDirectory;
+        $stepDirectories[] = $templateDirectory;
+        Session::set('CustomHtmlFormStep.' . $this->ClassName . $this->ID . '.stepDirectories', $stepDirectories);
+        Session::save();
 
         return true;
     }
