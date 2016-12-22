@@ -175,6 +175,34 @@ class CheckFormData {
     }
 
     /**
+     * checks reCAPTCHA field input
+     * 
+     * @param array $parameters form and field name
+     *
+     * @return array
+     * 
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 21.12.2016
+     */
+    public function GoogleRecaptchaField($parameters) {
+        $success            = false;
+        $gRecaptchaResponse = $_REQUEST['g-recaptcha-response'];
+        $remoteIp           = $_SERVER['REMOTE_ADDR'];
+        
+        $recaptcha = new \ReCaptcha\ReCaptcha(GoogleRecaptchaField::get_recaptcha_secret());
+        $resp = $recaptcha->verify($gRecaptchaResponse, $remoteIp);
+        if ($resp->isSuccess()) {
+            $success = true;
+        } else {
+            $errorMessage = _t('Form.CAPTCHAFIELDNOMATCH', 'Your entry was not correct. Please try again!');
+        }
+        return array(
+            'success'       => $success,
+            'errorMessage'  => $errorMessage
+        );
+    }
+
+    /**
      * Checks if a field is empty and if this result is expected
      *
      * @param boolean $expectedResult the expected result
