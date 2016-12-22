@@ -1673,6 +1673,12 @@ class CustomHtmlForm extends Form {
      */
     public function injectSpecialFormFields() {
         if (array_key_exists($this->class, self::$useSpamCheck)) {
+            $secret  = GoogleRecaptchaField::get_recaptcha_secret();
+            $siteKey = GoogleRecaptchaField::get_recaptcha_site_key();
+            if (empty($secret) ||
+                empty($siteKey)) {
+                self::$use_google_recaptcha = false;
+            }
             if (self::$use_google_recaptcha) {
                 $this->formFields['GoogleRecaptchaField'] = array(
                     'type'      => 'GoogleRecaptchaField',
