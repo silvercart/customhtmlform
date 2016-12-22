@@ -54,6 +54,13 @@ class CustomHtmlForm extends Form {
     public static $useSpamCheck = array();
 
     /**
+     * Set to true to use Google Recaptcha as spam check
+     *
+     * @var boolean
+     */
+    public static $use_google_recaptcha = true;
+
+    /**
      * Set to true to use a custom tabindex order for the forms fields
      *
      * @var array
@@ -1074,6 +1081,13 @@ class CustomHtmlForm extends Form {
                                 'fieldName' => $this->name.'PtCaptchaImageField'
                             );
                         }
+                        // GoogleRecaptchaField
+                        if ($requirement == 'GoogleRecaptchaField') {
+                            $requiredValue = array(
+                                'formName'  => $this->class,
+                                'fieldName' => $this->name.'GoogleRecaptchaField'
+                            );
+                        }
 
                         // Callbackfunktion verwenden
                         if ($requirement == 'callBack') {
@@ -1659,23 +1673,34 @@ class CustomHtmlForm extends Form {
      */
     public function injectSpecialFormFields() {
         if (array_key_exists($this->class, self::$useSpamCheck)) {
-            $this->formFields['PtCaptchaInputField'] = array(
-                'type'              => 'PtCaptchaInputField',
-                'title'             => _t('CustomHtmlFormField.PtCaptchaInputField_Title'),
-                'form'              => $this,
-                'checkRequirements' => array
-                (
-                    'isFilledIn'        => true,
-                    'hasLength'         => CustomHtmlFormConfiguration::SpamCheck_numberOfCharsInCaptcha(),
-                    'PtCaptchaInput'    => true
-                )
-            );
-            $this->formFields['PtCaptchaImageField'] = array(
-                'type'      => 'PtCaptchaImageField',
-                'title'     => _t('CustomHtmlFormField.PtCaptchaImageField_Title'),
-                'form'      => $this,
-                'maxLength' => CustomHtmlFormConfiguration::SpamCheck_numberOfCharsInCaptcha(),
-            );
+            if (self::$use_google_recaptcha) {
+                $this->formFields['GoogleRecaptchaField'] = array(
+                    'type'      => 'GoogleRecaptchaField',
+                    'title'     => _t('CustomHtmlFormField.GoogleRecaptchaField_Title'),
+                    'form'      => $this,
+                    'checkRequirements' => array(
+                        'GoogleRecaptchaField' => true
+                    )
+                );
+            } else {
+                $this->formFields['PtCaptchaInputField'] = array(
+                    'type'              => 'PtCaptchaInputField',
+                    'title'             => _t('CustomHtmlFormField.PtCaptchaInputField_Title'),
+                    'form'              => $this,
+                    'checkRequirements' => array
+                    (
+                        'isFilledIn'        => true,
+                        'hasLength'         => CustomHtmlFormConfiguration::SpamCheck_numberOfCharsInCaptcha(),
+                        'PtCaptchaInput'    => true
+                    )
+                );
+                $this->formFields['PtCaptchaImageField'] = array(
+                    'type'      => 'PtCaptchaImageField',
+                    'title'     => _t('CustomHtmlFormField.PtCaptchaImageField_Title'),
+                    'form'      => $this,
+                    'maxLength' => CustomHtmlFormConfiguration::SpamCheck_numberOfCharsInCaptcha(),
+                );
+            }
         }
     }
 
@@ -1974,8 +1999,12 @@ class CustomHtmlForm extends Form {
      * @since 07.12.2012
      */
     public function SpamCheckField() {
-        $field  = $this->CustomHtmlFormFieldByName('PtCaptchaImageField');
-        $field .= $this->CustomHtmlFormFieldByName('PtCaptchaInputField');
+        if (self::$use_google_recaptcha) {
+            $field  = $this->CustomHtmlFormFieldByName('GoogleRecaptchaField');
+        } else {
+            $field  = $this->CustomHtmlFormFieldByName('PtCaptchaImageField');
+            $field .= $this->CustomHtmlFormFieldByName('PtCaptchaInputField');
+        }
 
         return $field;
     }
