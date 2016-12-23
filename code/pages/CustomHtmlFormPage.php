@@ -285,35 +285,21 @@ class CustomHtmlFormPage_Controller extends DataExtension {
      *
      * @return void
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>,
-     *         Sebastian Diel <sdiel@pixeltricks.de>
-     * @since 29.10.2013
+     * @author Sebastian Diel <sdiel@pixeltricks.de>,
+     *         Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 23.12.2016
      */
     public function onBeforeInit() {
-
         if (!$this->owner instanceof Security ||
              $this->owner->urlParams['Action'] != 'ping') {
-            // -------------------------------------------------------------------
-            // load scripts
-            // -------------------------------------------------------------------
             Requirements::block('sapphire/thirdparty/jquery/jquery.js');
-            if (self::$include_meta_content_language) {
-                Requirements::insertHeadTags('<meta http-equiv="Content-language" content="' . i18n::get_locale() . '" />', 'CustomHtmlFormContentLanguageTag');
-            }
-            Requirements::add_i18n_javascript('customhtmlform/javascript/lang');
-
             if (!class_exists('RequirementsEngine')) {
                 if (self::$do_use_own_jquery) {
                     Requirements::javascript('customhtmlform/script/jquery.js');
                 }
-                Requirements::javascript('customhtmlform/script/jquery.scrollTo.min.js');
-                Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.checkFormData.js');
-                Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.events.js');
-                Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.validator.js');
-                Requirements::javascript(SAPPHIRE_DIR . "/javascript/i18n.js");
-                Requirements::add_i18n_javascript('customhtmlform/javascript/lang');
             }
         }
+
         $this->owner->isFrontendPage = true;
     }
 
@@ -331,11 +317,27 @@ class CustomHtmlFormPage_Controller extends DataExtension {
      *
      * @return void
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 25.10.2010
+     * @author Sebastian Diel <sdiel@pixeltricks.de>,
+     *         Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 23.12.2016
      */
     public function onAfterInit() {
+        if (!$this->owner instanceof Security ||
+            $this->owner->urlParams['Action'] != 'ping') {
+            if (self::$include_meta_content_language) {
+                Requirements::insertHeadTags('<meta http-equiv="Content-language" content="' . i18n::get_locale() . '" />', 'CustomHtmlFormContentLanguageTag');
+            }
+            Requirements::add_i18n_javascript('customhtmlform/javascript/lang');
+
+            if (!class_exists('RequirementsEngine')) {
+                Requirements::javascript('customhtmlform/script/jquery.scrollTo.min.js');
+                Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.checkFormData.js');
+                Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.events.js');
+                Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.validator.js');
+                Requirements::javascript(SAPPHIRE_DIR . "/javascript/i18n.js");
+                Requirements::add_i18n_javascript('customhtmlform/javascript/lang');
+            }
+        }
         $onLoadSnippetStr           = '';
         $onLoadInTheEndSnippetStr   = '';
         $snippetStr                 = '';
