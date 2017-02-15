@@ -946,11 +946,14 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
      *
      * @return void
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 04.04.2011
+     * @author Sebastian Diel <sdiel@pixeltricks.de>,
+     *         Sascha Koehler <skoehler@pixeltricks.de>
+     * @since 15.02.2017
      */
     public function resetStepMapping() {
         $this->stepMapping = array();
+        Session::clear('CustomHtmlFormStep.' . $this->ClassName . $this->ID . '.stepDirectories');
+        Session::save();
         Session::set('CustomHtmlFormStep.' . $this->ClassName . $this->ID . '.stepDirectories', array());
         Session::save();
     }
