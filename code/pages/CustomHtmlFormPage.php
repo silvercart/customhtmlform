@@ -85,6 +85,73 @@ class CustomHtmlFormPage_Controller extends DataExtension {
     public static $do_use_own_jquery = true;
 
     /**
+     * Determines whether to load the jQuery dependencies or not.
+     *
+     * @var bool
+     */
+    private static $load_jquery_dependencies = true;
+
+    /**
+     * Sets whether to load the jQuery sources included in this module.
+     * 
+     * @param bool $do_use_own_jquery Load jQuery dependencies?
+     * 
+     * @return void
+     */
+    public static function set_do_use_own_jquery($do_use_own_jquery) {
+        self::$do_use_own_jquery = $do_use_own_jquery;
+    }
+    
+    /**
+     * Returns whether to load the jQuery sources included in this module.
+     * 
+     * @return bool
+     */
+    public static function get_do_use_own_jquery() {
+        return self::$do_use_own_jquery;
+    }
+    
+    /**
+     * Returns whether to load the jQuery sources included in this module.
+     * Alias for self::get_load_jquery_dependencies()
+     * 
+     * @return bool
+     */
+    public static function do_use_own_jquery() {
+        return self::$do_use_own_jquery;
+    }
+
+    /**
+     * Sets whether to load the jQuery dependencies or not.
+     * 
+     * @param bool $load_jquery_dependencies Load jQuery dependencies?
+     * 
+     * @return void
+     */
+    public static function set_load_jquery_dependencies($load_jquery_dependencies) {
+        self::$load_jquery_dependencies = $load_jquery_dependencies;
+    }
+    
+    /**
+     * Returns whether to load the jQuery dependencies or not.
+     * 
+     * @return bool
+     */
+    public static function get_load_jquery_dependencies() {
+        return self::$load_jquery_dependencies;
+    }
+    
+    /**
+     * Returns whether to load the jQuery dependencies or not.
+     * Alias for self::get_load_jquery_dependencies()
+     * 
+     * @return bool
+     */
+    public static function load_jquery_dependencies() {
+        return self::$load_jquery_dependencies;
+    }
+
+    /**
      * adds a snippet to the list of JS onload events
      * Fuegt ein Snippet in die Liste der Javascript Onload-Events ein.
      *
@@ -330,10 +397,12 @@ class CustomHtmlFormPage_Controller extends DataExtension {
             Requirements::add_i18n_javascript('customhtmlform/javascript/lang');
 
             if (!class_exists('RequirementsEngine')) {
-                Requirements::javascript('customhtmlform/script/jquery.scrollTo.min.js');
-                Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.checkFormData.js');
-                Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.events.js');
-                Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.validator.js');
+                if (self::load_jquery_dependencies()) {
+                    Requirements::javascript('customhtmlform/script/jquery.scrollTo.min.js');
+                    Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.checkFormData.js');
+                    Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.events.js');
+                    Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.validator.js');
+                }
                 Requirements::javascript(SAPPHIRE_DIR . "/javascript/i18n.js");
                 Requirements::add_i18n_javascript('customhtmlform/javascript/lang');
             }
