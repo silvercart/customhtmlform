@@ -524,20 +524,22 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
             success = false;
         } else {
             // Check for number of decimal places
-            var separatorPos         = cleanValue.indexOf('.');
-            var decimalPlacesInValue = that.fieldValue.length - (separatorPos + 1);
+            var separatorPos = cleanValue.indexOf('.');
+            if (separatorPos >= 0) {
+                var decimalPlacesInValue = that.fieldValue.length - (separatorPos + 1);
 
-            if (decimalPlacesInValue > numberOfDecimalPlaces) {
-                if(typeof(ss) == 'undefined' || typeof(ss.i18n) == 'undefined') {
-                    errorMessage = 'Dieses Feld darf maximal ' + numberOfDecimalPlaces + ' Dezimalstellen enthalten.';
-                } else {
-                    errorMessage = ss.i18n.sprintf(
-                        ss.i18n._t('Form.MAX_DECIMAL_PLACES_ALLOWED', 'Dieses Feld darf maximal %s Dezimalstellen enthalten.'),
-                        numberOfDecimalPlaces
-                    );
+                if (decimalPlacesInValue > numberOfDecimalPlaces) {
+                    if(typeof(ss) == 'undefined' || typeof(ss.i18n) == 'undefined') {
+                        errorMessage = 'Dieses Feld darf maximal ' + numberOfDecimalPlaces + ' Dezimalstellen enthalten.';
+                    } else {
+                        errorMessage = ss.i18n.sprintf(
+                            ss.i18n._t('Form.MAX_DECIMAL_PLACES_ALLOWED', 'Dieses Feld darf maximal %s Dezimalstellen enthalten.'),
+                            numberOfDecimalPlaces
+                        );
+                    }
+
+                    success = false;
                 }
-
-                success = false;
             }
         }
 
