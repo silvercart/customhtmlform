@@ -943,6 +943,23 @@ class CustomHtmlForm extends Form {
             foreach ($groupFields as $fieldName => $fieldDefinition) {
                 if (array_key_exists($fieldName, $postVars)) {
                     $formData[$fieldName] = Convert::raw2sql($postVars[$fieldName]);
+                } elseif (strpos($fieldName, '[') !== false &&
+                    strpos($fieldName, ']') !== false &&
+                    strpos($fieldName, '[') < strpos($fieldName, ']')) {
+                    
+                    $tmpFieldName  = $fieldName;
+                    $matches       = [];
+                    $fieldNameKeys = [];
+                    while (preg_match('|\[([^\]]*)\]|', $tmpFieldName, $matches)) {
+                        $tmpFieldName    = str_replace($matches[0], '', $tmpFieldName);
+                        $fieldNameKeys[] = $matches[1];
+                    }
+                    $finalValue = $postVars[$tmpFieldName];
+                    $formData[$tmpFieldName] = $finalValue;
+                    foreach ($fieldNameKeys as $key) {
+                        $finalValue = $finalValue[$key];
+                    }
+                    $formData[$fieldName] = $finalValue;
                 } else {
                     $formData[$fieldName] = false;
                 }
