@@ -160,11 +160,30 @@ class CustomHtmlFormPage_Controller extends DataExtension {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function addJavascriptOnloadSnippet($snippet) {
         $this->JavascriptOnloadSnippets[] = $snippet;
+    }
+
+    /**
+     * Returns the list of JS onload events.
+     *
+     * @return array
+     */
+    public function getJavascriptOnloadSnippets() {
+        return $this->JavascriptOnloadSnippets;
+    }
+
+    /**
+     * Sets the list of JS onload events.
+     *
+     * @param array $javascriptOnloadSnippets JS onload events
+     * 
+     * @return void
+     */
+    public function setJavascriptOnloadSnippets($javascriptOnloadSnippets) {
+        $this->JavascriptOnloadSnippets = $javascriptOnloadSnippets;
     }
 
     /**
