@@ -1,22 +1,18 @@
 <?php
-/**
- * Copyright 2016 pixeltricks GmbH
- *
- * This file is part of CustomHtmlForm.
- *
- * @package CustomHtmlForm
- * @subpackage FormFields
- */
+
+namespace CustomHtmlForm\Forms;
+
+use SilverStripe\Forms\FormField;
 
 /**
- * A Google reCAPTCHA field
+ * A Google reCAPTCHA field.
  *
  * @package CustomHtmlForm
- * @subpackage FormFields
+ * @subpackage Forms
  * @author Sebastian Diel <sdiel@pixeltricks.de>
- * @since 21.12.2016
- * @copyright 2016 pixeltricks GmbH
- * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
+ * @since 11.10.2017
+ * @copyright 2017 pixeltricks GmbH
+ * @license see license file in modules root directory
  */
 class GoogleRecaptchaField extends FormField {
     
@@ -114,7 +110,7 @@ class GoogleRecaptchaField extends FormField {
         } else {
             $validator->validationError(
                 $this->getName(),
-                _t('Form.CAPTCHAFIELDNOMATCH'),
+                _t(CustomHtmlForm::class . '.CAPTCHAFIELDNOMATCH', 'Your entry was not correct. Please try again!'),
                 "validation",
                 false
             );

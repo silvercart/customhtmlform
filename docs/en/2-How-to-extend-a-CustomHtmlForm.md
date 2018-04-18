@@ -105,8 +105,8 @@ Finally, the extension in /mysite/code/MySilvercartAddressExtension.php should l
 		public function extraStatics() {
 			return array(
 				'db' => array(
-					'MobilePhoneAreaCode' => 'VarChar(10)',
-					'MobilePhone' => 'VarChar(50)',
+					'MobilePhoneAreaCode' => 'Varchar(10)',
+					'MobilePhone' => 'Varchar(50)',
 				),
 			);
 		}

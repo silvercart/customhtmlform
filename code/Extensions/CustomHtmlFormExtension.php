@@ -1,33 +1,16 @@
 <?php
-/**
- * Copyright 2010, 2011 pixeltricks GmbH
- *
- * This file is part of CustomHtmlForms.
- *
- * CustomHtmlForms is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * CustomHtmlForms is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with CustomHtmlForms.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @package CustomHtmlForm
- */
+
+namespace CustomHtmlForm\Extensions;
 
 /**
  * Interface for a DataExtension to decorate a CustomHtmlForm
  *
  * @package CustomHtmlForm
+ * @subpackage Extensions
  * @author Sebastian Diel <sdiel@pixeltricks.de>
- * @copyright 2016 pixeltricks GmbH
- * @since 30.05.2016
- * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
+ * @since 12.10.2017
+ * @copyright 2017 pixeltricks GmbH
+ * @license see license file in modules root directory
  */
 interface CustomHtmlFormExtension {
     
@@ -44,10 +27,10 @@ interface CustomHtmlFormExtension {
     /**
      * This method will be called after CustomHtmlForm's __construct().
      * 
-     * @param ContentController $controller  the calling controller instance
-     * @param array             $params      optional parameters
-     * @param array             $preferences optional preferences
-     * @param bool              $barebone    defines if a form should only be instanciated or be used too
+     * @param \SilverStripe\CMS\Controllers\ContentController $controller  the calling controller instance
+     * @param array                                           $params      optional parameters
+     * @param array                                           $preferences optional preferences
+     * @param bool                                            $barebone    defines if a form should only be instanciated or be used too
      * 
      * @return bool
      * 
@@ -73,8 +56,8 @@ interface CustomHtmlFormExtension {
      * This method will be called after CustomHtmlForm's default submitFailure.
      * You can manipulate the relevant data here.
      * 
-     * @param SS_HTTPRequest &$data submit data
-     * @param Form           &$form form object
+     * @param \SilverStripe\Control\HTTPRequest &$data submit data
+     * @param \SilverStripe\Forms\Form          &$form form object
      * 
      * @return bool
      * 
@@ -87,9 +70,9 @@ interface CustomHtmlFormExtension {
      * This method will be called after CustomHtmlForm's default submitSuccess.
      * You can manipulate the relevant data here.
      * 
-     * @param SS_HTTPRequest &$data     submit data
-     * @param Form           &$form     form object
-     * @param array          &$formData secured form data
+     * @param \SilverStripe\Control\HTTPRequest &$data     submit data
+     * @param \SilverStripe\Forms\Form          &$form     form object
+     * @param array                             &$formData secured form data
      * 
      * @return bool
      * 
@@ -101,10 +84,10 @@ interface CustomHtmlFormExtension {
     /**
      * This method will be called before CustomHtmlForm's __construct().
      * 
-     * @param ContentController $controller  the calling controller instance
-     * @param array             $params      optional parameters
-     * @param array             $preferences optional preferences
-     * @param bool              $barebone    defines if a form should only be instanciated or be used too
+     * @param \SilverStripe\CMS\Controllers\ContentController $controller  the calling controller instance
+     * @param array                                           $params      optional parameters
+     * @param array                                           $preferences optional preferences
+     * @param bool                                            $barebone    defines if a form should only be instanciated or be used too
      * 
      * @return bool
      * 
@@ -130,8 +113,8 @@ interface CustomHtmlFormExtension {
      * This method will be called before CustomHtmlForm's default submit.
      * You can manipulate the relevant data here.
      * 
-     * @param SS_HTTPRequest &$data submit data
-     * @param Form           &$form form object
+     * @param \SilverStripe\Control\HTTPRequest &$data submit data
+     * @param \SilverStripe\Forms\Form          &$form form object
      * 
      * @return bool
      * 
@@ -144,8 +127,8 @@ interface CustomHtmlFormExtension {
      * This method will be called before CustomHtmlForm's default submitFailure.
      * You can manipulate the relevant data here.
      * 
-     * @param SS_HTTPRequest &$data submit data
-     * @param Form           &$form form object
+     * @param \SilverStripe\Control\HTTPRequest &$data submit data
+     * @param \SilverStripe\Forms\Form          &$form form object
      * 
      * @return bool
      * 
@@ -158,9 +141,9 @@ interface CustomHtmlFormExtension {
      * This method will be called before CustomHtmlForm's default submitSuccess.
      * You can manipulate the relevant data here.
      * 
-     * @param SS_HTTPRequest &$data     submit data
-     * @param Form           &$form     form object
-     * @param array          &$formData secured form data
+     * @param \SilverStripe\Control\HTTPRequest &$data     submit data
+     * @param \SilverStripe\Forms\Form          &$form     form object
+     * @param array                             &$formData secured form data
      * 
      * @return bool
      * 
@@ -170,6 +153,21 @@ interface CustomHtmlFormExtension {
     public function onBeforeSubmitSuccess(&$data, &$form, &$formData);
     
     /**
+     * Updates form fields by group.
+     * 
+     * @param string                      &$groupName Group name
+     * @param string                      &$template  Template name
+     * @param \SilverStripe\ORM\ArrayList $fieldGroup Field group
+     * @param mixed                       &$argument1 Optional argument
+     * 
+     * @return void
+     *
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 12.10.2017
+     */
+    public function overwriteCustomHtmlFormFieldsByGroup(&$groupName, &$template, $fieldGroup, &$argument1);
+    
+    /**
      * This method will replace CustomHtmlForm's default submitFailure. It's
      * important that this method returns sth. to ensure that the default 
      * submitFailure won't be called. The return value should be a rendered 
@@ -177,8 +175,8 @@ interface CustomHtmlFormExtension {
      * You can also trigger a direct or redirect and return what ever you want
      * (perhaps boolean true?).
      * 
-     * @param SS_HTTPRequest &$data submit data
-     * @param Form           &$form form object
+     * @param \SilverStripe\Control\HTTPRequest &$data submit data
+     * @param \SilverStripe\Forms\Form          &$form form object
      * 
      * @return string
      * 
@@ -195,9 +193,9 @@ interface CustomHtmlFormExtension {
      * You can also trigger a direct or redirect and return what ever you want
      * (perhaps boolean true?).
      * 
-     * @param SS_HTTPRequest &$data     submit data
-     * @param Form           &$form     form object
-     * @param array          &$formData secured form data
+     * @param \SilverStripe\Control\HTTPRequest &$data     submit data
+     * @param \SilverStripe\Forms\Form          &$form     form object
+     * @param array                             &$formData secured form data
      * 
      * @return string
      * 
@@ -205,6 +203,18 @@ interface CustomHtmlFormExtension {
      * @since 10.11.2011
      */
     public function overwriteSubmitSuccess(&$data, &$form, &$formData);
+    
+    /**
+     * Updates the special fields.
+     * 
+     * @param string &$fieldsMarkup Fields string to update.
+     * 
+     * @return void
+     *
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 12.10.2017
+     */
+    public function updateCustomHtmlFormSpecialFields(&$fieldsMarkup);
     
     /**
      * This method is called before CustomHtmlForm requires the form fields. You 
@@ -231,4 +241,17 @@ interface CustomHtmlFormExtension {
      * @since 28.11.2011
      */
     public function updatePreferences(&$preferences);
+    
+    /**
+     * Updates the submitted form data.
+     * 
+     * @param array                             &$formData Form data to update
+     * @param \SilverStripe\Control\HTTPRequest $data      HTTP request data
+     * 
+     * @return void
+     *
+     * @author Sebastian Diel <sdiel@pixeltricks.de>
+     * @since 12.10.2017
+     */
+    public function updateSubmittedFormData(&$formData, $data);
 }

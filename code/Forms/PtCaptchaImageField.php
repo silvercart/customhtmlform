@@ -1,36 +1,21 @@
 <?php
-/**
- * Copyright 2013 pixeltricks GmbH
- *
- * This file is part of SilverCart.
- *
- * SilverCart is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * SilverCart is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with SilverCart.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @package CustomHtmlForm
- * @subpackage FormFields
- */
+
+namespace CustomHtmlForm\Forms;
+
+use CustomHtmlForm\Dev\Tools;
+use CustomHtmlForm\Model\SiteConfigExtension;
+use SilverStripe\Control\Director;
+use SilverStripe\Forms\TextField;
 
 /**
- * A ptCaptcha field (uses the jax captcha class)
+ * A ptCaptcha field (uses the jax captcha class).
  *
  * @package CustomHtmlForm
- * @subpackage FormFields
- * @author Sascha Koehler <skoehler@pixeltricks.de>,
- *         Sebastian Diel <sdiel@pixeltricks.de>
- * @since 08.04.2013
- * @copyright 2013 pixeltricks GmbH
- * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
+ * @subpackage Forms
+ * @author Sebastian Diel <sdiel@pixeltricks.de>
+ * @since 11.10.2017
+ * @copyright 2017 pixeltricks GmbH
+ * @license see license file in modules root directory
  */
 class PtCaptchaImageField extends TextField {
     
@@ -121,10 +106,10 @@ class PtCaptchaImageField extends TextField {
         parent::__construct($name, $title, $value, $maxLength, $form);
 
         $this->setTempDir(          ASSETS_PATH . '/pt-captcha');
-        $this->setWidth(            CustomHtmlFormConfiguration::SpamCheck_width());
-        $this->setHeight(           CustomHtmlFormConfiguration::SpamCheck_height());
-        $this->setJpgQuality(       CustomHtmlFormConfiguration::SpamCheck_jpgQuality());
-        $this->setNrOfChars(        CustomHtmlFormConfiguration::SpamCheck_numberOfCharsInCaptcha());
+        $this->setWidth(            SiteConfigExtension::SpamCheck_width());
+        $this->setHeight(           SiteConfigExtension::SpamCheck_height());
+        $this->setJpgQuality(       SiteConfigExtension::SpamCheck_jpgQuality());
+        $this->setNrOfChars(        SiteConfigExtension::SpamCheck_numberOfCharsInCaptcha());
         $this->setFont(             Director::baseFolder() . '/customhtmlform/fonts/Aller_Rg.ttf');
         $this->setFormIdentifier(   $form->getName() . $this->getName());
     }
@@ -146,7 +131,7 @@ class PtCaptchaImageField extends TextField {
         if ($this->cachedField === null) {
             $picture            = $this->getPic($this->getNrOfChars());
             $this->cachedField  = '
-                <img src="'.(CustomHtmlFormTools::getBaseURLSegment()).'customhtmlformimage/get/cap_'.$picture.'/jpg" width="'.$this->width.'" height="'.$this->height.'" alt="Captcha" />
+                <img src="'.(Tools::getBaseURLSegment()).'customhtmlformimage/get/cap_'.$picture.'/jpg" width="'.$this->width.'" height="'.$this->height.'" alt="Captcha" />
             ';
         }
         return $this->cachedField;
@@ -174,7 +159,7 @@ class PtCaptchaImageField extends TextField {
         } else {
             $validator->validationError(
                 $this->getName(),
-                _t('Form.CAPTCHAFIELDNOMATCH'),
+                _t(CustomHtmlForm::class . '.CAPTCHAFIELDNOMATCH', 'Your entry was not correct. Please try again!'),
                 "validation",
                 false
             );
@@ -263,10 +248,6 @@ class PtCaptchaImageField extends TextField {
      * @param int $charCount The number of chars to generate
      *
      * @return boolean|string
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>,
-     *         Sebastian Diel <sdiel@pixeltricks.de>
-     * @since 08.04.2013
      */
     public function getPic($charCount = 8) {
         if (is_null($this->pic)) {
@@ -279,20 +260,20 @@ class PtCaptchaImageField extends TextField {
                 if (!is_array($_SESSION)) {
                     $_SESSION = array();
                 }
-                $customHtmlFormSession = Session::get('CustomHtmlForm');
+                $customHtmlFormSession = Tools::Session()->get('CustomHtmlForm');
                 if (is_null($customHtmlFormSession)) {
-                    Session::set('CustomHtmlForm', array());
-                    Session::save();
-                    $customHtmlFormSession = Session::get('CustomHtmlForm');
+                    Tools::Session()->set('CustomHtmlForm', array());
+                    Tools::saveSession();
+                    $customHtmlFormSession = Tools::Session()->get('CustomHtmlForm');
                 }
                 if (!array_key_exists('SpamCheck', $customHtmlFormSession)) {
-                    Session::set('CustomHtmlForm.SpamCheck', array());
-                    Session::save();
+                    Tools::Session()->set('CustomHtmlForm.SpamCheck', array());
+                    Tools::saveSession();
                 }
-                $customHtmlFormSessionSpamCheck = Session::get('CustomHtmlForm.SpamCheck');
+                $customHtmlFormSessionSpamCheck = Tools::Session()->get('CustomHtmlForm.SpamCheck');
                 $customHtmlFormSessionSpamCheck[$this->getFormIdentifier()] = $captchaIdentifier;
-                Session::set('CustomHtmlForm.SpamCheck', $customHtmlFormSessionSpamCheck);
-                Session::save();
+                Tools::Session()->set('CustomHtmlForm.SpamCheck', $customHtmlFormSessionSpamCheck);
+                Tools::saveSession();
 
                 $this->pic = $captchaIdentifier;
             }

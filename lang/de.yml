@@ -1,46 +1,39 @@
 de:
-  CustomHtmlForm:
+  CustomHtmlForm\Forms\CustomHtmlForm:
+    CAPTCHAFIELDNOMATCH: "Diese Eingabe war leider falsch. Versuchen Sie es bitte erneut!"
+    ERROR_CHECK_FIELDS: "Bitte pr&uuml;fen Sie Ihre Eingaben in folgenden Feldern:"
+    ERROR_CSRF_FIELDS: "Ihre Session ist abgelaufenen. Bitte laden Sie die Seite neu und füllen Sie das Formular nochmals aus."
+    ERROR_CSRF_MESSAGE: "Mögliche CSRF Attacke!"
     REQUIRED_FIELD_MARKER: "<span class=\"required-field\">[ Pflichtfeld ]</span>"
-  CustomHtmlFormAdmin:
-    MENUTITLE: "Formulare"
-    PLURALNAME: "Formulare"
-    SINGULARNAME: "Formulare"
-  CustomHtmlFormConfiguration:
-    PLURALNAME: "Formular Konfiguration"
-    SINGULARNAME: "Formular Konfiguration"
+  CustomHtmlForm\Forms\PtCaptchaImageField:
+    Title: "Bitte diesen Captcha-Code im folgenden Feld eingeben:"
+  CustomHtmlForm\Forms\PtCaptchaInputField:
+    Title: "Captcha-Code:"
+  CustomHtmlForm\Model\SiteConfigExtension:
+    FormConfigurationTab: "Formular Konfiguration"
     SpamCheck_height: "Höhe in Pixel"
     SpamCheck_jpgQuality: "JPG Qualität des Captcha-Bilds (0 [schlechteste] bis 100 [beste])"
     SpamCheck_numberOfCharsInCaptcha: "Anzahl der Zeichen im Captcha"
     SpamCheck_width: "Breite in Pixel"
-  CustomHtmlFormConfigurationAdmin:
-    TAB_SPAMCHECK: "Captcha"
-  CustomHtmlFormErrorMessages:
-    CHECK_FIELDS: "Bitte pr&uuml;fen Sie Ihre Eingaben in folgenden Feldern:"
-    CSRF_FIELDS: "Ihre Session ist abgelaufenen. Bitte laden Sie die Seite neu und füllen Sie das Formular nochmals aus."
-    CSRF_MESSAGE: "Mögliche CSRF Attacke!"
-  CustomHtmlFormField:
-    PtCaptchaImageField_Title: "Bitte diesen Captcha-Code im folgenden Feld eingeben:"
-    PtCaptchaInputField_Title: "Captcha-Code:"
-  CustomHtmlFormStepPage:
+  CustomHtmlForm\Model\StepPage:
     BASE_NAME: "Basisname für Formular Objekt- und Templatedateien: "
     CANCEL_TARGET: "Auf welche Seite soll der Abbrechen-Link fuehren: "
     SHOW_CANCEL: "Abbrechen Link zeigen"
-  Form:
-    CAPTCHAFIELDNOMATCH: "Diese Eingabe war leider falsch. Versuchen Sie es bitte erneut!"
+  CustomHtmlForm\Validation\CheckFormData:
     CURRENCY_ONLY: "In dieses Feld muss eine Währungsangabe (z.B. \"1499,95\") eingetragen werden."
     DATE_ONLY: "In dieses Feld muss ein Datum im Format \"tt.mm.jjjj\" eingetragen werden."
-    FIED_REQUIRES_NR_OF_CHARS: "Dieses Feld erfordert %s Zeichen."
+    FIED_REQUIRES_NR_OF_CHARS: "Dieses Feld erfordert {count} Zeichen."
     FIELD_MAY_NOT_BE_EMPTY: "Dieses Feld darf nicht leer sein."
     FIELD_MUST_BE_EMPTY: "Dieses Feld muss leer sein."
     FIELD_MUST_BE_FILLED_IN: "Dieses Feld muss ausgefuellt sein."
     HASNOSPECIALSIGNS: "Dieses Feld muss Sonderzeichen enthalten (andere Zeichen als Buchstaben, Zahlen und die Zeichen \"@\" und \".\")."
     HASSPECIALSIGNS: "Dieses Feld darf nur Buchstaben, Zahlen und die Zeichen \"@\" und \".\" enthalten."
     MANDATORYFIELD: "Dieses Feld muss ausgefüllt werden."
-    MAX_DECIMAL_PLACES_ALLOWED_: "Dieses Feld darf maximal %s Dezimalstellen enthalten."
-    MIN_CHARS: "Bitte gib mindestens %s Zeichen ein."
+    MAX_DECIMAL_PLACES_ALLOWED_: "Dieses Feld darf maximal {places} Dezimalstellen enthalten."
+    MIN_CHARS: "Bitte gib mindestens {count} Zeichen ein."
     MUSTBEEMAILADDRESS: "Bitte geben Sie hier eine gültige Email Adresse an."
     MUSTNOTBEEMAILADDRESS: "Bitte geben Sie hier keine Email Adresse an."
     NUMBERS_ONLY: "Dieses Feld darf nur Zahlen enthalten."
     QUANTITY_ONLY: "Dieses Feld darf nur Zahlen sowie \".\" und \",\" enthalten."
-    REQUIRES_OTHER_VALUE_AS_IN_FIELD: "Dieses Feld darf nicht den gleichen Wert wie das Feld \"%s\" haben."
-    REQUIRES_SAME_VALUE_AS_IN_FIELD: "Bitte geben Sie den gleichen Wert ein wie im Feld \"%s\"."
+    REQUIRES_OTHER_VALUE_AS_IN_FIELD: "Dieses Feld darf nicht den gleichen Wert wie das Feld \"{field}\" haben."
+    REQUIRES_SAME_VALUE_AS_IN_FIELD: "Bitte geben Sie den gleichen Wert ein wie im Feld \"{field}\"."

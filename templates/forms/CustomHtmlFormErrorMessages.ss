@@ -1,6 +1,6 @@
 <% if errorMessages %>
     <div class="alert alert-error">
-        <p><strong><% _t('CustomHtmlFormErrorMessages.CHECK_FIELDS','Please check your input on the following fields:') %></strong></p>
+        <p><strong><%t CustomHtmlForm\Forms\CustomHtmlForm.ERROR_CHECK_FIELDS 'Please check your input on the following fields:' %></strong></p>
         <ul>
         <% loop errorMessages %>
             <li>$fieldname</li>

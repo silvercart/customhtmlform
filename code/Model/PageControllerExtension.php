@@ -1,36 +1,27 @@
 <?php
-/**
- * Copyright 2010, 2011 pixeltricks GmbH
- *
- * This file is part of CustomHtmlForms.
- *
- * CustomHtmlForms is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * CustomHtmlForms is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with CustomHtmlForms.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @package CustomHtmlForm
- */
+
+namespace CustomHtmlForm\Model;
+
+use CustomHtmlForm\Forms\CustomHtmlForm;
+use Exception;
+use SilverStripe\Core\Extension;
+use SilverStripe\Control\Director;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\View\Requirements;
+use SilverStripe\i18n\i18n;
 
 /**
- * Provides additional methods for Page.php used by the CustomHtmlForms module
+ * Provides additional methods for Page.php used by the CustomHtmlForms module.
  *
  * @package CustomHtmlForm
- * @author Sascha Koehler <skoehler@pixeltricks.de>,
- *         Sebastian Diel <sdiel@pixeltricks.de>
- * @since 04.07.2013
- * @copyright 2013 pixeltricks GmbH
- * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
+ * @subpackage Model
+ * @author Sebastian Diel <sdiel@pixeltricks.de>
+ * @since 11.10.2017
+ * @copyright 2017 pixeltricks GmbH
+ * @license see license file in modules root directory
  */
-class CustomHtmlFormPage_Controller extends DataExtension {
+class PageControllerExtension extends Extension {
     
     /**
      * Set this to false if you do not want to include the meta-content-language-tag
@@ -49,7 +40,7 @@ class CustomHtmlFormPage_Controller extends DataExtension {
      *
      * @var array
      */
-    public static $allowed_actions = array(
+    private static $allowed_actions = array(
         'customHtmlFormSubmit',
         'uploadifyUpload',
         'uploadifyRefresh',
@@ -175,7 +166,6 @@ class CustomHtmlFormPage_Controller extends DataExtension {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function addJavascriptSnippet($snippet) {
@@ -215,7 +205,6 @@ class CustomHtmlFormPage_Controller extends DataExtension {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function registerCustomHtmlForm($formIdentifier, CustomHtmlForm $formObj) {
@@ -244,7 +233,7 @@ class CustomHtmlFormPage_Controller extends DataExtension {
      *
      * @param string $formIdentifier The identifier of the form
      *
-     * @return mixed CustomHtmlForm|bool false
+     * @return CustomHtmlForm|bool
      */
     public function getRegisteredCustomHtmlForm($formIdentifier) {
         $formObj = false;
@@ -260,9 +249,6 @@ class CustomHtmlFormPage_Controller extends DataExtension {
      * Returns all registered CustomHtmlForms.
      *
      * @return array
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 15.10.2011
      */
     public function getRegisteredCustomHtmlForms() {
         return $this->registeredCustomHtmlForms;
@@ -274,9 +260,6 @@ class CustomHtmlFormPage_Controller extends DataExtension {
      * @param array $forms An array containing CustomHtmlForms
      * 
      * @return void
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 15.10.2011
      */
     public function setRegisteredCustomHtmlForms($forms) {
         $this->registeredCustomHtmlForms = $forms;
@@ -403,10 +386,11 @@ class CustomHtmlFormPage_Controller extends DataExtension {
                     Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.events.js');
                     Requirements::javascript('customhtmlform/script/jquery.pixeltricks.forms.validator.js');
                 }
-                Requirements::javascript(SAPPHIRE_DIR . "/javascript/i18n.js");
+                Requirements::javascript('silverstripe/admin:client/dist/js/i18n.js');
                 Requirements::add_i18n_javascript('customhtmlform/javascript/lang');
             }
         }
+        return;
         $onLoadSnippetStr           = '';
         $onLoadInTheEndSnippetStr   = '';
         $snippetStr                 = '';
@@ -450,7 +434,6 @@ class CustomHtmlFormPage_Controller extends DataExtension {
      * @return mixed depends on processing form method
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public function customHtmlFormSubmit($form) {
@@ -499,7 +482,6 @@ class CustomHtmlFormPage_Controller extends DataExtension {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
      * @since 03.11.2010
      */
     public function uploadifyUpload() {
@@ -517,15 +499,14 @@ class CustomHtmlFormPage_Controller extends DataExtension {
     /**
      * wrapper for action to uploadify field
      *
-     * @param SS_HTTPRequest $request the request parameter
+     * @param HTTPRequest $request the request parameter
      *
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
      * @since 03.11.2010
      */
-    public function uploadifyRefresh(SS_HTTPRequest $request) {
+    public function uploadifyRefresh(HTTPRequest $request) {
         $fieldReference = $this->getFieldObject();
 
         if ($fieldReference != '') {
@@ -541,7 +522,6 @@ class CustomHtmlFormPage_Controller extends DataExtension {
      * @return void
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
      * @since 03.11.2010
      */
     public function uploadifyRemoveFile() {
@@ -558,9 +538,6 @@ class CustomHtmlFormPage_Controller extends DataExtension {
      * Method Description
      *
      * @return void
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 03.11.2010
      */
     protected function getFieldObject() {
         $formIdentifier = 'CreateAuctionFormStep5';

@@ -1,46 +1,39 @@
 nl:
-  CustomHtmlForm:
+  CustomHtmlForm\Forms\CustomHtmlForm:
+    CAPTCHAFIELDNOMATCH: "Your entry was not correct. Please try again!"
+    ERROR_CHECK_FIELDS: "Please check your input on the following fields:"
+    ERROR_CSRF_FIELDS: "Your session has expired. Please reload this page and fill in the form again."
+    ERROR_CSRF_MESSAGE: "Possible CSRF attack!"
     REQUIRED_FIELD_MARKER: "<span class=\"required-field\">[ Required ]</span>"
-  CustomHtmlFormAdmin:
-    MENUTITLE: "Forms"
-    PLURALNAME: "Forms"
-    SINGULARNAME: "Form"
-  CustomHtmlFormConfiguration:
-    PLURALNAME: "Form configuration"
-    SINGULARNAME: "Form configuration"
+  CustomHtmlForm\Forms\PtCaptchaImageField:
+    Title: "Enter this captcha code in the following field please:"
+  CustomHtmlForm\Forms\PtCaptchaInputField:
+    Title: "Captcha code:"
+  CustomHtmlForm\Model\SiteConfigExtension:
+    FormConfigurationTab: "Form configuration"
     SpamCheck_height: "Height in pixels"
     SpamCheck_jpgQuality: "JPG quality setting for the rendering of the captcha image (0 [worst] to 100 [best])"
     SpamCheck_numberOfCharsInCaptcha: "Number of characters in the captcha"
     SpamCheck_width: "Width in pixels"
-  CustomHtmlFormConfigurationAdmin:
-    TAB_SPAMCHECK: "Captcha"
-  CustomHtmlFormErrorMessages:
-    CHECK_FIELDS: "Please check your input on the following fields:"
-    CSRF_FIELDS: "Your session has expired. Please reload this page and fill in the form again."
-    CSRF_MESSAGE: "Possible CSRF attack!"
-  CustomHtmlFormField:
-    PtCaptchaImageField_Title: "Enter this captcha code in the following field please:"
-    PtCaptchaInputField_Title: "Captcha code:"
-  CustomHtmlFormStepPage:
+  CustomHtmlForm\Model\StepPage:
     BASE_NAME: "base name for form object and template files: "
     CANCEL_TARGET: "To which page should the cancel link direct: "
     SHOW_CANCEL: "show cancel link"
-  Form:
-    CAPTCHAFIELDNOMATCH: "Your entry was not correct. Please try again!"
+  CustomHtmlForm\Validation\CheckFormData:
     CURRENCY_ONLY: "Please enter a valid currency amount (e.g. 1499,00)."
     DATE_ONLY: "Please enter a valid german date (e.g. \"dd.mm.yyyy\")."
-    FIED_REQUIRES_NR_OF_CHARS: "This field requires exactly %s characters."
+    FIED_REQUIRES_NR_OF_CHARS: "This field requires exactly {count} characters."
     FIELD_MAY_NOT_BE_EMPTY: "Dit veld mag niet leeg zijn."
     FIELD_MUST_BE_EMPTY: "Dit veld mag leeg zijn."
     FIELD_MUST_BE_FILLED_IN: "Please fill in this field."
     HASNOSPECIALSIGNS: "This field must contain special signs (other signs than letters, numbers and the signs \"@\" and \".\")."
     HASSPECIALSIGNS: "This field must not contain special signs (letters, numbers and the signs \"@\" and \".\")."
     MANDATORYFIELD: "This field must be filled in."
-    MAX_DECIMAL_PLACES_ALLOWED_: "This field can not have more than %s decimal places."
-    MIN_CHARS: "Enter at least %s characters."
+    MAX_DECIMAL_PLACES_ALLOWED_: "This field can not have more than {places} decimal places."
+    MIN_CHARS: "Enter at least {count} characters."
     MUSTBEEMAILADDRESS: "Please enter a valid email address."
     MUSTNOTBEEMAILADDRESS: "Please don't enter an email address."
     NUMBERS_ONLY: "This field may consist of numbers only."
     QUANTITY_ONLY: "This field may consist of numbers and \".\" or \",\" only."
-    REQUIRES_OTHER_VALUE_AS_IN_FIELD: "This field may not have the same value as field \"%s\"."
-    REQUIRES_SAME_VALUE_AS_IN_FIELD: "Please enter the same value as in field \"%s\"."
+    REQUIRES_OTHER_VALUE_AS_IN_FIELD: "This field may not have the same value as field \"{field}\"."
+    REQUIRES_SAME_VALUE_AS_IN_FIELD: "Please enter the same value as in field \"{field}\"."

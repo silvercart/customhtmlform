@@ -1,45 +1,30 @@
 <?php
-/**
- * Copyright 2013 pixeltricks GmbH
- *
- * This file is part of CustomHtmlForms.
- *
- * CustomHtmlForms is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * CustomHtmlForms is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with CustomHtmlForms.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @package CustomHtmlForm
- */
+
+namespace CustomHtmlForm\Model;
+
+use SilverStripe\Forms\FieldList;
+use SilverCart\Forms\FormFields\TextField;
+use SilverStripe\ORM\DataExtension;
+use SilverStripe\SiteConfig\SiteConfig;
 
 /**
- * Configuration for CustomHtmlForms.
+ * SiteConfig Extension for CustomHtmlForms.
  *
  * @package CustomHtmlForm
- * @subpackage Config
- * @author Sascha Koehler <skoehler@pixeltricks.de>, Patrick Schneider <pschneider@pixeltricks.de>
- * @copyright 2013 pixeltricks GmbH
- * @since 06.06.2013
- * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
+ * @subpackage Model
+ * @author Sebastian Diel <sdiel@pixeltricks.de>
+ * @since 11.10.2017
+ * @copyright 2017 pixeltricks GmbH
+ * @license see license file in modules root directory
  */
-class CustomHtmlFormConfiguration extends DataExtension {
+class SiteConfigExtension extends DataExtension {
 
     /**
      * Attributes.
      *
      * @var array
-     *
-     * @since 2012-12-10
      */
-    public static $db = array(
+    private static $db = array(
         'SpamCheck_numberOfCharsInCaptcha' => 'Int',
         'SpamCheck_width'                  => 'Int',
         'SpamCheck_height'                 => 'Int',
@@ -51,7 +36,7 @@ class CustomHtmlFormConfiguration extends DataExtension {
      *
      * @var array
      */
-    public static $defaults = array(
+    private static $defaults = array(
         'SpamCheck_numberOfCharsInCaptcha' => 8,
         'SpamCheck_width'                  => 160,
         'SpamCheck_height'                 => 50,
@@ -59,9 +44,9 @@ class CustomHtmlFormConfiguration extends DataExtension {
     );
 
     /**
-     * CustomHtmlFormConfiguration object
+     * SiteConfig object
      *
-     * @var CustomHtmlFormConfiguration 
+     * @var SiteConfig 
      */
     public static $config                           = null;
     
@@ -179,11 +164,11 @@ class CustomHtmlFormConfiguration extends DataExtension {
         $labels = array_merge(
                 $labels,
                 array(
-                'SpamCheck_numberOfCharsInCaptcha'  => _t('CustomHtmlFormConfiguration.SpamCheck_numberOfCharsInCaptcha'),
-                'SpamCheck_width'                   => _t('CustomHtmlFormConfiguration.SpamCheck_width'),
-                'SpamCheck_height'                  => _t('CustomHtmlFormConfiguration.SpamCheck_height'),
-                'SpamCheck_jpgQuality'              => _t('CustomHtmlFormConfiguration.SpamCheck_jpgQuality'),
-                'FormConfigurationTab'              => _t('CustomHtmlFormConfiguration.SINGULARNAME')
+                'SpamCheck_numberOfCharsInCaptcha'  => _t(SiteConfigExtension::class . '.SpamCheck_numberOfCharsInCaptcha', 'Number of characters in the captcha'),
+                'SpamCheck_width'                   => _t(SiteConfigExtension::class . '.SpamCheck_width', 'Width in pixels'),
+                'SpamCheck_height'                  => _t(SiteConfigExtension::class . '.SpamCheck_height', 'Height in pixels'),
+                'SpamCheck_jpgQuality'              => _t(SiteConfigExtension::class . '.SpamCheck_jpgQuality', 'JPG quality setting for the rendering of the captcha image (0 [worst] to 100 [best])'),
+                'FormConfigurationTab'              => _t(SiteConfigExtension::class . '.FormConfigurationTab', 'Form configuration'),
             )
         );
     }
@@ -215,22 +200,11 @@ class CustomHtmlFormConfiguration extends DataExtension {
     /**
      * Returns the CustomHtmlFormConfig or triggers an error if not existent.
      *
-     * @return SilvercartConfig|false
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>, Roland Lehmann
-     * @since 10.02.2013
+     * @return SiteConfig
      */
     public static function getConfig() {
         if (is_null(self::$config)) {
             self::$config = SiteConfig::current_site_config();
-
-            if (!self::$config) {
-                if (SilvercartTools::isIsolatedEnvironment()) {
-                    return false;
-                }
-                $errorMessage = _t('CustomHtmlFormConfiguration.ERROR_NO_CONFIG');
-                self::triggerError($errorMessage);
-            }
         }
         return self::$config;
     }

@@ -1,42 +1,26 @@
 <?php
-/**
-* Copyright 2013 pixeltricks GmbH
-*
-* This file is part of SilverCart.
-*
-* SilverCart is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* SilverCart is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU Lesser General Public License
-* along with SilverCart.  If not, see <http://www.gnu.org/licenses/>.
-*
-* @package CustomHtmlForm
-* @subpackage Controller
-*/
+
+namespace CustomHtmlForm\Control;
+
+use SilverStripe\Control\Controller;
+use SilverStripe\Control\HTTPRequest;
 
 /**
-* Delivers images from the silverstripe-cache directory.
-*
-* In your image src tag enter the following pattern:
-* <img src="customhtmlformimage/get/{YourImageName}/{Extension}" />
-*
-* Allowed extensions are defined in self::$allowed_mime_types.
-*
-* @package CustomHtmlForm
-* @subpackage Controller
-* @copyright pixeltricks GmbH
-* @author Sascha Koehler <skoehler@pixeltricks.de>
-* @since 2013-03-07
-* @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
-*/
-class CustomHtmlFormImageHandler extends Controller {
+ * Delivers images from the silverstripe-cache directory.
+ *
+ * In your image src tag enter the following pattern:
+ * <img src="customhtmlformimage/get/{YourImageName}/{Extension}" />
+ *
+ * Allowed extensions are defined in self::$allowed_mime_types.
+ *
+ * @package CustomHtmlForm
+ * @subpackage Control
+ * @author Sebastian Diel <sdiel@pixeltricks.de>
+ * @since 12.10.2017
+ * @copyright 2017 pixeltricks GmbH
+ * @license see license file in modules root directory
+ */
+class ImageHandler extends Controller {
 
     /**
     * Allowed actions
@@ -62,12 +46,9 @@ class CustomHtmlFormImageHandler extends Controller {
     /**
      * Returns the image for the given name
      *
-     * @param SS_HTTPREQUEST $request The request object
+     * @param HTTPRequest $request The request object
      *
      * @return string
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 2013-03-07
      */
     public function get($request) {
         $error      = 0;

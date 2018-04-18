@@ -22,46 +22,18 @@
  * @ignore
  */
 
-ContentController::add_extension('CustomHtmlFormPage_Controller');
-Security::add_extension('CustomHtmlFormPage_Controller');
-SiteConfig::add_extension('CustomHtmlFormConfiguration');
-
-$cacheBaseDir   = getTempFolder() . DIRECTORY_SEPARATOR . 'cache';
-$cacheDir       = $cacheBaseDir . DIRECTORY_SEPARATOR . 'CustomHtmlForm';
-if (Director::isDev()) {
-    $cachelifetime = 1;
-} else {
-    $cachelifetime = 86400;
-}
-if (!is_dir($cacheDir)) {
-    if (!is_dir($cacheBaseDir)) {
-        mkdir($cacheBaseDir);
-    }
-    mkdir($cacheDir);
-}
-if (class_exists('SilvercartCleanCacheTask')) {
-    SilvercartCleanCacheTask::register_cache_directory($cacheDir);
-}
-SS_Cache::set_cache_lifetime('CustomHtmlForm', $cachelifetime);
-SS_Cache::add_backend(
-        'CustomHtmlForm',
-        'File',
-        array(
-            'cache_dir'                 => $cacheDir,
-            'hashed_directory_level'    => 2,
-        )
-);
-SS_Cache::pick_backend('CustomHtmlForm', 'CustomHtmlForm');
+use CustomHtmlForm\Model\PageControllerExtension;
+use SilverStripe\Control\Director;
 
 if (class_exists('RequirementsEngine')) {
-    if (CustomHtmlFormPage_Controller::do_use_own_jquery()) {
+    if (PageControllerExtension::do_use_own_jquery()) {
         RequirementsEngine::registerJsFile('customhtmlform/script/jquery.js');
     }
-    if (CustomHtmlFormPage_Controller::load_jquery_dependencies()) {
+    if (PageControllerExtension::load_jquery_dependencies()) {
         RequirementsEngine::registerJsFile('customhtmlform/script/jquery.scrollTo.min.js');
         RequirementsEngine::registerJsFile('customhtmlform/script/jquery.pixeltricks.forms.checkFormData.js');
         RequirementsEngine::registerJsFile('customhtmlform/script/jquery.pixeltricks.forms.events.js');
         RequirementsEngine::registerJsFile('customhtmlform/script/jquery.pixeltricks.forms.validator.js');
     }
-    RequirementsEngine::registerJsFile(SAPPHIRE_DIR . "/javascript/i18n.js");
+    RequirementsEngine::registerJsFile(Director::baseURL() . "/silverstripe-admin/client/src/i18n.js");
 }

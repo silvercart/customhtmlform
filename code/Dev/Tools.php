@@ -1,35 +1,34 @@
 <?php
-/**
- * Copyright 2013 pixeltricks GmbH
- *
- * This file is part of CustomHtmlForms.
- *
- * CustomHtmlForms is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * CustomHtmlForms is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with CustomHtmlForms.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @package CustomHtmlForm
- */
+
+namespace CustomHtmlForm\Dev;
+
+use CustomHtmlForm\Forms\PtCaptchaImageField;
+use CustomHtmlForm\Forms\PtCaptchaInputField;
+use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\EmailField;
+use SilverStripe\Forms\GroupedDropdownField;
+use SilverStripe\Forms\ListboxField;
+use SilverStripe\Forms\OptionsetField;
+use SilverStripe\Forms\SelectionGroup;
+use SilverStripe\Forms\TextareaField;
+use SilverStripe\Forms\TextField;
+use SilverStripe\Forms\TreeDropdownField;
+use SilverStripe\Forms\TreeDropdownField_Readonly;
+use SilverStripe\Control\Controller;
+use SilverStripe\Control\Director;
+use SilverStripe\Control\Session;
 
 /**
- * Provides helper methods for CustomHtmlForms
+ * Provides helper methods for CustomHtmlForms.
  *
  * @package CustomHtmlForm
- * @author Sascha Koehler <skoehler@pixeltricks.de>
- * @copyright 2013 pixeltricks GmbH
- * @since 2013-02-14
- * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
+ * @subpackage Dev
+ * @author Sebastian Diel <sdiel@pixeltricks.de>
+ * @since 11.10.2017
+ * @copyright 2017 pixeltricks GmbH
+ * @license see license file in modules root directory
  */
-class CustomHtmlFormTools {
+class Tools {
 
     /**
      * The base url segment
@@ -51,22 +50,13 @@ class CustomHtmlFormTools {
     public static function isDropdownField($type) {
         $isField = false;
 
-        if ($type == 'DropdownField' ||
-            $type == 'GroupedDropdownField' ||
-            $type == 'HTMLDropdownField' ||
-            $type == 'CountryDropdownField' ||
-            $type == 'LanguageDropdownField' ||
-            $type == 'SimpleTreeDropdownField' ||
-            $type == 'TreeDropdownField' ||
-            $type == 'TreeDropdownField_Readonly' ||
-            $type == 'StateProvinceDropdownField_Readonly' ||
-            $type == 'Widget_TreeDropdownField_Readonly' ||
-            $type == 'StateDropdownField' ||
-            $type == 'SilvercartCheckoutOptionsetField' ||
-            $type == 'SilvercartShippingOptionsetField' ||
-            $type == 'OptionsetField' ||
-            in_array('OptionsetField', class_parents($type)) ||
-            in_array('DropdownField', class_parents($type))) {
+        if ($type == DropdownField::class ||
+            $type == GroupedDropdownField::class ||
+            $type == TreeDropdownField::class ||
+            $type == TreeDropdownField_Readonly::class ||
+            $type == OptionsetField::class ||
+            in_array(OptionsetField::class, class_parents($type)) ||
+            in_array(DropdownField::class, class_parents($type))) {
 
             $isField = true;
         }
@@ -87,8 +77,8 @@ class CustomHtmlFormTools {
     public static function isListboxField($type) {
         $isField = false;
 
-        if ($type == 'ListboxField' ||
-            in_array('ListboxField', class_parents($type))) {
+        if ($type == ListboxField::class ||
+            in_array(ListboxField::class, class_parents($type))) {
 
             $isField = true;
         }
@@ -109,10 +99,8 @@ class CustomHtmlFormTools {
     public static function isOptionsetField($type) {
         $isField = false;
 
-        if ($type == 'OptionsetField' ||
-            $type == 'SilvercartCheckoutOptionsetField' ||
-            $type == 'SilvercartShippingOptionsetField' ||
-            in_array('OptionsetField', class_parents($type))) {
+        if ($type == OptionsetField::class ||
+            in_array(OptionsetField::class, class_parents($type))) {
 
             $isField = true;
        }
@@ -133,8 +121,8 @@ class CustomHtmlFormTools {
     public static function isSelectiongroupField($type) {
         $isField = false;
 
-        if ($type == 'SelectionGroup' ||
-            in_array('SelectionGroup', class_parents($type))) {
+        if ($type == SelectionGroup::class ||
+            in_array(SelectionGroup::class, class_parents($type))) {
 
             $isField = true;
         }
@@ -155,12 +143,12 @@ class CustomHtmlFormTools {
     public static function isTextField($type) {
         $isField = false;
 
-        if ($type != 'PtCaptchaImageField' &&
-            ($type == 'TextField' ||
-            $type == 'SilvercartTextField' ||
-            $type == 'EmailField' ||
-            $type == 'PtCaptchaInputField' ||
-            in_array('TextField', class_parents($type)))) {
+        if ($type != PtCaptchaImageField::class &&
+            ($type == TextField::class ||
+            $type == SilverCart\Forms\FormFields\TextField::class ||
+            $type == EmailField::class ||
+            $type == PtCaptchaInputField::class ||
+            in_array(TextField::class, class_parents($type)))) {
 
             $isField = true;
         }
@@ -181,8 +169,8 @@ class CustomHtmlFormTools {
     public static function isTextareaField($type) {
         $isField = false;
 
-        if ($type == 'TextareaField' ||
-            in_array('TextareaField', class_parents($type))) {
+        if ($type == TextareaField::class ||
+            in_array(TextareaField::class, class_parents($type))) {
 
             $isField = true;
         }
@@ -215,5 +203,23 @@ class CustomHtmlFormTools {
             self::$baseURLSegment = $baseUrl;
         }
         return self::$baseURLSegment;
+    }
+    
+    /**
+     * Returns the current Session.
+     * 
+     * @return Session
+     */
+    public static function Session() {
+        return Controller::curr()->getRequest()->getSession();
+    }
+    
+    /**
+     * Returns the current Session.
+     * 
+     * @return Session
+     */
+    public static function saveSession() {
+        return self::Session()->save(Controller::curr()->getRequest());
     }
 }

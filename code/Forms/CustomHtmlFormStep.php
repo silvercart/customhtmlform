@@ -1,33 +1,18 @@
 <?php
-/**
- * Copyright 2013 pixeltricks GmbH
- *
- * This file is part of CustomHtmlForms.
- *
- * CustomHtmlForms is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * CustomHtmlForms is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with CustomHtmlForms.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @package CustomHtmlForm
- */
+
+namespace CustomHtmlForm\Forms;
+
+use CustomHtmlForm\Forms\CustomHtmlForm;
 
 /**
  * Provides multipage functionality for CustomHtmlForms
  *
  * @package CustomHtmlForm
- * @author Sascha Koehler <skoehler@pixeltricks.de>
- * @copyright 2013 pixeltricks GmbH
- * @since 2013-02-14
- * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
+ * @subpackage Forms
+ * @author Sebastian Diel <sdiel@pixeltricks.de>
+ * @since 11.10.2017
+ * @copyright 2017 pixeltricks GmbH
+ * @license see license file in modules root directory
  */
 class CustomHtmlFormStep extends CustomHtmlForm {
 
@@ -97,7 +82,6 @@ class CustomHtmlFormStep extends CustomHtmlForm {
      * @return bool
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
      * @since 22.12.2010
      */
     public function isStepCompleted() {
@@ -117,7 +101,6 @@ class CustomHtmlFormStep extends CustomHtmlForm {
      * @return bool
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
      * @since 23.12.2010
      */
     public function isPreviousStepCompleted() {
@@ -137,7 +120,6 @@ class CustomHtmlFormStep extends CustomHtmlForm {
      * @return boolean
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pixeltricks GmbH
      * @since 06.04.2011
      */
     public function isLastStep() {
@@ -152,13 +134,11 @@ class CustomHtmlFormStep extends CustomHtmlForm {
     }
 
     /**
-     * Returns the output of a form that was initialised by a
-     * CustomHtmlFormStepPage object.
+     * Returns the output of a form that was initialised by a StepPage object.
      *
      * @return string
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pixeltricks GmbH
      * @since 06.04.2011
      */
     public function CustomHtmlFormInitOutput() {

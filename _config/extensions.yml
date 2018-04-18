@@ -1,0 +1,12 @@
+---
+Name: customhtmlform-extensions
+---
+SilverStripe\CMS\Controllers\ContentController:
+  extensions:
+    - CustomHtmlForm\Model\PageControllerExtension
+SilverStripe\Security\Security:
+  extensions:
+    - CustomHtmlForm\Model\PageControllerExtension
+SilverStripe\SiteConfig\SiteConfig:
+  extensions:
+    - CustomHtmlForm\Model\SiteConfigExtension

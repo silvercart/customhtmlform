@@ -1,33 +1,20 @@
 <?php
-/**
- * Copyright 2010, 2011 pixeltricks GmbH
- *
- * This file is part of CustomHtmlForms.
- *
- * CustomHtmlForms is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * CustomHtmlForms is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with CustomHtmlForms.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @package CustomHtmlForm
- */
+
+namespace CustomHtmlForm\Validation;
+
+use CustomHtmlForm\Dev\Tools;
+use CustomHtmlForm\Forms\GoogleRecaptchaField;
+use ReCaptcha\ReCaptcha;
 
 /**
- * Offers methods for form input validation
+ * Offers methods for form input validation.
  *
  * @package CustomHtmlForm
- * @author Sascha Koehler <skoehler@pixeltricks.de>
- * @copyright 2010 pixeltricks GmbH
- * @since 25.10.2010
- * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
+ * @subpackage Validation
+ * @author Sebastian Diel <sdiel@pixeltricks.de>
+ * @since 11.10.2017
+ * @copyright 2017 pixeltricks GmbH
+ * @license see license file in modules root directory
  */
 class CheckFormData {
 
@@ -78,9 +65,9 @@ class CheckFormData {
             $success = false;
 
             if ($match) {
-                $errorMessage = _t('Form.HASNOSPECIALSIGNS', 'This field must contain special signs (other signs than letters, numbers and the signs "@" and ".").');
+                $errorMessage = _t(CheckFormData::class . '.HASNOSPECIALSIGNS', 'This field must contain special signs (other signs than letters, numbers and the signs "@" and ".").');
             } else {
-                $errorMessage = _t('Form.HASSPECIALSIGNS', 'This field must not contain special signs (letters, numbers and the signs "@" and ".").');
+                $errorMessage = _t(CheckFormData::class . '.HASSPECIALSIGNS', 'This field must not contain special signs (letters, numbers and the signs "@" and ".").');
             }
         }
 
@@ -117,9 +104,9 @@ class CheckFormData {
                 $success = false;
 
                 if ($match) {
-                    $errorMessage = _t('Form.MUSTNOTBEEMAILADDRESS', 'Please don\'t enter an email address.');
+                    $errorMessage = _t(CheckFormData::class . '.MUSTNOTBEEMAILADDRESS', 'Please don\'t enter an email address.');
                 } else {
-                    $errorMessage = _t('Form.MUSTBEEMAILADDRESS', 'Please enter a valid email address.');
+                    $errorMessage = _t(CheckFormData::class . '.MUSTBEEMAILADDRESS', 'Please enter a valid email address.');
                 }
             }
         }
@@ -145,17 +132,17 @@ class CheckFormData {
      * @since 25.10.2010
      */
     public function PtCaptchaInput($parameters) {
-        $customHtmlForm = Session::get('CustomHtmlForm');
-        $spamCheck      = Session::get('CustomHtmlForm.SpamCheck');
+        $customHtmlForm = Tools::Session()->get('CustomHtmlForm');
+        $spamCheck      = Tools::Session()->get('CustomHtmlForm.SpamCheck');
         if (is_null($customHtmlForm)) {
-            Session::set('CustomHtmlForm', array());
+            Tools::Session()->set('CustomHtmlForm', array());
         }
         if (is_null($spamCheck)) {
-            Session::set('CustomHtmlForm.SpamCheck', array());
+            Tools::Session()->set('CustomHtmlForm.SpamCheck', array());
         }
-        Session::save();
+        Tools::saveSession();
 
-        $codeToMatch = Session::get('CustomHtmlForm.SpamCheck.' . $parameters['fieldName']);
+        $codeToMatch = Tools::Session()->get('CustomHtmlForm.SpamCheck.' . $parameters['fieldName']);
 
         $success        = false;
         $errorMessage   = '';
@@ -165,7 +152,7 @@ class CheckFormData {
             $success = true;
         } else {
             $success        = false;
-            $errorMessage   = _t('Form.CAPTCHAFIELDNOMATCH', 'Your entry was not correct. Please try again!');
+            $errorMessage   = _t(CustomHtmlForm::class . '.Title', 'Enter this captcha code in the following field please:');
         }
 
         return array(
@@ -189,12 +176,12 @@ class CheckFormData {
         $gRecaptchaResponse = $_REQUEST['g-recaptcha-response'];
         $remoteIp           = $_SERVER['REMOTE_ADDR'];
         
-        $recaptcha = new \ReCaptcha\ReCaptcha(GoogleRecaptchaField::get_recaptcha_secret());
+        $recaptcha = new ReCaptcha(GoogleRecaptchaField::get_recaptcha_secret());
         $resp = $recaptcha->verify($gRecaptchaResponse, $remoteIp);
         if ($resp->isSuccess()) {
             $success = true;
         } else {
-            $errorMessage = _t('Form.CAPTCHAFIELDNOMATCH', 'Your entry was not correct. Please try again!');
+            $errorMessage = _t(CustomHtmlForm::class . '.CAPTCHAFIELDNOMATCH', 'Your entry was not correct. Please try again!');
         }
         return array(
             'success'       => $success,
@@ -232,9 +219,9 @@ class CheckFormData {
 
         if (!$success) {
             if ($isFilledIn) {
-                $errorMessage = _t('Form.FIELD_MUST_BE_EMPTY', 'This field must be empty.');
+                $errorMessage = _t(CheckFormData::class . '.FIELD_MUST_BE_EMPTY', 'This field must be empty.');
             } else {
-                $errorMessage = _t('Form.FIELD_MAY_NOT_BE_EMPTY', 'This field may not be empty.');
+                $errorMessage = _t(CheckFormData::class . '.FIELD_MAY_NOT_BE_EMPTY', 'This field may not be empty.');
             }
         }
 
@@ -300,7 +287,7 @@ class CheckFormData {
 
         return array(
             'success'       => $isFilledInCorrectly,
-            'errorMessage'  => _t('Form.FIELD_MUST_BE_FILLED_IN', 'Please fill in this field.')
+            'errorMessage'  => _t(CheckFormData::class . '.FIELD_MUST_BE_FILLED_IN', 'Please fill in this field.')
         );
     }
 
@@ -329,7 +316,12 @@ class CheckFormData {
 
         return array(
             'success'       => $hasMinLength,
-            'errorMessage'  => sprintf(_t('Form.MIN_CHARS', 'Enter at least %s characters.'), $minLength)
+            'errorMessage'  => _t(CheckFormData::class . '.MIN_CHARS',
+                    'Enter at least {count} characters.',
+                    [
+                        'count' => $minLength,
+                    ]
+            )
         );
     }
 
@@ -359,7 +351,12 @@ class CheckFormData {
 
         return array(
             'success'       => $hasLength,
-            'errorMessage'  => sprintf(_t('Form.FIED_REQUIRES_NR_OF_CHARS', 'This field requires exactly %s characters.'), $length)
+            'errorMessage'  => _t(CheckFormData::class . '.FIED_REQUIRES_NR_OF_CHARS',
+                    'This field requires exactly {count} characters.',
+                    [
+                        'count' => $length,
+                    ]
+            )
         );
     }
 
@@ -395,7 +392,12 @@ class CheckFormData {
 
         return array(
             'success'       => $isEqual,
-            'errorMessage'  => sprintf(_t('Form.REQUIRES_SAME_VALUE_AS_IN_FIELD', 'Please enter the same value as in field "%s".'), $refererField)
+            'errorMessage'  => _t(CheckFormData::class . '.REQUIRES_SAME_VALUE_AS_IN_FIELD',
+                    'Please enter the same value as in field "{field}".',
+                    [
+                        'field' => $refererField
+                    ]
+            )
         );
     }
 
@@ -431,7 +433,12 @@ class CheckFormData {
 
         return array(
             'success'       => $isNotEqual,
-            'errorMessage'  => sprintf(_t('Form.REQUIRES_OTHER_VALUE_AS_IN_FIELD', 'This field may not have the same value as field "%s".'), $refererField)
+            'errorMessage'  => _t(CheckFormData::class . '.REQUIRES_OTHER_VALUE_AS_IN_FIELD',
+                    'This field may not have the same value as field "{field}".',
+                    [
+                        'field' => $refererField,
+                    ]
+            )
         );
     }
 
@@ -568,7 +575,7 @@ class CheckFormData {
 
         return array(
             'success'       => $success,
-            'errorMessage'  => _t('Form.NUMBERS_ONLY', 'This field may consist of numbers only.')
+            'errorMessage'  => _t(CheckFormData::class . '.NUMBERS_ONLY', 'This field may consist of numbers only.')
         );
     }
 
@@ -602,7 +609,7 @@ class CheckFormData {
         }
 
         if ($isQuantityField === false) {
-            $errorMessage = _t('Form.QUANTITY_ONLY', 'This field may consist of numbers and "." or "," only.');
+            $errorMessage = _t(CheckFormData::class . '.QUANTITY_ONLY', 'This field may consist of numbers and "." or "," only.');
             $success      = false;
         } else {
             // Check for number of decimal places
@@ -610,9 +617,11 @@ class CheckFormData {
             $decimalPlacesInValue = strlen($this->value) - ($separatorPos + 1);
 
             if ($decimalPlacesInValue > $numberOfDecimalPlaces) {
-                $errorMessage = sprintf(
-                    _t('Form.MAX_DECIMAL_PLACES_ALLOWED', 'Dieses Feld darf maximal %s Dezimalstellen enthalten.'),
-                    $numberOfDecimalPlaces
+                $errorMessage = _t(CheckFormData::class . '.MAX_DECIMAL_PLACES_ALLOWED',
+                        'This field can not have more than {places} decimal places.',
+                        [
+                            'places' => $numberOfDecimalPlaces,
+                        ]
                 );
                 $success = false;
             }
@@ -650,7 +659,7 @@ class CheckFormData {
 
         return array(
             'success'       => $success,
-            'errorMessage'  => _t('Form.CURRENCY_ONLY', 'Please enter a valid currency amount (e.g. 1499,00).')
+            'errorMessage'  => _t(CheckFormData::class . '.CURRENCY_ONLY', 'Please enter a valid currency amount (e.g. 1499,00).')
         );
     }
 
@@ -680,7 +689,7 @@ class CheckFormData {
 
         return array(
             'success'       => $success,
-            'errorMessage'  => _t('Form.DATE_ONLY', 'Please enter a valid german date (e.g. "dd.mm.yyyy").')
+            'errorMessage'  => _t(CheckFormData::class . '.DATE_ONLY', 'Please enter a valid german date (e.g. "dd.mm.yyyy").')
         );
     }
 

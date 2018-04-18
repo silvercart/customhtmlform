@@ -4,7 +4,7 @@ After:
   - '#rootroutes'
   - '#coreroutes'
 ---
-Director:
+SilverStripe\Control\Director:
   rules:
-    'customhtmlformaction//$Action/$ID/$OtherID': 'CustomHtmlFormActionHandler'
-    'customhtmlformimage//$Action/$ID/$OtherID': 'CustomHtmlFormImageHandler'
+    'customhtmlformaction//$Action/$ID/$OtherID': 'CustomHtmlForm\Control\ActionHandler'
+    'customhtmlformimage//$Action/$ID/$OtherID': 'CustomHtmlForm\Control\ImageHandler'

@@ -1,0 +1,11 @@
+---
+Name: customhtmlformcache
+After:
+  - '#corecache'
+---
+SilverStripe\Core\Injector\Injector:
+  Psr\SimpleCache\CacheInterface.CustomHtmlForm:
+    factory: SilverStripe\Core\Cache\CacheFactory
+    constructor:
+      namespace: "CustomHtmlForm"
+      automatic_serialization: true

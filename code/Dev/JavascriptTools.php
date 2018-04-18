@@ -1,35 +1,18 @@
 <?php
-/**
- * Copyright 2013 pixeltricks GmbH
- *
- * This file is part of CustomHtmlForms.
- *
- * CustomHtmlForms is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * CustomHtmlForms is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with CustomHtmlForms.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @package CustomHtmlForm
- */
+
+namespace CustomHtmlForm\Dev;
 
 /**
  * Provides helper methods for CustomHtmlForms for javascript handling.
  *
  * @package CustomHtmlForm
- * @author Sascha Koehler <skoehler@pixeltricks.de>
- * @copyright 2013 pixeltricks GmbH
- * @since 2013-02-14
- * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
+ * @subpackage Dev
+ * @author Sebastian Diel <sdiel@pixeltricks.de>
+ * @since 11.10.2017
+ * @copyright 2017 pixeltricks GmbH
+ * @license see license file in modules root directory
  */
-class CustomHtmlFormToolsJavascript {
+class JavascriptTools {
 
     /**
      * Creates a Json string from an array recursively
@@ -92,7 +75,6 @@ class CustomHtmlFormToolsJavascript {
      * @return string
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
      * @since 11.11.2010
      */
     public static function createJsonFromStructure($structure) {
@@ -120,7 +102,6 @@ class CustomHtmlFormToolsJavascript {
      * @return string
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
     public static function generateJsValidatorFields($fieldGroups) {
@@ -205,7 +186,6 @@ class CustomHtmlFormToolsJavascript {
      * @return string
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
      * @since 10.11.2010
      */
     public static function generateJsValidatorEventString($event, $definition) {
@@ -268,7 +248,6 @@ class CustomHtmlFormToolsJavascript {
      * @return string
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
      * @since 10.11.2010
      *
      */

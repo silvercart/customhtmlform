@@ -1,34 +1,54 @@
 <?php
-/**
- * Copyright 2013 pixeltricks GmbH
- *
- * This file is part of CustomHtmlForms.
- *
- * CustomHtmlForms is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * CustomHtmlForms is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with CustomHtmlForms.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @package CustomHtmlForm
- */
+
+namespace CustomHtmlForm\Forms;
+
+use CustomHtmlForm\Dev\JavascriptTools;
+use CustomHtmlForm\Dev\Tools;
+use CustomHtmlForm\Forms\GoogleRecaptchaField;
+use CustomHtmlForm\Forms\PtCaptchaImageField;
+use CustomHtmlForm\Model\SiteConfigExtension;
+use CustomHtmlForm\Model\StepPageController;
+use CustomHtmlForm\Validation\CheckFormData;
+use Psr\SimpleCache\CacheInterface;
+use SilverStripe\AssetAdmin\Forms\UploadField;
+use SilverStripe\CMS\Controllers\ContentController;
+use SilverStripe\Control\Controller;
+use SilverStripe\Control\Director;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Core\Convert;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Forms\CheckboxField;
+use SilverStripe\Forms\CheckboxSetField;
+use SilverStripe\Forms\DateField;
+use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\Form;
+use SilverStripe\Forms\FormAction;
+use SilverStripe\Forms\HiddenField;
+use SilverStripe\Forms\MoneyField;
+use SilverStripe\Forms\PasswordField;
+use SilverStripe\Forms\TextareaField;
+use SilverStripe\Forms\TextField;
+use SilverStripe\Forms\TreeDropdownField;
+use SilverStripe\Forms\TreeMultiselectField;
+use SilverStripe\ORM\ArrayList;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Security\SecurityToken;
+use SilverStripe\View\ArrayData;
+use SilverStripe\View\Requirements;
+use SilverStripe\View\SSViewer;
+use SilverStripe\View\ViewableData;
+use Translatable;
 
 /**
- * Provide functionallity for forms with freely configurable HTML code
+ * Provide functionallity for forms with freely configurable HTML code.
  *
  * @package CustomHtmlForm
- * @author Sascha Koehler <skoehler@pixeltricks.de>,
- *         Sebastian Diel <sdiel@pixeltricks.de>
- * @since 04.07.2013
- * @copyright 2013 pixeltricks GmbH
- * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
+ * @subpackage Forms
+ * @author Sebastian Diel <sdiel@pixeltricks.de>
+ * @since 11.10.2017
+ * @copyright 2017 pixeltricks GmbH
+ * @license see license file in modules root directory
  */
 class CustomHtmlForm extends Form {
 
@@ -128,6 +148,13 @@ class CustomHtmlForm extends Form {
      * @var array
      */
     protected $SSformFields;
+
+    /**
+     * the objects class name
+     *
+     * @var string
+     */
+    public $class;
 
     /**
      * the objects name
@@ -349,6 +376,7 @@ class CustomHtmlForm extends Form {
      * @since 13.01.2015
      */
     public function __construct($controller, $params = null, $preferences = null, $barebone = false) {
+        $this->class = get_class($this);
         $this->extend('onBeforeConstruct', $controller, $params, $preferences, $barebone);
         global $project;
 
@@ -445,14 +473,13 @@ class CustomHtmlForm extends Form {
         if (!$barebone) {
             $javascriptSnippets = $this->getJavascriptValidatorInitialisation();
 
-            if (!$this->getLoadShoppingCartModules()) {
-                SilvercartShoppingCart::setLoadShoppingCartModules(false);
-            }
-            
-            if ($this->getCreateShoppingCartForms() &&
-                class_exists('SilvercartShoppingCart')) {
-                
-                SilvercartShoppingCart::setCreateShoppingCartForms(false);
+            if (class_exists('SilverCart\\Model\\Order\\ShoppingCart')) {
+                if (!$this->getLoadShoppingCartModules()) {
+                    \SilverCart\Model\Order\ShoppingCart::setLoadShoppingCartModules(false);
+                }
+                if ($this->getCreateShoppingCartForms()) {
+                    \SilverCart\Model\Order\ShoppingCart::setCreateShoppingCartForms(false);
+                }
             }
             
             $this->controller->addJavascriptSnippet($javascriptSnippets['javascriptSnippets']);
@@ -553,7 +580,7 @@ class CustomHtmlForm extends Form {
         if ($isRequiredField &&
             $markRequiredFields) {
 
-            $marker = _t('CustomHtmlForm.REQUIRED_FIELD_MARKER');
+            $marker = _t(CustomHtmlForm::class . '.REQUIRED_FIELD_MARKER', '<span class="required-field">[ Required ]</span>');
         }
 
         return $marker;
@@ -564,18 +591,14 @@ class CustomHtmlForm extends Form {
      * e.g. the datepicker field
      *
      * @return string
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>,
-     *         Sebastian Diel <sdiel@pixeltricks.de>
-     * @since 08.07.2013
      */
     public function getJavascriptFieldInitialisations() {
+        $this->getFormFields();
         $snippet    = '';
-        $formFields = $this->getFormFields();
 
-        foreach ($this->fieldGroups as $groupName => $groupFields) {
+        foreach ($this->fieldGroups as $groupFields) {
             foreach ($groupFields as $fieldName => $fieldDefinition) {
-                if ($fieldDefinition['type'] == 'DateField') {
+                if ($fieldDefinition['type'] == DateField::class) {
                     $config = '';
 
                     if (array_key_exists('configuration', $fieldDefinition)) {
@@ -613,7 +636,7 @@ class CustomHtmlForm extends Form {
         $javascriptSnippets = '';
         $javascriptOnloadSnippets = '';
         if ($this->getDoJsValidation()) {
-            $validatorFields    = CustomHtmlFormToolsJavascript::generateJsValidatorFields($this->fieldGroups);
+            $validatorFields    = JavascriptTools::generateJsValidatorFields($this->fieldGroups);
             $javascriptSnippets = '
                 var ' . $this->jsName . ';';
 
@@ -650,9 +673,6 @@ class CustomHtmlForm extends Form {
      * @param string $fieldDefinition The field definition
      *
      * @return void
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 04.12.2012
      */
     public function setFormField($identifier, $fieldDefinition) {
         $this->formFields[$identifier] = $fieldDefinition;
@@ -665,9 +685,6 @@ class CustomHtmlForm extends Form {
      * @param string $value      The value of the field
      *
      * @return void
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 25.01.2011
      */
     public function setFormFieldValue($identifier, $value) {
         $field = $this->SSformFields['fields']->fieldByName($identifier);
@@ -720,7 +737,7 @@ class CustomHtmlForm extends Form {
             $request['CustomHtmlFormName'] == $customHtmlFormName) {
             foreach ($formFields as $fieldName => $fieldDefinition) {
                 if (isset($request[$fieldName])) {
-                    if (strtolower($fieldDefinition['type']) == 'passwordfield') {
+                    if ($fieldDefinition['type'] == PasswordField::class) {
                         continue;
                     }
                     $this->formFields[$fieldName][$this->getFormFieldValueLabel($fieldName)] = $request[$fieldName];
@@ -737,9 +754,6 @@ class CustomHtmlForm extends Form {
      * @param string $fieldName name of the field
      *
      * @return string
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 20.12.2010
      */
     protected function getFormFieldValueLabel($fieldName) {
         $valueLabel = 'value';
@@ -749,8 +763,8 @@ class CustomHtmlForm extends Form {
         if (isset($formFields[$fieldName])) {
             $fieldDefinition = $formFields[$fieldName];
             
-            if (CustomHtmlFormTools::isDropdownField($fieldDefinition['type']) ||
-                CustomHtmlFormTools::isListboxField($fieldDefinition['type'])) {
+            if (Tools::isDropdownField($fieldDefinition['type']) ||
+                Tools::isListboxField($fieldDefinition['type'])) {
                 $valueLabel = 'selectedValue';
             }
         }
@@ -762,8 +776,8 @@ class CustomHtmlForm extends Form {
      * Processes the submitted form; If there are validation errors the form will
      * be returned with error messages.
      *
-     * @param SS_HTTPRequest $data submit data
-     * @param Form           $form form object
+     * @param HTTPRequest $data submit data
+     * @param Form        $form form object
      *
      * @return ViewableData
      *
@@ -827,8 +841,8 @@ class CustomHtmlForm extends Form {
      * In calse of validation errors the form will be returned with error
      * messages
      *
-     * @param SS_HTTPRequest $data submit data
-     * @param Form           $form form object
+     * @param HTTPRequest $data submit data
+     * @param Form        $form form object
      *
      * @return ViewableData
      *
@@ -882,7 +896,7 @@ class CustomHtmlForm extends Form {
         );
 
         // pass rendered form to the controller
-        if ($this->controller instanceof CustomHtmlFormStepPage_Controller) {
+        if ($this->controller instanceof StepPageController) {
             $output = $this->controller->customise(
                 array(
                     $form => $outputForm
@@ -902,32 +916,28 @@ class CustomHtmlForm extends Form {
     /**
      * This method will be call if there are no validation error
      *
-     * @param SS_HTTPRequest $data     input data
-     * @param Form           $form     form object
-     * @param array          $formData secured form data
+     * @param HTTPRequest $data     input data
+     * @param Form        $form     form object
+     * @param array       $formData secured form data
      *
      * @return mixed
      *
      * @author Sascha Koehler <skoehler@pixeltricks.de>
      * @since 25.10.2010
      */
-    protected function submitSuccess($data, $form, $formData) {
+    protected function submitSuccess(HTTPRequest $data, Form $form, $formData) {
         // In Instanz implementieren
     }
 
     /**
-     * Passes the values from the SS_HTTPRequest object to the defined form;
+     * Passes the values from the HTTPRequest object to the defined form;
      * missing values will be set to false
      *
      * during the transmission the values will become SQL secure
      *
-     * @param SS_HTTPRequest $request the submitted data
+     * @param HTTPRequest $request the submitted data
      *
      * @return array
-     *
-     * @author Sebastian Diel <sdiel@pixeltricks.de>,
-     *         Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 11.10.2016
      */
     public function getFormData($request) {
         $formData = array();
@@ -967,7 +977,7 @@ class CustomHtmlForm extends Form {
     /**
      * checks all form fields and returns them as array
      *
-     * @param SS_HTTPRequest $data Die zu pruefenden Formulardaten.
+     * @param HTTPRequest $data Die zu pruefenden Formulardaten.
      *
      * @return void
      *
@@ -989,11 +999,11 @@ class CustomHtmlForm extends Form {
                 // Possible CSRF attack
                 $error                 = true;
                 $errorMessages['CSRF'] = array(
-                    'message'   => _t('CustomHtmlFormErrorMessages.CSRF_MESSAGE'),
-                    'fieldname' => _t('CustomHtmlFormErrorMessages.CSRF_FIELDS'),
-                    'title'     => _t('CustomHtmlFormErrorMessages.CSRF_FIELDS'),
+                    'message'   => _t(CustomHtmlForm::class . '.ERROR_CSRF_MESSAGE', 'Possible CSRF attack!'),
+                    'fieldname' => _t(CustomHtmlForm::class . '.ERROR_CSRF_FIELDS', 'Your session has expired. Please reload this page and fill in the form again.'),
+                    'title'     => _t(CustomHtmlForm::class . '.ERROR_CSRF_FIELDS', 'Your session has expired. Please reload this page and fill in the form again.'),
                     'CSRF' => array(
-                        'message' => _t('CustomHtmlFormErrorMessages.CSRF_MESSAGE')
+                        'message' => _t(CustomHtmlForm::class . '.ERROR_CSRF_MESSAGE', 'Possible CSRF attack!'),
                     )
                 );
             }
@@ -1133,17 +1143,14 @@ class CustomHtmlForm extends Form {
 
     /**
      * creates the form's input fields and action fields and fills missing data
-     * with standard values
-     *
-     * @return array retunrs form fields and form actions
+     * with standard values.
+     * Returns:
      *      array(
      *          'fields'    => FieldList,
      *          'actions'   => FieldList
      *      )
      *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>,
-     *         Sebastian Diel <sdiel@pixeltricks.de>
-     * @since 04.07.2013
+     * @return array retunrs form fields and form actions
      */
     protected function getForm() {
         if (is_null($this->form)) {
@@ -1211,9 +1218,6 @@ class CustomHtmlForm extends Form {
      * @param string $fieldName The name to search for
      *
      * @return mixed
-     * 
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 18.11.2011
      */
     public function getFormFieldDefinition($fieldName) {
         if (isset($this->customParameters[$fieldName])) {
@@ -1249,7 +1253,7 @@ class CustomHtmlForm extends Form {
             'multiple'              => null,
             'tabIndex'              => 0,
             'form'                  => $this,
-            'maxLength'             => CustomHtmlFormTools::isTextField($fieldDefinition['type']) ? 255 : null,
+            'maxLength'             => Tools::isTextField($fieldDefinition['type']) ? 255 : null,
         );
         foreach ($requiredFieldParams as $param => $default) {
             if (!array_key_exists($param, $fieldDefinition)) {
@@ -1269,9 +1273,6 @@ class CustomHtmlForm extends Form {
      * @return Field
      *
      * @throws Exception
-     * @author Sascha Koehler <skoehler@pixeltricks.de>,
-     *         Sebastian Diel <sdiel@pixeltricks.de>
-     * @since 04.03.2014
      */
     public function getFormField($fieldName, $fieldDefinition) {
 
@@ -1296,7 +1297,7 @@ class CustomHtmlForm extends Form {
         $this->addRequiredFieldParams($fieldDefinition, $fieldReference);
 
         // create field
-        if (CustomHtmlFormTools::isListboxField($fieldDefinition['type'])) {
+        if (Tools::isListboxField($fieldDefinition['type'])) {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
@@ -1306,8 +1307,8 @@ class CustomHtmlForm extends Form {
                 $fieldDefinition['multiple'],
                 $fieldDefinition['form']
             );
-        } else if (CustomHtmlFormTools::isDropdownField($fieldDefinition['type'])) {
-            if ($fieldDefinition['type'] == 'TreeDropdownField') {
+        } else if (Tools::isDropdownField($fieldDefinition['type'])) {
+            if ($fieldDefinition['type'] == TreeDropdownField::class) {
                 Requirements::css(FRAMEWORK_DIR . '/css/TreeDropdownField.css');
                 Requirements::css('customhtmlform/css/TreeDropdownField.css');
                 $field = new $fieldDefinition['type'](
@@ -1333,7 +1334,7 @@ class CustomHtmlForm extends Form {
                     $fieldDefinition['form']
                 );
             }
-        } else if (CustomHtmlFormTools::isOptionsetField($fieldDefinition['type'])) {
+        } else if (Tools::isOptionsetField($fieldDefinition['type'])) {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
@@ -1341,7 +1342,7 @@ class CustomHtmlForm extends Form {
                 $fieldDefinition['selectedValue'],
                 $fieldDefinition['form']
             );
-        } else if (CustomHtmlFormTools::isSelectiongroupField($fieldDefinition['type'])) {
+        } else if (Tools::isSelectiongroupField($fieldDefinition['type'])) {
             $groupFields = array();
 
             foreach ($fieldDefinition['items'] as $itemFieldName => $item) {
@@ -1358,7 +1359,7 @@ class CustomHtmlForm extends Form {
                 $groupFields
             );
             $field->value = $fieldDefinition['value'];
-        } else if (CustomHtmlFormTools::isTextField($fieldDefinition['type'])) {
+        } else if (Tools::isTextField($fieldDefinition['type'])) {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
@@ -1379,7 +1380,7 @@ class CustomHtmlForm extends Form {
                     $field->setConfig($key, $value);
                 }
             }
-        } else if ($fieldDefinition['type'] == 'PtCaptchaImageField') {
+        } else if ($fieldDefinition['type'] == PtCaptchaImageField::class) {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
@@ -1387,14 +1388,14 @@ class CustomHtmlForm extends Form {
                 $fieldDefinition['maxLength'],
                 $fieldDefinition['form']
             );
-        } else if ($fieldDefinition['type'] == 'PasswordField') {
+        } else if ($fieldDefinition['type'] == PasswordField::class) {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
                 $fieldDefinition['value']
             );
             $field->setMaxLength($fieldDefinition['maxLength']);
-        } else if ($fieldDefinition['type'] == 'DateField') {
+        } else if ($fieldDefinition['type'] == DateField::class) {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
@@ -1410,7 +1411,7 @@ class CustomHtmlForm extends Form {
                     $field->setConfig($key, $value);
                 }
             }
-        } else if (CustomHtmlFormTools::isTextareaField($fieldDefinition['type'])) {
+        } else if (Tools::isTextareaField($fieldDefinition['type'])) {
 
             if (!isset($fieldDefinition['rows'])) {
                 $fieldDefinition['rows'] = 10;
@@ -1433,48 +1434,8 @@ class CustomHtmlForm extends Form {
                 method_exists($field, 'setPlaceholder')) {
                 $field->setPlaceholder($fieldDefinition['placeholder']);
             }
-        } else if ($fieldDefinition['type'] == 'MultipleImageUploadField' ||
-                   $fieldDefinition['type'] == 'MultipleFileUploadField') {
-
-            if (isset($fieldDefinition['configuration']) &&
-                is_array($fieldDefinition['configuration'])) {
-
-                $configuration = $fieldDefinition['configuration'];
-            } else {
-                $configuration = array();
-            }
-
-            $field = new $fieldDefinition['type'](
-                $fieldName,
-                $fieldDefinition['title'],
-                $configuration,
-                $fieldDefinition['form']
-            );
-            if (isset($fieldDefinition['filetypes']) &&
-                is_array($fieldDefinition['filetypes'])) {
-                $field->setFileTypes($fieldDefinition['filetypes']);
-            }
-            $field->setVar('script', urlencode($this->controller->Link().'uploadifyUpload'));
-            $field->setVar('refreshlink', ($this->controller->Link().'uploadifyRefresh'));
-            $field->setVar('refreshlink', ($this->controller->Link().'uploadifyRefresh'));
-
-            if (isset($fieldDefinition['configuration']) &&
-                is_array($fieldDefinition['configuration']) &&
-                isset($fieldDefinition['configuration']['uploadFolder'])) {
-
-                $field->setUploadFolder($fieldDefinition['configuration']['uploadFolder']);
-            } else {
-                $field->setUploadFolder('Uploads');
-            }
-
-            if (isset($fieldDefinition['value']) &&
-                is_array($fieldDefinition['value'])) {
-
-                $field->setValue($fieldDefinition['value']);
-            }
-        } else if ($fieldDefinition['type'] == 'UploadField' ||
-                   $fieldDefinition['type'] == 'CommunityImageUploadField' ||
-                   $fieldDefinition['type'] == 'CommunityImageUploadField_Readonly') {
+        } else if ($fieldDefinition['type'] == UploadField::class ||
+                   in_array(UploadField::class, class_parents($fieldDefinition['type']))) {
             $field = new $fieldDefinition['type'](
                 $fieldName,
                 $fieldDefinition['title'],
@@ -1506,7 +1467,7 @@ class CustomHtmlForm extends Form {
             if (array_key_exists('showDescriptionField', $fieldDefinition)) {
                 $field->setShowDescriptionField($fieldDefinition['showDescriptionField']);
             }
-        } else if ($fieldDefinition['type'] == 'TreeMultiselectField') {
+        } else if ($fieldDefinition['type'] == TreeMultiselectField::class) {
             Requirements::css(FRAMEWORK_DIR . '/css/TreeDropdownField.css');
             Requirements::css('customhtmlform/css/TreeDropdownField.css');
             if (array_key_exists('keyField', $fieldDefinition)) {
@@ -1629,10 +1590,6 @@ class CustomHtmlForm extends Form {
      * returns the form objects name
      *
      * @return string
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 25.10.2010
      */
     public function getCustomHtmlFormName() {
         return $this->name;
@@ -1681,8 +1638,8 @@ class CustomHtmlForm extends Form {
             }
             if (self::$use_google_recaptcha) {
                 $this->formFields['GoogleRecaptchaField'] = array(
-                    'type'      => 'GoogleRecaptchaField',
-                    'title'     => _t('CustomHtmlFormField.GoogleRecaptchaField_Title'),
+                    'type'      => GoogleRecaptchaField::class,
+                    'title'     => _t(GoogleRecaptchaField::class . '.Title', ' '),
                     'form'      => $this,
                     'checkRequirements' => array(
                         'GoogleRecaptchaField' => true
@@ -1690,21 +1647,21 @@ class CustomHtmlForm extends Form {
                 );
             } else {
                 $this->formFields['PtCaptchaInputField'] = array(
-                    'type'              => 'PtCaptchaInputField',
-                    'title'             => _t('CustomHtmlFormField.PtCaptchaInputField_Title'),
+                    'type'              => PtCaptchaInputField::class,
+                    'title'             => _t(PtCaptchaInputField::class . '.Title', 'Captcha code:'),
                     'form'              => $this,
                     'checkRequirements' => array
                     (
                         'isFilledIn'        => true,
-                        'hasLength'         => CustomHtmlFormConfiguration::SpamCheck_numberOfCharsInCaptcha(),
+                        'hasLength'         => SiteConfigExtension::SpamCheck_numberOfCharsInCaptcha(),
                         'PtCaptchaInput'    => true
                     )
                 );
                 $this->formFields['PtCaptchaImageField'] = array(
-                    'type'      => 'PtCaptchaImageField',
-                    'title'     => _t('CustomHtmlFormField.PtCaptchaImageField_Title'),
+                    'type'      => PtCaptchaImageField::class,
+                    'title'     => _t(PtCaptchaImageField::class . '.Title', 'Enter this captcha code in the following field please:'),
                     'form'      => $this,
-                    'maxLength' => CustomHtmlFormConfiguration::SpamCheck_numberOfCharsInCaptcha(),
+                    'maxLength' => SiteConfigExtension::SpamCheck_numberOfCharsInCaptcha(),
                 );
             }
         }
@@ -1833,11 +1790,7 @@ class CustomHtmlForm extends Form {
      *
      * @param string $formIdentifier The identifier of the form
      *
-     * @return mixed CustomHtmlForm|bool false
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2011 pixeltricks GmbH
-     * @since 08.04.2011
+     * @return CustomHtmlForm|bool
      */
     public function getRegisteredCustomHtmlForm($formIdentifier) {
         $formObj = false;
@@ -1855,9 +1808,6 @@ class CustomHtmlForm extends Form {
      * @param string $fieldType The field type
      *
      * @return mixed
-     * 
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 06.12.2011
      */
     public static function getRegisteredFormFieldHandlerForType($fieldType) {
         if (array_key_exists($fieldType, self::$registeredFormFieldHandlers)) {
@@ -2190,14 +2140,18 @@ class CustomHtmlForm extends Form {
             'errorMessages' => new ArrayList($this->errorMessages),
             'messages'      => new ArrayList($this->messages)
         );
+        $templateBaseDir = '';
+        foreach (SSViewer::get_themes() as $theme) {
+            $templateBaseDir = THEMES_DIR . '/' . $theme;
+        }
 
         $templates = array(
             $project . '/templates/forms/' . $template . '.ss',
             $project . '/templates/Layout/' . $template . '.ss',
-            THEMES_DIR . '/' . SSViewer::current_theme() . '_customhtmlform/templates/forms/' . $template . '.ss',
-            THEMES_DIR . '/' . SSViewer::current_theme() . '_customhtmlform/templates/Layout/' . $template . '.ss',
-            THEMES_DIR . '/' . SSViewer::current_theme() . '/templates/forms/' . $template . '.ss',
-            THEMES_DIR . '/' . SSViewer::current_theme() . '/templates/Layout/' . $template . '.ss',
+            $templateBaseDir . '_customhtmlform/templates/forms/' . $template . '.ss',
+            $templateBaseDir . '_customhtmlform/templates/Layout/' . $template . '.ss',
+            $templateBaseDir . '/templates/forms/' . $template . '.ss',
+            $templateBaseDir . '/templates/Layout/' . $template . '.ss',
             'customhtmlform/templates/forms/' . $template . '.ss',
         );
         foreach ($templates as $templatePath) {
@@ -2404,9 +2358,6 @@ class CustomHtmlForm extends Form {
      * @param string $preferenceName The name of the preference
      *
      * @return mixed
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 2013-02-14
      */
     public function getPreference($preferenceName) {
         if (isset($this->preferences[$preferenceName])) {
@@ -2422,9 +2373,6 @@ class CustomHtmlForm extends Form {
      * returns submit button title
      *
      * @return string
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 26.10.2010
      */
     protected function getSubmitButtontitle() {
         return $this->getPreference('submitButtonTitle');
@@ -2434,9 +2382,6 @@ class CustomHtmlForm extends Form {
      * returns submit button title
      *
      * @return string
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 26.10.2010
      */
     protected function getSubmitButtonToolTip() {
         $toolTip = $this->getPreference('submitButtonToolTip');
@@ -2452,9 +2397,6 @@ class CustomHtmlForm extends Form {
      * Indicates wether the shoppingcart modules should be loaded.
      *
      * @return array
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 27.04.2011
      */
     public function getLoadShoppingCartModules() {
         return $this->getPreference('loadShoppingcartModules');
@@ -2464,9 +2406,6 @@ class CustomHtmlForm extends Form {
      * Indicates wether the shoppingcart forms should be drawn.
      *
      * @return array
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 27.04.2011
      */
     public function getCreateShoppingCartForms() {
         return $this->getPreference('createShoppingcartForms');
@@ -2476,9 +2415,6 @@ class CustomHtmlForm extends Form {
      * is JS validation defined?
      *
      * @return bool
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 18.11.2010
      */
     protected function getDoJsValidation() {
         return $this->getPreference('doJsValidation');
@@ -2488,9 +2424,6 @@ class CustomHtmlForm extends Form {
      * Should the form scroll to the first field after validation?
      *
      * @return bool
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 18.11.2010
      */
     protected function getDoJsValidationScrolling() {
         return $this->getPreference('doJsValidationScrolling');
@@ -2500,9 +2433,6 @@ class CustomHtmlForm extends Form {
      * Should the form fields be filled with submitted values from the request object?
      *
      * @return bool
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 20.12.2010
      */
     protected function getFillInRequestValues() {
         return $this->getPreference('fillInRequestValues');
@@ -2512,10 +2442,6 @@ class CustomHtmlForm extends Form {
      * Should JS validation messages be shown?
      *
      * @return bool
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @copyright 2010 pixeltricks GmbH
-     * @since 23.11.2010
      */
     protected function getShowJsValidationErrorMessages() {
         return $this->getPreference('showJsValidationErrorMessages');
@@ -2525,9 +2451,6 @@ class CustomHtmlForm extends Form {
      * returns the submit button's title
      *
      * @return string
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 27.10.2010
      */
     protected function getSubmitAction() {
         return $this->getPreference('submitAction');
@@ -2573,9 +2496,6 @@ class CustomHtmlForm extends Form {
      * @param array             $preferences optional preferences
      *
      * @return ContentController
-     *
-     * @author Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 28.10.2010
      */
     protected function getFormController($controller, $preferences) {
         if (isset($preferences['controller'])) {
@@ -2679,7 +2599,7 @@ class CustomHtmlForm extends Form {
         }
         
         if (class_exists('Translatable')) {
-            $requestString .= '_'.Translatable::get_current_locale();
+            $requestString .= '_' . Translatable::get_current_locale();
         }
 
         $this->cacheKey .= sha1($requestString);
@@ -2691,6 +2611,7 @@ class CustomHtmlForm extends Form {
         if ($this->hasCacheKeyExtension()) {
             $this->cacheKey .= $this->getCacheKeyExtension();
         }
+        $this->cacheKey = str_replace(array('{','}','(',')','/','\\','@',':'), '-', $this->cacheKey);
     }
 
     /**
@@ -2746,16 +2667,10 @@ class CustomHtmlForm extends Form {
     /**
      * Returns the Cache object for CustomHtmlForm
      * 
-     * @return Zend_Cache_Core
+     * @return CacheInterface
      */
     public static function getCache() {
-        self::$cache = SS_Cache::factory(
-                'CustomHtmlForm',
-                'Output',
-                array(
-                    'automatic_serialization'   => true,
-                )
-        );
+        self::$cache = Injector::inst()->get(CacheInterface::class . '.CustomHtmlForm');
         return self::$cache;
     }
 
@@ -2770,7 +2685,7 @@ class CustomHtmlForm extends Form {
         if (self::$cache_enabled &&
             $this->excludeFromCache === false) {
             $cache = self::getCache();
-            $cache->save($output, $this->getCacheKey());
+            $cache->set($this->getCacheKey(), $output);
         }
     }
     
@@ -2784,7 +2699,7 @@ class CustomHtmlForm extends Form {
         if (self::$cache_enabled &&
             $this->excludeFromCache === false) {
             $cache = self::getCache();
-            $cachedFormOutput = $cache->load($this->getCacheKey());
+            $cachedFormOutput = $cache->get($this->getCacheKey());
         }
         return $cachedFormOutput;
     }
@@ -2866,7 +2781,7 @@ class CustomHtmlForm extends Form {
      * @since 19.11.2014
      */
     public function createHiddenFieldDefinition($value, $isFilledIn = false, $additionalRequirements = array(), $additionalDefinitions = array()) {
-        return $this->createFieldDefinition('HiddenField', '', $value, $isFilledIn, $additionalRequirements, null, $additionalDefinitions);
+        return $this->createFieldDefinition(HiddenField::class, '', $value, $isFilledIn, $additionalRequirements, null, $additionalDefinitions);
     }
     
     /**
@@ -2885,7 +2800,7 @@ class CustomHtmlForm extends Form {
      * @since 31.07.2014
      */
     public function createTextFieldDefinition($title, $value, $isFilledIn = false, $additionalRequirements = array(), $selectedValue = null, $additionalDefinitions = array()) {
-        return $this->createFieldDefinition('TextField', $title, $value, $isFilledIn, $additionalRequirements, $selectedValue, $additionalDefinitions);
+        return $this->createFieldDefinition(TextField::class, $title, $value, $isFilledIn, $additionalRequirements, $selectedValue, $additionalDefinitions);
     }
     
     /**
@@ -2912,7 +2827,7 @@ class CustomHtmlForm extends Form {
         if (!is_null($cols)) {
             $additionalDefinitions['cols'] = $cols;
         }
-        return $this->createFieldDefinition('TextareaField', $title, $value, $isFilledIn, $additionalRequirements, $selectedValue, $additionalDefinitions);
+        return $this->createFieldDefinition(TextareaField::class, $title, $value, $isFilledIn, $additionalRequirements, $selectedValue, $additionalDefinitions);
     }
     
     /**
@@ -2931,7 +2846,7 @@ class CustomHtmlForm extends Form {
      * @since 31.07.2014
      */
     public function createCheckboxFieldDefinition($title, $value, $isFilledIn = false, $additionalRequirements = array(), $selectedValue = null, $additionalDefinitions = array()) {
-        return $this->createFieldDefinition('CheckboxField', $title, $value, $isFilledIn, $additionalRequirements, $selectedValue, $additionalDefinitions);
+        return $this->createFieldDefinition(CheckboxField::class, $title, $value, $isFilledIn, $additionalRequirements, $selectedValue, $additionalDefinitions);
     }
     
     /**
@@ -2950,7 +2865,7 @@ class CustomHtmlForm extends Form {
      * @since 31.07.2014
      */
     public function createDropdownFieldDefinition($title, $value, $selectedValue = null, $isFilledIn = false, $additionalRequirements = array(), $additionalDefinitions = array()) {
-        return $this->createFieldDefinition('DropdownField', $title, $value, $isFilledIn, $additionalRequirements, $selectedValue, $additionalDefinitions);
+        return $this->createFieldDefinition(DropdownField::class, $title, $value, $isFilledIn, $additionalRequirements, $selectedValue, $additionalDefinitions);
     }
     
     /**
@@ -2977,7 +2892,7 @@ class CustomHtmlForm extends Form {
         $additionalDefinitions['labelField']   = $labelField;
         $additionalDefinitions['showSearch']   = $showSearch;
         $additionalDefinitions['treeBaseID']   = $treeBaseID;
-        return $this->createFieldDefinition('TreeDropdownField', $title, $value, $isFilledIn, $additionalRequirements, $keyField, $additionalDefinitions);
+        return $this->createFieldDefinition(TreeDropdownField::class, $title, $value, $isFilledIn, $additionalRequirements, $keyField, $additionalDefinitions);
     }
     
     /**
@@ -3004,7 +2919,7 @@ class CustomHtmlForm extends Form {
         $additionalDefinitions['labelField']   = $labelField;
         $additionalDefinitions['showSearch']   = $showSearch;
         $additionalDefinitions['treeBaseID']   = $treeBaseID;
-        return $this->createFieldDefinition('TreeMultiselectField', $title, $value, $isFilledIn, $additionalRequirements, $keyField, $additionalDefinitions);
+        return $this->createFieldDefinition(TreeMultiselectField::class, $title, $value, $isFilledIn, $additionalRequirements, $keyField, $additionalDefinitions);
     }
     
     /**
@@ -3023,9 +2938,9 @@ class CustomHtmlForm extends Form {
      * @since 31.07.2014
      */
     public function createMoneyFieldDefinition($title, $value, $isFilledIn = false, $additionalRequirements = array(), $selectedValue = null, $additionalDefinitions = array()) {
-        $fieldClass = 'MoneyField';
-        if (class_exists('SilvercartMoneyField')) {
-            $fieldClass = 'SilvercartMoneyField';
+        $fieldClass = MoneyField::class;
+        if (class_exists('SilverCart\\Forms\\FormFields\\MoneyField')) {
+            $fieldClass = \SilverCart\Forms\FormFields\MoneyField::class;
         }
         return $this->createFieldDefinition($fieldClass, $title, $value, $isFilledIn, $additionalRequirements, $selectedValue, $additionalDefinitions);
     }
@@ -3046,6 +2961,6 @@ class CustomHtmlForm extends Form {
      * @since 01.10.2014
      */
     public function createCheckboxSetFieldDefinition($title, $value, $selectedValue = null, $isFilledIn = false, $additionalRequirements = array(), $additionalDefinitions = array()) {
-        return $this->createFieldDefinition('CheckboxSetField', $title, $value, $isFilledIn, $additionalRequirements, $selectedValue, $additionalDefinitions);
+        return $this->createFieldDefinition(CheckboxSetField::class, $title, $value, $isFilledIn, $additionalRequirements, $selectedValue, $additionalDefinitions);
     }
 }
