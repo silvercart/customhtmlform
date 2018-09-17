@@ -346,9 +346,15 @@ class CustomHtmlForm extends Form {
      *
      * @author Sebastian Diel <sdiel@pixeltricks.de>,
      *         Sascha Koehler <skoehler@pixeltricks.de>
-     * @since 13.01.2015
+     * @since 17.09.2018
      */
     public function __construct($controller, $params = null, $preferences = null, $barebone = false) {
+        $config = SiteConfig::current_site_config();
+        if ($config instanceof SiteConfig
+         && $config->Theme
+        ) {
+            Config::inst()->update('SSViewer', 'theme', $config->Theme);
+        }
         $this->extend('onBeforeConstruct', $controller, $params, $preferences, $barebone);
         global $project;
 
