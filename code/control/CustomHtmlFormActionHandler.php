@@ -45,7 +45,7 @@ class CustomHtmlFormActionHandler extends Controller {
      * @since 01.03.2013
      */
     public static function addHandler($classname) {
-        Object::add_extension('CustomHtmlFormActionHandler', $classname);
+        SS_Object::add_extension('CustomHtmlFormActionHandler', $classname);
     }
     
 }

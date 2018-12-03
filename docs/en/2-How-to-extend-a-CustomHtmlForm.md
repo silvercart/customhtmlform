@@ -183,8 +183,8 @@ To get the new fields into your templates, add the following markup to your /mys
 To register the two extensions to the right base objects, open your /mysite/_config.php and add the following lines:
 
 	:::php
-	Object::add_extension('SilvercartAddress',          'MySilvercartAddressExtension');
-	Object::add_extension('SilvercartAddAddressForm',   'MySilvercartAddAddressFormExtension');
+	SS_Object::add_extension('SilvercartAddress',          'MySilvercartAddressExtension');
+	SS_Object::add_extension('SilvercartAddAddressForm',   'MySilvercartAddAddressFormExtension');
 
 ### Flush your cache and build your changes
 

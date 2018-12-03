@@ -1039,7 +1039,8 @@ class CustomHtmlFormStepPage_Controller extends Page_Controller {
             $prefix = $this->basename;
             
             if (is_array($directory)) {
-                list($directory, $definition) = each($directory);
+                $definition = current($directory);
+                $directory  = key($directory);
 
                 if (isset($definition['prefix'])) {
                     $prefix = $definition['prefix'];
