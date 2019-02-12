@@ -46,6 +46,12 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
      */
     this.noValidationFields = [];
     /**
+     * CSS class to use for form field error status (outer box)
+     *
+     * @var string
+     */
+    this.errorCssClass = 'error';
+    /**
      * CSS class to use for error messages (outer box)
      *
      * @var string
@@ -384,7 +390,7 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
                         } else {
                             $(errorBoxSelector).append(messageStr);
                         }
-                        $(errorBoxSelector).addClass('error');
+                        $(errorBoxSelector).addClass(that.errorCssClass);
                     }
                     else
                     {
@@ -523,6 +529,15 @@ var pixeltricks         = pixeltricks       ? pixeltricks       : [];
     {
         this.formName = formName;
     }
+    
+    /**
+     * Sets the error box css class
+     * 
+     * @param errorCssClass string
+     */
+    this.setErrorCssClass = function(errorCssClass) {
+        this.errorCssClass = errorCssClass;
+    };
     
     /**
      * Sets the error box css class

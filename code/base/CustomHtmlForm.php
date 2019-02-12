@@ -312,6 +312,13 @@ class CustomHtmlForm extends Form {
     protected $customHtmlFormAction = null;
     
     /**
+     * Custom CSS class to use for JS error form field status.
+     *
+     * @var string
+     */
+    public static $custom_error_css_class = '';
+    
+    /**
      * Custom CSS class to use for JS error messages.
      *
      * @var string
@@ -631,6 +638,9 @@ class CustomHtmlForm extends Form {
                 ' . $this->jsName . '.setPreference(\'showJsValidationErrorMessages\', ' . ($this->getShowJsValidationErrorMessages() ? 'true' : 'false') . ');
                 ' . $this->jsName . '.bindEvents();';
 
+            if (!empty(self::$custom_error_css_class)) {
+                $javascriptOnloadSnippets .= $this->jsName . ".setErrorCssClass('" . self::$custom_error_css_class . "');";
+            }
             if (!empty(self::$custom_error_box_css_class)) {
                 $javascriptOnloadSnippets .= $this->jsName . ".setErrorBoxCssClass('" . self::$custom_error_box_css_class . "');";
             }
