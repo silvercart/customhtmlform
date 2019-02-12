@@ -464,7 +464,7 @@ class CustomHtmlFormPage_Controller extends DataExtension {
     /**
      * processor method for all customhtmlform forms
      *
-     * @param Form $form the submitting form object
+     * @param SS_HTTPRequest $form the submitting form object
      *
      * @return mixed depends on processing form method
      *
@@ -472,7 +472,7 @@ class CustomHtmlFormPage_Controller extends DataExtension {
      * @copyright 2010 pixeltricks GmbH
      * @since 25.10.2010
      */
-    public function customHtmlFormSubmit($form) {
+    public function customHtmlFormSubmit($request) {
         $formName                    = $this->owner->request->postVar('CustomHtmlFormName');
         $registeredCustomHtmlFormObj = false;
 
@@ -491,7 +491,7 @@ class CustomHtmlFormPage_Controller extends DataExtension {
         }
 
         if ($registeredCustomHtmlFormObj instanceof CustomHtmlForm) {
-            return $registeredCustomHtmlFormObj->submit($form, null);
+            return $registeredCustomHtmlFormObj->submit($request);
         } else {
             if ($this->owner->request->requestVar('_REDIRECT_BACK_URL')) {
                 $url = $this->owner->request->requestVar('_REDIRECT_BACK_URL');

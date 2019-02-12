@@ -381,12 +381,6 @@ class CustomHtmlForm extends Form {
         if (!$barebone) {
             $this->getFormFields();
         }
-        
-        if ($this->securityTokenEnabled) {
-            SecurityToken::enable();
-        } else {
-            SecurityToken::disable();
-        }
 
         parent::__construct(
             $this->getFormController($controller, $preferences),
@@ -394,6 +388,12 @@ class CustomHtmlForm extends Form {
             new FieldList(),
             new FieldList()
         );
+        
+        if ($this->securityTokenEnabled) {
+            $this->enableSecurityToken();
+        } else {
+            $this->disableSecurityToken();
+        }
         
         if (!$barebone) {
             $this->getFormFields();
@@ -777,12 +777,15 @@ class CustomHtmlForm extends Form {
      *         Sascha Koehler <skoehler@pixeltricks.de>
      * @since 24.01.2014
      */
-    public function submit($data, $form) {
+    public function submit($data, $form = null) {
         $this->extend('onBeforeSubmit', $data, $form);
         $formData = $this->getFormData($data);
         $this->extend('updateSubmittedFormData', $formData, $data);
         $this->checkFormData($formData);
         $result = null;
+        if (is_null($form)) {
+            $form = $this;
+        }
 
         ob_start();
         if (empty($this->errorMessages)) {
